@@ -1,3 +1,14 @@
+server:
+  port: 8080
+
 spring:
   application:
     name: backend
+  datasource:
+    driver: org.postgresql.Driver
+    url:  jdbc:postgresql://localhost:5432/rentifydb
+    username: pguser
+    password: pgpassword
+  jpa:
+    hibernate:
+      ddl-auto: update

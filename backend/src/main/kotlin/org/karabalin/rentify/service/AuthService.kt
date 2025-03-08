@@ -1,0 +1,78 @@
+package org.karabalin.rentify.service
+
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
+import jakarta.annotation.PostConstruct
+import org.karabalin.rentify.model.dto.AuthResponse
+import org.karabalin.rentify.model.dto.LoginRequest
+import org.karabalin.rentify.model.dto.RefreshTokenRequest
+import org.karabalin.rentify.model.dto.RegisterRequest
+import org.karabalin.rentify.model.entity.Role
+import org.karabalin.rentify.model.entity.User
+import org.karabalin.rentify.repository.RoleRepository
+import org.karabalin.rentify.repository.UserRepository
+import org.karabalin.rentify.util.JwtUtil
+
+@Service
+class AuthService(
+    private val userRepository: UserRepository,
+    private val roleRepository: RoleRepository,
+    private val jwtUtil: JwtUtil,
+    private val authenticationManager: AuthenticationManager,
+    private val passwordEncoder: PasswordEncoder
+) {
+    @PostConstruct
+    fun initRoles() {
+        listOf("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR").forEach { roleName ->
+            if (roleRepository.findByName(roleName) == null) {
+                roleRepository.save(Role(name = roleName))
+            }
+        }
+    }
+
+    fun register(request: RegisterRequest): AuthResponse {
+        val userRole = roleRepository.findByName("ROLE_USER")
+            ?: throw IllegalStateException("ROLE_USER not found")
+
+        val user = User(
+            email = request.email,
+            password = passwordEncoder.encode(request.password),
+            role = userRole
+        )
+        userRepository.save(user)
+
+        val accessToken = jwtUtil.generateAccessToken(user.email)
+        val refreshToken = jwtUtil.generateRefreshToken(user.email)
+
+        return AuthResponse(accessToken, refreshToken)
+    }
+
+    fun login(request: LoginRequest): AuthResponse {
+        authenticationManager.authenticate(
+            UsernamePasswordAuthenticationToken(request.email, request.password)
+        )
+
+        val user = userRepository.findByEmail(request.email)
+            ?: throw UsernameNotFoundException("User not found")
+
+        val accessToken = jwtUtil.generateAccessToken(user.email)
+        val refreshToken = jwtUtil.generateRefreshToken(user.email)
+
+        return AuthResponse(accessToken, refreshToken)
+    }
+
+    fun refreshToken(request: RefreshTokenRequest): AuthResponse {
+        if (!jwtUtil.validateToken(request.refreshToken)) {
+            throw IllegalArgumentException("Invalid refresh token")
+        }
+
+        val email = jwtUtil.getEmailFromToken(request.refreshToken)
+            ?: throw IllegalArgumentException("Invalid token")
+
+        val accessToken = jwtUtil.generateAccessToken(email)
+        return AuthResponse(accessToken, request.refreshToken)
+    }
+}

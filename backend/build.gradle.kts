@@ -19,12 +19,18 @@ repositories {
 	mavenCentral()
 }
 
+val jjwtVersion = "0.12.6"
+
 dependencies {
+	implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
+	implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
+	implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
+	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

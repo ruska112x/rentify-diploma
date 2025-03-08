@@ -12,3 +12,8 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+
+jwt:
+  secret: 12311231123112311231123112311231
+  accessTokenValidity: 900
+  refreshTokenValidity: 604800

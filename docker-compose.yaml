@@ -12,15 +12,6 @@ services:
     networks:
       - main-network
 
-  adminer:
-    container_name: pg-adminer
-    image: adminer
-    restart: always
-    ports:
-      - 8078:8080
-    networks:
-      - main-network
-
 networks:
   main-network:
     driver: bridge

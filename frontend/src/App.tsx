@@ -1,8 +1,19 @@
-import React from 'react'
+import Navbar from './components/Navbar'
+import { Routes } from 'react-router'
+import { Route } from 'react-router'
+import Login from './pages/Login'
+import Register from './pages/Register'
 
 const App = () => {
   return (
-    <h1>Empty</h1>
+    <>
+      <Navbar />
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/" element={<div>Home Page</div>} />
+      </Routes>
+    </>
   )
 }
 

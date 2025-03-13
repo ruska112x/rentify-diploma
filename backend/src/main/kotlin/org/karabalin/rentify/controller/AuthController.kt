@@ -1,5 +1,6 @@
 package org.karabalin.rentify.controller
 
+import jakarta.validation.Valid
 import org.karabalin.rentify.model.dto.AuthResponse
 import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RefreshTokenRequest
@@ -15,12 +16,12 @@ class AuthController(
     private val roleRepository: RoleRepository
 ) {
     @PostMapping("/register")
-    fun register(@RequestBody request: RegisterRequest): AuthResponse {
+    fun register(@Valid @RequestBody request: RegisterRequest): AuthResponse {
         return authService.register(request)
     }
 
     @PostMapping("/login")
-    fun login(@RequestBody request: LoginRequest): AuthResponse {
+    fun login(@Valid @RequestBody request: LoginRequest): AuthResponse {
         return authService.login(request)
     }
 

@@ -6,9 +6,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import jakarta.annotation.PostConstruct
-import org.karabalin.rentify.model.dto.AuthResponse
+import org.karabalin.rentify.model.domain.AuthTokens
 import org.karabalin.rentify.model.dto.LoginRequest
-import org.karabalin.rentify.model.dto.RefreshTokenRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
 import org.karabalin.rentify.model.entity.Role
 import org.karabalin.rentify.model.entity.User
@@ -33,7 +32,7 @@ class AuthService(
         }
     }
 
-    fun register(request: RegisterRequest): AuthResponse {
+    fun register(request: RegisterRequest): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER")
             ?: throw IllegalStateException("ROLE_USER not found")
 
@@ -47,10 +46,10 @@ class AuthService(
         val accessToken = jwtUtil.generateAccessToken(user.email)
         val refreshToken = jwtUtil.generateRefreshToken(user.email)
 
-        return AuthResponse(accessToken, refreshToken)
+        return AuthTokens(accessToken, refreshToken)
     }
 
-    fun login(request: LoginRequest): AuthResponse {
+    fun login(request: LoginRequest): AuthTokens {
         val user = userRepository.findByEmail(request.email)
             ?: throw UsernameNotFoundException("User with this email not found")
 
@@ -61,18 +60,18 @@ class AuthService(
         val accessToken = jwtUtil.generateAccessToken(user.email)
         val refreshToken = jwtUtil.generateRefreshToken(user.email)
 
-        return AuthResponse(accessToken, refreshToken)
+        return AuthTokens(accessToken, refreshToken)
     }
 
-    fun refreshToken(request: RefreshTokenRequest): AuthResponse {
-        if (!jwtUtil.validateToken(request.refreshToken)) {
+    fun refreshToken(refreshToken: String): AuthTokens {
+        if (!jwtUtil.validateToken(refreshToken)) {
             throw IllegalArgumentException("Invalid refresh token")
         }
 
-        val email = jwtUtil.getEmailFromToken(request.refreshToken)
+        val email = jwtUtil.getEmailFromToken(refreshToken)
             ?: throw IllegalArgumentException("Invalid token")
 
         val accessToken = jwtUtil.generateAccessToken(email)
-        return AuthResponse(accessToken, request.refreshToken)
+        return AuthTokens(accessToken, refreshToken)
     }
 }

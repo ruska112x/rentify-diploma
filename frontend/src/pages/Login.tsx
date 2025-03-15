@@ -2,13 +2,13 @@ import React, { useState, FormEvent } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
 import { setTokens } from '../state/authSlice';
+import api from '../api/api';
 
 interface LoginResponse {
   accessToken: string;
-  refreshToken: string;
 }
 
 interface ErrorRegisterResponse {
@@ -26,13 +26,12 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post<LoginResponse>('http://localhost:8080/api/auth/login', {
+      const response = await api.post<LoginResponse>('http://localhost:8080/api/auth/login', {
         email,
         password,
       });
       dispatch(setTokens({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
+        accessToken: response.data.accessToken
       }));
       navigate('/');
     } catch (error) {

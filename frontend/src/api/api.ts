@@ -5,11 +5,11 @@ import { logout, setTokens } from '../state/authSlice';
 
 interface RefreshResponse {
     accessToken: string;
-    refreshToken: string;
 }
 
 const api = axios.create({
     baseURL: 'http://localhost:8080',
+    withCredentials: true,
 });
 
 interface CustomAxiosRequestConfig extends AxiosRequestConfig {
@@ -35,13 +35,9 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
-                const refreshToken = store.getState().auth.refreshToken;
-                const response = await axios.post<RefreshResponse>('http://localhost:8080/api/auth/refresh', {
-                    refreshToken,
-                });
+                const response = await axios.post<RefreshResponse>('http://localhost:8080/api/auth/refresh');
                 store.dispatch(setTokens({
-                    accessToken: response.data.accessToken,
-                    refreshToken: response.data.refreshToken,
+                    accessToken: response.data.accessToken
                 }));
                 originalRequest.headers = originalRequest.headers || {};
                 originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;

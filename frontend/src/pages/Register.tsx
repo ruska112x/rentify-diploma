@@ -8,7 +8,6 @@ import { setTokens } from '../state/authSlice';
 
 interface RegisterResponse {
     accessToken: string;
-    refreshToken: string;
 }
 
 interface ErrorRegisterResponse {
@@ -38,8 +37,7 @@ const Register: React.FC = () => {
                 password,
             });
             dispatch(setTokens({
-                accessToken: response.data.accessToken,
-                refreshToken: response.data.refreshToken,
+                accessToken: response.data.accessToken
             }));
             navigate('/');
         } catch (error) {

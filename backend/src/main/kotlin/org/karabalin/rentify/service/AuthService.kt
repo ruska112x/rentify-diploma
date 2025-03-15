@@ -52,7 +52,7 @@ class AuthService(
 
     fun login(request: LoginRequest): AuthResponse {
         val user = userRepository.findByEmail(request.email)
-            ?: throw UsernameNotFoundException("User not found")
+            ?: throw UsernameNotFoundException("User with this email not found")
 
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.email, request.password)

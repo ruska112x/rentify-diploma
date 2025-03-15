@@ -1,8 +1,8 @@
 import React, { useState, FormEvent } from 'react';
-import { TextField, Button, Container, Typography, Box } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
 import { setTokens } from '../state/authSlice';
 
@@ -11,9 +11,15 @@ interface LoginResponse {
   refreshToken: string;
 }
 
+interface ErrorRegisterResponse {
+  error?: string;
+}
+
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
   const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({});
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
@@ -30,7 +36,20 @@ const Login: React.FC = () => {
       }));
       navigate('/');
     } catch (error) {
-      console.error('Login error:', error);
+      const axiosError = error as AxiosError<ErrorRegisterResponse>;
+      if (axiosError.response?.status === 404) {
+        const errorData = axiosError.response.data;
+        setFieldErrors({
+          email: errorData.error,
+        });
+
+        if (!errorData.error) {
+          setError("An unexpected error occurred. Please try again.");
+        }
+      } else {
+        console.error("Register error:", error);
+        setError("An unexpected error occurred. Please try again.");
+      }
     }
   };
 
@@ -41,13 +60,22 @@ const Login: React.FC = () => {
           Sign in
         </Typography>
         <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
+          {error && (
+            <Alert severity="error" sx={{ mb: 2 }}>
+              {error}
+            </Alert>
+          )}
           <TextField
             margin="normal"
             required
             fullWidth
             label="Email Address"
+            placeholder="example@mail.org"
+            type="email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            error={!!fieldErrors.email}
+            helperText={fieldErrors.email}
           />
           <TextField
             margin="normal"

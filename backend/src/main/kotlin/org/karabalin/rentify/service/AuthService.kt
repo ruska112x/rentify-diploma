@@ -51,12 +51,12 @@ class AuthService(
     }
 
     fun login(request: LoginRequest): AuthResponse {
+        val user = userRepository.findByEmail(request.email)
+            ?: throw UsernameNotFoundException("User not found")
+
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.email, request.password)
         )
-
-        val user = userRepository.findByEmail(request.email)
-            ?: throw UsernameNotFoundException("User not found")
 
         val accessToken = jwtUtil.generateAccessToken(user.email)
         val refreshToken = jwtUtil.generateRefreshToken(user.email)

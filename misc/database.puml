@@ -12,71 +12,68 @@ package "Moderation" {
   package "Chats" {
     package "Minimal" {
       entity "User" as user {
-        * id: Long <<generated>>
+        * id: UUID <<generated>> <<PK>>
         ---
-        * email: String
+        * email: String <<unique>>
         * password: String
         * phone: String
-        * lastLoginTime : LocalDateTime
-        * createdAtTime : LocalDateTime
-        * updatedAtTime : LocalDateTime
+        * lastLoginTime: LocalDateTime
+        * createdAtTime: LocalDateTime
+        * updatedAtTime: LocalDateTime
         * statusId: Long <<FK>>
         * roleId: Long <<FK>>
       }
 
       ' USER, ADMIN, MODERATOR
       entity "UserRole" as userRole {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
         * name: String
       }
 
       ' ACTIVE, BLOCKED, DELETED
       entity "UserStatus" as userStatus {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
         * name: String
       }
 
       entity "RentalListing" as rentalListing {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
         * title: String
         * description: String
+        * tariffDescription: String
         * autoRenew: boolean
-        hourPrice: int
-        dayPrice: int
-        weekPrice: int
-        * createdAtTime : LocalDateTime
-        * updatedAtTime : LocalDateTime
-        * userId: Long <<FK>>
+        * createdAtTime: LocalDateTime
+        * updatedAtTime: LocalDateTime
+        * userId: UUID <<FK>>
         * statusId: Long <<FK>>
       }
 
       ' ACTIVE, BLOCKED, ONDELETION, DELETED
       entity "RentalListingStatus" as rentalListingStatus {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
         * name: String
       }
 
       entity "Booking" as booking {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
-        * totalPrice: int
         * startDateTime: LocalDateTime
         * endDateTime: LocalDateTime
-        * createdAtTime : LocalDateTime
-        * updatedAtTime : LocalDateTime
+        * createdAtTime: LocalDateTime
+        * updatedAtTime: LocalDateTime
         * rentalListingId: Long <<FK>>
-        * userId: Long <<FK>>
+        * userId: UUID <<FK>>
       }
 
       entity "Review" as review {
-        * id: Long <<generated>>
+        * id: Long <<generated>> <<PK>>
         ---
         * text: String
-        * createdAtTime : LocalDateTime
+        * createdAtTime: LocalDateTime
         * rentalListingId: Long <<FK>>
         * authorId: Long <<FK>>
       }
@@ -95,25 +92,25 @@ package "Moderation" {
     }
 
     entity "Chat" as chat {
-      * id: Long <<generated>>
+      * id: Long <<generated>> <<PK>>
       ---
-      * createdAtTime : LocalDateTime
+      * createdAtTime: LocalDateTime
       * typeId: Long <<FK>>
       * userIdF: Long <<FK>>
       * userIdS: Long <<FK>>
     }
 
     entity "ChatType" as chatType {
-      * id: Long <<generated>>
+      * id: Long <<generated>> <<PK>>
       ---
       * name: String
     }
 
     entity "Message" as message {
-      * id: Long <<generated>>
+      * id: Long <<generated>> <<PK>>
       ---
       * content: String
-      * createdAtTime : LocalDateTime
+      * createdAtTime: LocalDateTime
       attachmentUrl: String
       * chatId: Long <<FK>>
       * authorId: Long <<FK>>

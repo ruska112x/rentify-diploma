@@ -19,9 +19,9 @@ package "Moderation" {
         * email: String <<unique>>
         * password: String
         * phone: String
-        * lastLoginTime: LocalDateTime
-        * createdAtTime: LocalDateTime
-        * updatedAtTime: LocalDateTime
+        * lastLoginTime: Instant
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
         * statusId: Long <<FK>>
         * roleId: Long <<FK>>
       }
@@ -48,8 +48,8 @@ package "Moderation" {
         * address: String
         * tariffDescription: String
         * autoRenew: boolean
-        * createdAtTime: LocalDateTime
-        * updatedAtTime: LocalDateTime
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
         * userId: UUID <<FK>>
         * statusId: Long <<FK>>
       }
@@ -64,10 +64,10 @@ package "Moderation" {
       entity "Booking" as booking {
         * id: Long <<generated>> <<PK>>
         ---
-        * startDateTime: LocalDateTime
-        * endDateTime: LocalDateTime
-        * createdAtTime: LocalDateTime
-        * updatedAtTime: LocalDateTime
+        * startDateTime: Instant
+        * endDateTime: Instant
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
         * rentalListingId: Long <<FK>>
         * userId: UUID <<FK>>
       }
@@ -76,7 +76,7 @@ package "Moderation" {
         * id: Long <<generated>> <<PK>>
         ---
         * text: String
-        * createdAtTime: LocalDateTime
+        * createdAtTime: Instant
         * rentalListingId: Long <<FK>>
         * authorId: Long <<FK>>
       }
@@ -97,7 +97,7 @@ package "Moderation" {
     entity "Chat" as chat {
       * id: Long <<generated>> <<PK>>
       ---
-      * createdAtTime: LocalDateTime
+      * createdAtTime: Instant
       * typeId: Long <<FK>>
       * userIdF: Long <<FK>>
       * userIdS: Long <<FK>>
@@ -113,7 +113,7 @@ package "Moderation" {
       * id: Long <<generated>> <<PK>>
       ---
       * content: String
-      * createdAtTime: LocalDateTime
+      * createdAtTime: Instant
       attachmentUrl: String
       * chatId: Long <<FK>>
       * authorId: Long <<FK>>

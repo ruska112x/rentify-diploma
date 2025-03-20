@@ -121,9 +121,9 @@ package "Moderation" {
 
     ' chat }o--|| user
     ' chat }o--|| user
-    ' chat ||--|| chatType
+    chat ||--|| chatType
 
-    ' message }o--|| chat
+    message }o--|| chat
     ' message }o--|| user
   }
 }

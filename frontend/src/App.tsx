@@ -6,27 +6,31 @@ import Register from './pages/Register'
 import { useEffect } from 'react'
 import { store } from './state/store'
 import api from './api/api'
-import { logout, setTokens } from './state/authSlice'
+import { logoutUser, setTokens, setHasTriedRefresh } from './state/authSlice'
 
 interface RefreshResponse {
   accessToken: string;
 }
 
 async function initializeAuth() {
-  const isTriedRefresh = store.getState().auth.accessToken;
-  if (isTriedRefresh) {
+  const { hasTriedInitialRefresh } = store.getState().auth;
+  console.log(hasTriedInitialRefresh);
+  if (hasTriedInitialRefresh) {
     return;
-  } else {
-    try {
-      const { data } = await api.post<RefreshResponse>('/api/auth/refresh');
-      store.dispatch(setTokens({ accessToken: data.accessToken }));
-    } catch (error) {
-      store.dispatch(logout());
-    }
+  }
+
+  try {
+    const { data } = await api.post<RefreshResponse>('/api/auth/refresh');
+    store.dispatch(setTokens({ accessToken: data.accessToken }));
+  } catch (error) {
+    store.dispatch(logoutUser());
+  } finally {
+    store.dispatch(setHasTriedRefresh());
   }
 }
 
 const App = () => {
+  // TODO: FIX INFINITE LOOP
   useEffect(() => {
     initializeAuth();
   }, []);

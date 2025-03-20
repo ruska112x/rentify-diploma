@@ -4,11 +4,13 @@ import axios from 'axios';
 interface AuthState {
   accessToken: string | null;
   isAuthenticated: boolean;
+  hasTriedInitialRefresh: boolean;
 }
 
 const initialState: AuthState = {
   accessToken: null,
   isAuthenticated: false,
+  hasTriedInitialRefresh: false,
 };
 
 export const logoutUser = createAsyncThunk(
@@ -29,10 +31,14 @@ const authSlice = createSlice({
     setTokens: (state, action: PayloadAction<{ accessToken: string; }>) => {
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
+      state.hasTriedInitialRefresh = true;
     },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
+    },
+    setHasTriedRefresh: (state) => {
+      state.hasTriedInitialRefresh = true;
     },
   },
   extraReducers: (builder) => {
@@ -43,5 +49,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, logout } = authSlice.actions;
+export const { setTokens, logout, setHasTriedRefresh } = authSlice.actions;
 export default authSlice.reducer;

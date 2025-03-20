@@ -14,6 +14,7 @@ import org.karabalin.rentify.model.entity.User
 import org.karabalin.rentify.repository.RoleRepository
 import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.util.JwtUtil
+import java.time.Instant
 
 @Service
 class AuthService(
@@ -39,6 +40,10 @@ class AuthService(
         val user = User(
             email = request.email,
             password = passwordEncoder.encode(request.password),
+            firstName = request.firstName,
+            lastName = request.lastName,
+            phone = request.phone,
+            lastLoginTime = Instant.now(),
             role = userRole
         )
         userRepository.save(user)

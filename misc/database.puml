@@ -14,10 +14,10 @@ package "Moderation" {
       entity "User" as user {
         * id: UUID <<generated>> <<PK>>
         ---
-        * firstName: String
-        * lastName: String
         * email: String <<unique>>
         * password: String
+        * firstName: String
+        * lastName: String
         * phone: String
         * lastLoginTime: Instant
         * createdAtTime: Instant

@@ -1,5 +1,5 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { AppDispatch, store } from '../state/store';
+import { store } from '../state/store';
 import { logout, setTokens } from '../state/authSlice';
 
 
@@ -50,16 +50,5 @@ api.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-export const initializeAuth = () => async (dispatch: AppDispatch) => {
-    try {
-        const response = await api.post('/api/auth/refresh');
-        dispatch(setTokens({ accessToken: response.data.accessToken }));
-    } catch (error) {
-        const axiosError = error as AxiosError;
-        console.error('Ошибка инициализации:', axiosError.response?.status, axiosError.response?.data);
-        dispatch(logout());
-    }
-};
 
 export default api;

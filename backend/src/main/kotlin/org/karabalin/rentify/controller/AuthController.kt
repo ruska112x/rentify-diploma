@@ -79,6 +79,19 @@ class AuthController(
         return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
     }
 
+    @PostMapping("/logout")
+    fun logout(response: HttpServletResponse): ResponseEntity<String> {
+        val cookie = Cookie("refreshToken", "").apply {
+            isHttpOnly = true
+            secure = false
+            path = "/"
+            maxAge = 0
+            setAttribute("SameSite", "Lax")
+        }
+        response.addCookie(cookie)
+        return ResponseEntity.ok("")
+    }
+
     @GetMapping("/roles")
     fun getAllRoles(): List<String> {
         return roleRepository.findAll().map { it.name }

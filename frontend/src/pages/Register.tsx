@@ -9,7 +9,6 @@ import { setTokens } from '../state/authSlice';
 
 interface RegisterResponse {
     accessToken: string;
-    refreshToken?: string;
 }
 
 interface ErrorRegisterResponse {
@@ -18,13 +17,12 @@ interface ErrorRegisterResponse {
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
-// Компонент для маскированного ввода
 const PhoneMaskInput = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     const { onChange, ...other } = props;
     return (
         <IMaskInput
             {...other}
-            mask="+{7} (000) 000-0000"
+            mask="+{0} (000) 000-0000"
             inputRef={ref}
             onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
             overwrite
@@ -103,7 +101,7 @@ const Register: React.FC = () => {
             if (axiosError.response?.status === 409) {
                 const errorData = axiosError.response.data;
                 setFieldErrors({
-                    email: errorData.error === 'Email already exists' ? errorData.error : undefined,
+                    email: errorData.error,
                 });
                 if (!errorData.error) {
                     setError("An unexpected error occurred. Please try again.");
@@ -167,7 +165,6 @@ const Register: React.FC = () => {
                         type="password"
                         value={rPassword}
                         onChange={(e) => setRPassword(e.target.value)}
-                        onPaste={(e) => e.preventDefault()}
                     />
                     <TextField
                         margin="normal"
@@ -194,14 +191,16 @@ const Register: React.FC = () => {
                         required
                         fullWidth
                         label="Phone Number"
-                        placeholder="+1 (234) 567-8900"
+                        placeholder="+7 (952) 812-4242"
                         value={phone}
                         onChange={handlePhoneChange}
-                        InputProps={{
-                            inputComponent: PhoneMaskInput as any, // Используем react-imask
-                        }}
                         error={!!phoneError || !!fieldErrors.phone}
                         helperText={phoneError || fieldErrors.phone || "Use international format"}
+                        slotProps={{
+                            input: {
+                                inputComponent: PhoneMaskInput as any,
+                            }
+                        }}
                     />
                     <Button
                         type="submit"

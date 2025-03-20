@@ -24,6 +24,17 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+export const refresh = createAsyncThunk(
+  'auth/refresh',
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
+    } catch (err) {
+      return rejectWithValue(err);
+    }
+  }
+);
+
 const authSlice = createSlice({
   name: 'auth',
   initialState,
@@ -46,6 +57,10 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.isAuthenticated = false;
     });
+    builder.addCase(refresh.fulfilled, (state) => {
+      state.isAuthenticated = true;
+    }
+    );
   },
 });
 

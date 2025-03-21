@@ -7,6 +7,7 @@ import { useEffect } from 'react'
 import { AppDispatch } from './state/store'
 import { refresh } from './state/authSlice'
 import { useDispatch } from 'react-redux'
+import MyProfile from './pages/MyProfile'
 
 const App = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -20,6 +21,7 @@ const App = () => {
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/profile" element={<MyProfile />} />
         <Route path="/" element={<div>Home Page</div>} />
       </Routes>
     </>

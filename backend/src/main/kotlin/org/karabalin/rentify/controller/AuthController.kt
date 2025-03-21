@@ -91,9 +91,4 @@ class AuthController(
         response.addCookie(cookie)
         return ResponseEntity.ok("")
     }
-
-    @GetMapping("/roles")
-    fun getAllRoles(): List<String> {
-        return roleRepository.findAll().map { it.name }
-    }
 }

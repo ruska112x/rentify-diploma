@@ -1,18 +1,22 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import axios from 'axios';
+import { JwtPayload, RefreshResponse } from '../shared/types';
+import { parseJwtPayload } from '../shared/jwtDecode';
 
 interface AuthState {
   accessToken: string | null;
   userEmail: string;
   isAuthenticated: boolean;
-  hasTriedInitialRefresh: boolean;
+  isRefreshing: boolean;
+  refreshError: string | null;
 }
 
 const initialState: AuthState = {
   accessToken: null,
   userEmail: "",
   isAuthenticated: false,
-  hasTriedInitialRefresh: false,
+  isRefreshing: false,
+  refreshError: null,
 };
 
 export const logoutUser = createAsyncThunk(
@@ -30,7 +34,9 @@ export const refresh = createAsyncThunk(
   'auth/refresh',
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
+      const response = await axios.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
+      const responseData = response.data as RefreshResponse;
+      return responseData;
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -44,7 +50,6 @@ const authSlice = createSlice({
     setTokens: (state, action: PayloadAction<{ accessToken: string; }>) => {
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
-      state.hasTriedInitialRefresh = true;
     },
     setUserMail: (state, action: PayloadAction<{ userEmail: string; }>) => {
       state.userEmail = action.payload.userEmail;
@@ -52,22 +57,34 @@ const authSlice = createSlice({
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
-    },
-    setHasTriedRefresh: (state) => {
-      state.hasTriedInitialRefresh = true;
+      state.isRefreshing = false;
+      state.refreshError = null;
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(logoutUser.fulfilled, (state) => {
-      state.accessToken = null;
-      state.isAuthenticated = false;
-    });
-    builder.addCase(refresh.fulfilled, (state) => {
-      state.isAuthenticated = true;
-    }
-    );
+    builder
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.accessToken = null;
+        state.isAuthenticated = false;
+      })
+      .addCase(refresh.pending, (state) => {
+        state.isRefreshing = true;
+        state.refreshError = null;
+      })
+      .addCase(refresh.fulfilled, (state, action) => {
+        state.accessToken = action.payload.accessToken;
+        state.userEmail = (parseJwtPayload(action.payload.accessToken) as JwtPayload).sub;
+        state.isAuthenticated = true;
+        state.isRefreshing = false;
+      })
+      .addCase(refresh.rejected, (state, action) => {
+        state.isRefreshing = false;
+        state.refreshError = action.payload as string;
+        state.isAuthenticated = false;
+        state.accessToken = null;
+      });
   },
 });
 
-export const { setTokens, setUserMail, logout, setHasTriedRefresh } = authSlice.actions;
+export const { setTokens, setUserMail, logout } = authSlice.actions;
 export default authSlice.reducer;

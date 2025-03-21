@@ -55,8 +55,11 @@ class AuthService(
     }
 
     fun login(request: LoginRequest): AuthTokens {
-        val user = userRepository.findByEmail(request.email)
-            ?: throw UsernameNotFoundException("User with this email not found")
+        val userOptional = userRepository.findByEmail(request.email)
+
+        val user = userOptional.orElseThrow {
+            throw UsernameNotFoundException("User with this email not found")
+        }
 
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.email, request.password)

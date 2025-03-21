@@ -11,10 +11,10 @@ class UserService(
 ) {
     fun findUserByEmail(email: String): Optional<User> {
         val userEntity = userRepository.findByEmail(email)
-        return if (userEntity != null) {
-            Optional.of(User(userEntity.email, userEntity.role.name))
-        } else {
-            Optional.empty()
+        var user: Optional<User> = Optional.empty()
+        userEntity.ifPresent {
+            user = Optional.of(User(it.email, it.firstName, it.lastName, it.phone, it.role.name))
         }
+        return user
     }
 }

@@ -1,7 +1,9 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { store } from '../state/store';
-import { logout, setTokens } from '../state/authSlice';
-import { RefreshResponse } from '../shared/types';
+import { logout } from '../state/authSlice';
+import { refresh } from '../state/authSlice';
+
+let refreshPromise: Promise<any> | null = null;
 
 const api = axios.create({
     baseURL: 'http://localhost:8080',
@@ -13,11 +15,19 @@ interface CustomAxiosRequestConfig extends AxiosRequestConfig {
 }
 
 api.interceptors.request.use(
-    (config: InternalAxiosRequestConfig) => {
-        const token = store.getState().auth.accessToken;
-        if (token) {
+    async (config: InternalAxiosRequestConfig) => {
+        const { accessToken, isRefreshing } = store.getState().auth;
+
+        if (accessToken && !isRefreshing) {
             config.headers = config.headers || {};
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer ${accessToken}`;
+        } else if (isRefreshing && refreshPromise) {
+            await refreshPromise;
+            const newToken = store.getState().auth.accessToken;
+            if (newToken) {
+                config.headers = config.headers || {};
+                config.headers.Authorization = `Bearer ${newToken}`;
+            }
         }
         return config;
     },
@@ -31,14 +41,22 @@ api.interceptors.response.use(
         if (error.response?.status === 401 && !originalRequest._retry) {
             originalRequest._retry = true;
             try {
-                const response = await api.post<RefreshResponse>('/api/auth/refresh');
-                store.dispatch(setTokens({
-                    accessToken: response.data.accessToken
-                }));
+                if (refreshPromise) {
+                    await refreshPromise;
+                } else {
+                    refreshPromise = store.dispatch(refresh()).unwrap();
+                    await refreshPromise;
+                }
+
+                const { accessToken } = store.getState().auth;
+                if (!accessToken) throw new Error('Refresh failed');
+
                 originalRequest.headers = originalRequest.headers || {};
-                originalRequest.headers.Authorization = `Bearer ${response.data.accessToken}`;
+                originalRequest.headers.Authorization = `Bearer ${accessToken}`;
+                refreshPromise = null;
                 return api(originalRequest);
             } catch (refreshError) {
+                refreshPromise = null;
                 store.dispatch(logout());
                 return Promise.reject(refreshError);
             }

@@ -33,9 +33,14 @@ const Navbar: React.FC = () => {
             </Button>
           </>
         ) : (
-          <Button color="inherit" onClick={handleLogout}>
-            Logout
-          </Button>
+          <>
+            <Button color="inherit" component={Link} to="/profile">
+              MyProfile
+            </Button>
+            <Button color="inherit" onClick={handleLogout}>
+              Logout
+            </Button>
+          </>
         )}
       </Toolbar>
     </AppBar>

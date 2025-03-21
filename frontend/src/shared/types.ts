@@ -20,3 +20,11 @@ export interface JwtPayload {
     iat?: number;
     exp?: number;
 }
+
+export interface User {
+    email: string;
+    firstName: string;
+    lastName: string;
+    phone: string;
+    roleName: string;
+}

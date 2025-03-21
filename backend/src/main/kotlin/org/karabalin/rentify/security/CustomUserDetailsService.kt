@@ -13,8 +13,11 @@ class CustomUserDetailsService(
     private val userRepository: UserRepository
 ) : UserDetailsService {
     override fun loadUserByUsername(email: String): UserDetails {
-        val user = userRepository.findByEmail(email)
-            ?: throw UsernameNotFoundException("User not found")
+        val userOptional = userRepository.findByEmail(email)
+
+        val user = userOptional.orElseThrow {
+            throw UsernameNotFoundException("User not found")
+        }
 
         val authorities = listOf(SimpleGrantedAuthority(user.role.getAuthority()))
 

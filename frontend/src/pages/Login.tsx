@@ -4,16 +4,10 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens } from '../state/authSlice';
+import { setTokens, setUserMail } from '../state/authSlice';
 import api from '../api/api';
-
-interface LoginResponse {
-  accessToken: string;
-}
-
-interface ErrorRegisterResponse {
-  error?: string;
-}
+import { parseJwtPayload } from '../shared/jwtDecode';
+import { ErrorRegisterResponse, JwtPayload, LoginResponse } from '../shared/types';
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState<string>('');
@@ -30,6 +24,10 @@ const Login: React.FC = () => {
         email,
         password,
       });
+      const decodedToken = parseJwtPayload(response.data.accessToken) as JwtPayload;
+      dispatch(setUserMail({
+        userEmail: decodedToken.sub
+      }));
       dispatch(setTokens({
         accessToken: response.data.accessToken
       }));

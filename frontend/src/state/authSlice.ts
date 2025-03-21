@@ -3,12 +3,14 @@ import axios from 'axios';
 
 interface AuthState {
   accessToken: string | null;
+  userEmail: string;
   isAuthenticated: boolean;
   hasTriedInitialRefresh: boolean;
 }
 
 const initialState: AuthState = {
   accessToken: null,
+  userEmail: "",
   isAuthenticated: false,
   hasTriedInitialRefresh: false,
 };
@@ -44,6 +46,9 @@ const authSlice = createSlice({
       state.isAuthenticated = true;
       state.hasTriedInitialRefresh = true;
     },
+    setUserMail: (state, action: PayloadAction<{ userEmail: string; }>) => {
+      state.userEmail = action.payload.userEmail;
+    },
     logout: (state) => {
       state.accessToken = null;
       state.isAuthenticated = false;
@@ -64,5 +69,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, logout, setHasTriedRefresh } = authSlice.actions;
+export const { setTokens, setUserMail, logout, setHasTriedRefresh } = authSlice.actions;
 export default authSlice.reducer;

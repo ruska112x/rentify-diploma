@@ -1,11 +1,7 @@
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { store } from '../state/store';
 import { logout, setTokens } from '../state/authSlice';
-
-
-interface RefreshResponse {
-    accessToken: string;
-}
+import { RefreshResponse } from '../shared/types';
 
 const api = axios.create({
     baseURL: 'http://localhost:8080',

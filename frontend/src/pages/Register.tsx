@@ -5,15 +5,9 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import axios, { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens } from '../state/authSlice';
-
-interface RegisterResponse {
-    accessToken: string;
-}
-
-interface ErrorRegisterResponse {
-    error?: string;
-}
+import { setTokens, setUserMail } from '../state/authSlice';
+import { parseJwtPayload } from '../shared/jwtDecode';
+import { ErrorRegisterResponse, JwtPayload, RegisterResponse } from '../shared/types';
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
@@ -92,6 +86,10 @@ const Register: React.FC = () => {
                 },
                 { withCredentials: true }
             );
+            const decodedToken = parseJwtPayload(response.data.accessToken) as JwtPayload;
+            dispatch(setUserMail({
+                userEmail: decodedToken.sub
+            }));
             dispatch(setTokens({
                 accessToken: response.data.accessToken
             }));

@@ -41,7 +41,7 @@ package "Moderation" {
       }
 
       entity "RentalListing" as rentalListing {
-        * id: Long <<generated>> <<PK>>
+        * id: UUID <<generated>> <<PK>>
         ---
         * title: String
         * description: String
@@ -62,23 +62,23 @@ package "Moderation" {
       }
 
       entity "Booking" as booking {
-        * id: Long <<generated>> <<PK>>
+        * id: UUID <<generated>> <<PK>>
         ---
         * startDateTime: Instant
         * endDateTime: Instant
         * createdAtTime: Instant
         * updatedAtTime: Instant
-        * rentalListingId: Long <<FK>>
+        * rentalListingId: UUID <<FK>>
         * userId: UUID <<FK>>
       }
 
       entity "Review" as review {
-        * id: Long <<generated>> <<PK>>
+        * id: UUID <<generated>> <<PK>>
         ---
         * text: String
         * createdAtTime: Instant
-        * rentalListingId: Long <<FK>>
-        * authorId: Long <<FK>>
+        * rentalListingId: UUID <<FK>>
+        * authorId: UUID <<FK>>
       }
 
       user ||--|| userRole
@@ -95,12 +95,12 @@ package "Moderation" {
     }
 
     entity "Chat" as chat {
-      * id: Long <<generated>> <<PK>>
+      * id: UUID <<generated>> <<PK>>
       ---
       * createdAtTime: Instant
       * typeId: Long <<FK>>
-      * userIdF: Long <<FK>>
-      * userIdS: Long <<FK>>
+      * userIdF: UUID <<FK>>
+      * userIdS: UUID <<FK>>
     }
 
     entity "ChatType" as chatType {
@@ -115,8 +115,8 @@ package "Moderation" {
       * content: String
       * createdAtTime: Instant
       attachmentUrl: String
-      * chatId: Long <<FK>>
-      * authorId: Long <<FK>>
+      * chatId: UUID <<FK>>
+      * authorId: UUID <<FK>>
     }
 
     ' chat }o--|| user

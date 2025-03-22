@@ -5,44 +5,32 @@ import {
     Paper,
     Typography,
     Box,
-    CircularProgress,
-    Alert,
     List,
     ListItem,
     ListItemText,
+    CircularProgress,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../state/store';
 import { fetchUser } from '../state/userSlice';
-import { refresh } from '../state/authSlice';
 
 const MyProfile: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { user, loading, error } = useSelector((state: RootState) => state.user);
-    const { isAuthenticated, userEmail } = useSelector((state: RootState) => state.auth);
+    const { userEmail } = useSelector((state: RootState) => state.auth);
+    const { user, loading } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         const initialize = async () => {
-            await dispatch(refresh()).unwrap();
-
-            if (isAuthenticated) {
-                dispatch(fetchUser(userEmail));
+            if (userEmail && !user) {
+                await dispatch(fetchUser(userEmail)).unwrap();
             }
         };
         initialize();
-    }, [dispatch, isAuthenticated]);
+    }, [dispatch, userEmail, user]);
 
     if (loading) {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <CircularProgress />
-            </Container>
-        );
-    }
-
-    if (error) {
-        return (
-            <Container sx={{ mt: 4 }}>
-                <Alert severity="error">{error}</Alert>
             </Container>
         );
     }

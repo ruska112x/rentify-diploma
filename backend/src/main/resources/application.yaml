@@ -10,6 +10,7 @@ spring:
     username: pguser
     password: pgpassword
   jpa:
+    open-in-view: false
     hibernate:
       ddl-auto: update
 

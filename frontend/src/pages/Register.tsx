@@ -123,9 +123,10 @@ const Register: React.FC = () => {
     return (
         <Container maxWidth="xs">
             <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                <Typography component="h1" variant="h5">
+                <Typography component="h1" variant="h5" sx={{ mb: 1 }}>
                     Register
                 </Typography>
+                <Alert severity="error">{'СЕРВИС НЕ НЕСЁТ НИКАКОЙ ОТВЕСТВЕННОСТИ ЗА ПОЛОМКУ, КРАЖУ, ПОТЕРЮ ВАШЕЙ ВЕЩИ!'}</Alert>
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 2 }}>

@@ -9,7 +9,7 @@ export const fetchUser = createAsyncThunk(
             const response = await api.get(`/api/${email}`);
             return response.data;
         } catch (error) {
-            return rejectWithValue('Failed to fetch user data');
+            return rejectWithValue(error);
         }
     }
 );

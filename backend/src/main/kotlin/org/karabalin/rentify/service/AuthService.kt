@@ -1,10 +1,5 @@
 package org.karabalin.rentify.service
 
-import org.springframework.security.authentication.AuthenticationManager
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
-import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.security.crypto.password.PasswordEncoder
-import org.springframework.stereotype.Service
 import jakarta.annotation.PostConstruct
 import org.karabalin.rentify.model.domain.AuthTokens
 import org.karabalin.rentify.model.dto.LoginRequest
@@ -14,6 +9,11 @@ import org.karabalin.rentify.model.entity.User
 import org.karabalin.rentify.repository.RoleRepository
 import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.util.JwtUtil
+import org.springframework.security.authentication.AuthenticationManager
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.userdetails.UsernameNotFoundException
+import org.springframework.security.crypto.password.PasswordEncoder
+import org.springframework.stereotype.Service
 import java.time.Instant
 
 @Service
@@ -34,8 +34,7 @@ class AuthService(
     }
 
     fun register(request: RegisterRequest): AuthTokens {
-        val userRole = roleRepository.findByName("ROLE_USER")
-            ?: throw IllegalStateException("ROLE_USER not found")
+        val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
 
         val user = User(
             email = request.email,
@@ -76,8 +75,7 @@ class AuthService(
             throw IllegalArgumentException("Invalid refresh token")
         }
 
-        val email = jwtUtil.getEmailFromToken(refreshToken)
-            ?: throw IllegalArgumentException("Invalid token")
+        val email = jwtUtil.getEmailFromToken(refreshToken) ?: throw IllegalArgumentException("Invalid token")
 
         val accessToken = jwtUtil.generateAccessToken(email)
         return AuthTokens(accessToken, refreshToken)

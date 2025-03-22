@@ -1,6 +1,6 @@
 package org.karabalin.rentify.util
 
-import io.jsonwebtoken.*
+import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
@@ -8,7 +8,7 @@ import java.util.*
 import javax.crypto.SecretKey
 
 @Component
-class JwtUtil (
+class JwtUtil(
     @Value("\${jwt.secret}")
     private val secret: String,
     @Value("\${jwt.accessTokenValidity}")

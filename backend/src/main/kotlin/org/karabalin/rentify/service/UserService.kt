@@ -3,7 +3,7 @@ package org.karabalin.rentify.service
 import org.karabalin.rentify.model.domain.User
 import org.karabalin.rentify.repository.UserRepository
 import org.springframework.stereotype.Service
-import java.util.Optional
+import java.util.*
 
 @Service
 class UserService(

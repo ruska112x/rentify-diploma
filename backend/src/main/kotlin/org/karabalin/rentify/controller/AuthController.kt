@@ -7,14 +7,16 @@ import jakarta.validation.Valid
 import org.karabalin.rentify.model.dto.AuthResponse
 import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
-import org.karabalin.rentify.repository.RoleRepository
 import org.karabalin.rentify.service.AuthService
 import org.karabalin.rentify.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
@@ -22,12 +24,14 @@ import org.springframework.web.server.ResponseStatusException
 class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
-    private val roleRepository: RoleRepository,
     @Value("\${jwt.refreshTokenValidity}")
     private val refreshTokenValidity: Long
 ) {
     @PostMapping("/register")
-    fun register(@Valid @RequestBody request: RegisterRequest, response: HttpServletResponse): ResponseEntity<AuthResponse> {
+    fun register(
+        @Valid @RequestBody request: RegisterRequest,
+        response: HttpServletResponse
+    ): ResponseEntity<AuthResponse> {
         val user = userService.findUserByEmail(request.email)
         if (user.isPresent) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists!")

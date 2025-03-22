@@ -126,6 +126,17 @@ package "Moderation" {
     message }o--|| chat
     ' message }o--|| user
   }
+
+  entity "UserBlockPeriods" as userBlockPeriods {
+    * id: Long <<generated>> <<PK>>
+    ---
+    * startDateTime: Instant
+    * endDateTime: Instant
+    * reason: String
+    * userId: UUID <<FK>>
+  }
+
+  ' userBlockPeriods }o--|| user
 }
 
 

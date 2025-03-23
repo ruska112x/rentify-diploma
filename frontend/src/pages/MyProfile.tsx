@@ -9,6 +9,7 @@ import {
     ListItem,
     ListItemText,
     CircularProgress,
+    Alert,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../state/store';
 import { fetchUser } from '../state/userSlice';
@@ -16,7 +17,7 @@ import { fetchUser } from '../state/userSlice';
 const MyProfile: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
     const { userEmail } = useSelector((state: RootState) => state.auth);
-    const { user, loading } = useSelector((state: RootState) => state.user);
+    const { user, loading, error } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
         const initialize = async () => {
@@ -31,6 +32,14 @@ const MyProfile: React.FC = () => {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (error) {
+        return (
+            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Alert severity="error">{error}</Alert>
             </Container>
         );
     }

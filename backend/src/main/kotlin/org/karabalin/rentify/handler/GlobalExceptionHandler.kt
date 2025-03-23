@@ -1,6 +1,8 @@
 package org.karabalin.rentify.handler
 
+import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
+import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.validation.FieldError
 import org.springframework.web.bind.MethodArgumentNotValidException
 import org.springframework.web.bind.annotation.ControllerAdvice
@@ -24,5 +26,12 @@ class GlobalExceptionHandler {
             errors[fieldName] = errorMessage
         }
         return ResponseEntity.status(e.statusCode).body(errors)
+    }
+
+    @ExceptionHandler(UsernameNotFoundException::class)
+    fun handleUsernameNotFoundException(e: UsernameNotFoundException):  ResponseEntity<Map<String, String?>> {
+        val errors: MutableMap<String, String?> = HashMap()
+        errors["error"] = e.message
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors)
     }
 }

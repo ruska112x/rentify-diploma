@@ -3,11 +3,12 @@ import { TextField, Button, Container, Typography, Box, Alert } from '@mui/mater
 import { IMaskInput } from 'react-imask';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
-import axios, { AxiosError } from 'axios';
+import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
 import { setTokens, setUserMail } from '../state/authSlice';
 import { parseJwtPayload } from '../shared/jwtDecode';
 import { ErrorRegisterResponse, JwtPayload, RegisterResponse } from '../shared/types';
+import api from '../api/api';
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
@@ -75,7 +76,7 @@ const Register: React.FC = () => {
         const cleanPhone = phone.replace(/[^+\d]/g, '');
 
         try {
-            const response = await axios.post<RegisterResponse>(
+            const response = await api.post<RegisterResponse>(
                 'http://localhost:8080/api/auth/register',
                 {
                     email,

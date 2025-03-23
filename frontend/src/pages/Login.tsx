@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
 import { setTokens, setUserMail } from '../state/authSlice';
-import api from '../api/api';
+import authoredApi from '../api/authoredApi';
 import { parseJwtPayload } from '../shared/jwtDecode';
 import { ErrorRegisterResponse, JwtPayload, LoginResponse } from '../shared/types';
 
@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post<LoginResponse>('http://localhost:8080/api/auth/login', {
+      const response = await authoredApi.post<LoginResponse>('http://localhost:8080/api/auth/login', {
         email,
         password,
       });

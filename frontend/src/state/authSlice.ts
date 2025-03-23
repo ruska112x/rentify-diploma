@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import axios from 'axios';
 import { JwtPayload, RefreshResponse } from '../shared/types';
 import { parseJwtPayload } from '../shared/jwtDecode';
+import api from '../api/api';
 
 interface AuthState {
   accessToken: string | null;
@@ -23,7 +23,7 @@ export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post('http://localhost:8080/api/auth/logout', {}, { withCredentials: true });
+      await api.post('http://localhost:8080/api/auth/logout', {}, { withCredentials: true });
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -34,7 +34,7 @@ export const refresh = createAsyncThunk(
   'auth/refresh',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
+      const response = await api.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
       const responseData = response.data as RefreshResponse;
       return responseData;
     } catch (err) {

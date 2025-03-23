@@ -1,14 +1,14 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { User } from '../shared/types';
-import api from '../api/api';
+import authoredApi from '../api/authoredApi';
 
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
     async (email: string, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/api/${email}`);
+            const response = await authoredApi.get(`/api/${email}`);
             return response.data;
-        } catch (error) {
+        } catch (error) {    
             return rejectWithValue(error);
         }
     }

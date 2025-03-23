@@ -13,7 +13,7 @@ class UserService(
         val userEntity = userRepository.findByEmail(email)
         var user: Optional<User> = Optional.empty()
         userEntity.ifPresent {
-            user = Optional.of(User(it.email, it.firstName, it.lastName, it.phone, it.role.name))
+            user = Optional.of(User(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name))
         }
         return user
     }

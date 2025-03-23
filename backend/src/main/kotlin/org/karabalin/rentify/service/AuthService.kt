@@ -4,8 +4,8 @@ import jakarta.annotation.PostConstruct
 import org.karabalin.rentify.model.domain.AuthTokens
 import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
-import org.karabalin.rentify.model.entity.Role
-import org.karabalin.rentify.model.entity.User
+import org.karabalin.rentify.model.entity.RoleEntity
+import org.karabalin.rentify.model.entity.UserEntity
 import org.karabalin.rentify.repository.RoleRepository
 import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.util.JwtUtil
@@ -28,7 +28,7 @@ class AuthService(
     fun initRoles() {
         listOf("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR").forEach { roleName ->
             if (roleRepository.findByName(roleName) == null) {
-                roleRepository.save(Role(name = roleName))
+                roleRepository.save(RoleEntity(name = roleName))
             }
         }
     }
@@ -36,19 +36,19 @@ class AuthService(
     fun register(request: RegisterRequest): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
 
-        val user = User(
+        val userEntity = UserEntity(
             email = request.email,
             password = passwordEncoder.encode(request.password),
             firstName = request.firstName,
             lastName = request.lastName,
             phone = request.phone,
             lastLoginTime = Instant.now(),
-            role = userRole
+            roleEntity = userRole
         )
-        userRepository.save(user)
+        userRepository.save(userEntity)
 
-        val accessToken = jwtUtil.generateAccessToken(user.email)
-        val refreshToken = jwtUtil.generateRefreshToken(user.email)
+        val accessToken = jwtUtil.generateAccessToken(userEntity.email)
+        val refreshToken = jwtUtil.generateRefreshToken(userEntity.email)
 
         return AuthTokens(accessToken, refreshToken)
     }

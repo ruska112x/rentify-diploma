@@ -6,7 +6,7 @@ import java.util.*
 
 @Entity
 @Table(name = "users")
-class User(
+class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     val id: UUID? = null,
@@ -37,7 +37,7 @@ class User(
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
-    val role: Role
+    val roleEntity: RoleEntity
 ) {
     @PreUpdate
     fun onUpdate() {

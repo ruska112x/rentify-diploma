@@ -186,7 +186,7 @@ const MyProfile: React.FC = () => {
                         onChange={handleChange}
                         fullWidth
                         error={!!formErrors.phone}
-                        helperText={formErrors.phone || 'Format: +0 (123) 456-7890'}
+                        helperText={formErrors.phone || 'Format: +7 (123) 456-7890'}
                         slotProps={{
                             input: {
                                 inputComponent: PhoneMaskInput as any,

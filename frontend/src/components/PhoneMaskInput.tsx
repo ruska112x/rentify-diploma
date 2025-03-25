@@ -8,7 +8,7 @@ const PhoneMaskInput = React.forwardRef<HTMLInputElement, any>((props, ref) => {
     return (
         <IMaskInput
             {...other}
-            mask="+{0} (000) 000-0000"
+            mask="+{7} (000) 000-0000"
             inputRef={ref}
             onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
             overwrite

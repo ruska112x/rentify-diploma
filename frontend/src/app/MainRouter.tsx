@@ -12,7 +12,7 @@ import Navbar from '../components/Navbar'
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { loading, error } = useSelector((state: RootState) => state.user);
+    const { isRefreshing, refreshError } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const initialize = async () => {
@@ -21,7 +21,7 @@ const MainRouter: React.FC = () => {
         initialize();
     }, [dispatch]);
 
-    if (loading) {
+    if (isRefreshing) {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <CircularProgress />
@@ -29,10 +29,10 @@ const MainRouter: React.FC = () => {
         );
     }
 
-    if (error) {
+    if (refreshError) {
         return (
             <Container sx={{ mt: 4 }}>
-                <Alert severity="error">{error}</Alert>
+                <Alert severity="error">{refreshError}</Alert>
             </Container>
         );
     }

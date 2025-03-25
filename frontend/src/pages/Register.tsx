@@ -197,7 +197,7 @@ const Register: React.FC = () => {
                         required
                         fullWidth
                         label="Phone Number"
-                        placeholder="+7 (952) 812-4242"
+                        placeholder="+7 (123) 456-7890"
                         value={phone}
                         onChange={handlePhoneChange}
                         error={!!phoneError || !!fieldErrors.phone}

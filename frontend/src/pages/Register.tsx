@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from 'react';
-import { TextField, Button, Container, Typography, Box, Alert } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton } from '@mui/material';
 import { IMaskInput } from 'react-imask';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -9,6 +9,7 @@ import { setTokens, setUserMail } from '../state/authSlice';
 import { parseJwtPayload } from '../shared/jwtDecode';
 import { ErrorRegisterResponse, JwtPayload, RegisterResponse } from '../shared/types';
 import api from '../api/api';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
 
 const phoneRegex = /^\+?[1-9]\d{1,14}$/;
 
@@ -41,6 +42,7 @@ const Register: React.FC = () => {
         lastName?: string;
         phone?: string;
     }>({});
+    const [showPassword, setShowPassword] = useState<boolean>(false);
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
 
@@ -55,6 +57,10 @@ const Register: React.FC = () => {
         const value = e.target.value;
         setPhone(value);
         setPhoneError(validatePhone(value));
+    };
+
+    const handleClickShowPassword = () => {
+        setShowPassword((prev) => !prev);
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -151,11 +157,26 @@ const Register: React.FC = () => {
                         required
                         fullWidth
                         label="Password"
-                        type="password"
+                        type={showPassword ? 'text' : 'password'}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!fieldErrors.password}
                         helperText={fieldErrors.password}
+                        slotProps={{
+                            input: {
+                                endAdornment: (
+                                    <InputAdornment position="end">
+                                        <IconButton
+                                            aria-label="toggle password visibility"
+                                            onClick={handleClickShowPassword}
+                                            edge="end"
+                                        >
+                                            {showPassword ? <VisibilityOff /> : <Visibility />}
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }
+                        }}
                     />
                     <TextField
                         margin="normal"

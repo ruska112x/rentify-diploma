@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from 'react';
-import { TextField, Button, Container, Typography, Box, Alert, IconButton, InputAdornment } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Alert, IconButton, InputAdornment, Paper } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
@@ -58,8 +58,8 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container maxWidth="xs">
-      <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <Paper component={Container} maxWidth="xs" sx={{ mt: 4, p: 4}}>
+      <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">
           Sign in
         </Typography>
@@ -115,7 +115,7 @@ const Login: React.FC = () => {
           </Button>
         </Box>
       </Box>
-    </Container>
+    </Paper>
   );
 };
 

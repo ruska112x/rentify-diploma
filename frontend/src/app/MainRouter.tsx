@@ -7,12 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../state/store'
 import { useEffect } from 'react'
 import { refresh } from '../state/authSlice'
-import { Alert, CircularProgress, Container, Typography } from '@mui/material'
+import { Box, CircularProgress, Container, Typography } from '@mui/material'
 import Navbar from '../components/Navbar'
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { isRefreshing, refreshError } = useSelector((state: RootState) => state.auth);
+    const { isRefreshing } = useSelector((state: RootState) => state.auth);
 
     useEffect(() => {
         const initialize = async () => {
@@ -29,16 +29,8 @@ const MainRouter: React.FC = () => {
         );
     }
 
-    if (refreshError) {
-        return (
-            <Container sx={{ mt: 4 }}>
-                <Alert severity="error">{refreshError}</Alert>
-            </Container>
-        );
-    }
-
     return (
-        <>
+        <Box sx={{ minHeight: '100vh' }}>
             <Navbar />
             <Routes>
                 <Route path="/login" element={<Login />} />
@@ -50,7 +42,7 @@ const MainRouter: React.FC = () => {
                     </Container>
                 } />
             </Routes>
-        </>
+        </Box>
     )
 }
 

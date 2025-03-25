@@ -8,7 +8,7 @@ export const fetchUser = createAsyncThunk(
         try {
             const response = await authoredApi.get(`/api/${email}`);
             return response.data;
-        } catch (error) {    
+        } catch (error) {
             return rejectWithValue(error);
         }
     }
@@ -29,7 +29,13 @@ const initialState: UserState = {
 const userSlice = createSlice({
     name: 'user',
     initialState,
-    reducers: {},
+    reducers: {
+        clearUserInfo: (state) => {
+            state.user = null;
+            state.loading = false;
+            state.error = null;
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(fetchUser.pending, (state) => {
@@ -47,4 +53,5 @@ const userSlice = createSlice({
     },
 });
 
+export const { clearUserInfo } = userSlice.actions;
 export default userSlice.reducer;

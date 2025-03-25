@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from 'react';
-import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton } from '@mui/material';
+import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton, Paper } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
@@ -113,8 +113,8 @@ const Register: React.FC = () => {
     };
 
     return (
-        <Container maxWidth="xs">
-            <Box sx={{ mt: 8, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+        <Paper component={Container} maxWidth="xs" sx={{ mt: 4, p: 4 }}>
+            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                 <Typography component="h1" variant="h5" sx={{ mb: 1 }}>
                     Register
                 </Typography>
@@ -219,7 +219,7 @@ const Register: React.FC = () => {
                     </Button>
                 </Box>
             </Box>
-        </Container>
+        </Paper>
     );
 };
 

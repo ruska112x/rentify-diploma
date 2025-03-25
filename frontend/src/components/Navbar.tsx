@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router';
 import { logoutUser } from '../state/authSlice';
 import { AppDispatch, RootState } from '../state/store';
+import { clearUserInfo } from '../state/userSlice';
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -11,7 +12,11 @@ const Navbar: React.FC = () => {
   const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
   const handleLogout = () => {
-    dispatch(logoutUser());
+    const logout = async () => {
+      await dispatch(logoutUser()).unwrap();
+      await dispatch(clearUserInfo());
+    }
+    logout();
     navigate('/login');
   };
 

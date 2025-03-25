@@ -1,12 +1,12 @@
 package org.karabalin.rentify.controller
 
-import org.karabalin.rentify.model.domain.User
+import jakarta.validation.Valid
+import org.karabalin.rentify.model.dto.GetUserResponse
+import org.karabalin.rentify.model.dto.UpdateUserRequest
 import org.karabalin.rentify.service.UserService
 import org.springframework.http.HttpStatus
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
@@ -16,10 +16,20 @@ class UserController(
     private val userService: UserService
 ) {
     @GetMapping("/{email}")
-    fun getOne(@PathVariable email: String): User {
-        val userOptional: Optional<User> = userService.findUserByEmail(email)
-        return userOptional.orElseThrow {
+    fun getOne(@PathVariable email: String): ResponseEntity<GetUserResponse> {
+        val userOptional: Optional<GetUserResponse> = userService.findUserByEmail(email)
+        val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$email` not found")
         }
+        return ResponseEntity.ok(user)
+    }
+
+    @PatchMapping("/{email}")
+    fun updateUser(
+        @PathVariable email: String,
+        @Valid @RequestBody updateUserRequest: UpdateUserRequest
+    ): ResponseEntity<String> {
+        userService.updateUserByEmail(email, updateUserRequest)
+        return ResponseEntity.ok("")
     }
 }

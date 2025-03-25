@@ -29,5 +29,6 @@ class UserService(
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
         user.phone = updateUserRequest.phone
+        userRepository.save(user)
     }
 }

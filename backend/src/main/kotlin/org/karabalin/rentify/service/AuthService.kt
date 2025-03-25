@@ -60,12 +60,16 @@ class AuthService(
             throw UsernameNotFoundException("User with this email not found")
         }
 
+        user.lastLoginTime = Instant.now()
+
         authenticationManager.authenticate(
             UsernamePasswordAuthenticationToken(request.email, request.password)
         )
 
         val accessToken = jwtUtil.generateAccessToken(user.email)
         val refreshToken = jwtUtil.generateRefreshToken(user.email)
+
+        userRepository.save(user)
 
         return AuthTokens(accessToken, refreshToken)
     }

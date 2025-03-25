@@ -1,6 +1,5 @@
 import React, { useState, FormEvent } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton } from '@mui/material';
-import { IMaskInput } from 'react-imask';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
@@ -10,21 +9,7 @@ import { parseJwtPayload } from '../shared/jwtDecode';
 import { ErrorRegisterResponse, JwtPayload, RegisterResponse } from '../shared/types';
 import api from '../api/api';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
-
-const phoneRegex = /^\+?[1-9]\d{1,14}$/;
-
-const PhoneMaskInput = React.forwardRef<HTMLInputElement, any>((props, ref) => {
-    const { onChange, ...other } = props;
-    return (
-        <IMaskInput
-            {...other}
-            mask="+{0} (000) 000-0000"
-            inputRef={ref}
-            onAccept={(value: any) => onChange({ target: { name: props.name, value } })}
-            overwrite
-        />
-    );
-});
+import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState<string>('');

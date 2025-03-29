@@ -16,6 +16,8 @@ import {
     DialogContent,
     DialogActions,
     TextField,
+    Tabs,
+    Tab,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../state/store';
 import { fetchUser } from '../state/userSlice';
@@ -38,6 +40,7 @@ const MyProfile: React.FC = () => {
         lastName: '',
         phone: '',
     });
+    const [tabValue, setTabValue] = useState(0);
 
     useEffect(() => {
         const initialize = async () => {
@@ -108,6 +111,10 @@ const MyProfile: React.FC = () => {
         }
     };
 
+    const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
+
     if (loading) {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -153,6 +160,35 @@ const MyProfile: React.FC = () => {
                         Edit Profile
                     </Button>
                 </Box>
+            </Paper>
+
+            <Paper elevation={3} sx={{ mt: 1, p: 3 }}>
+                <Tabs value={tabValue} onChange={handleTabChange} centered>
+                    <Tab label="Rentail Listngs" />
+                    <Tab label="Bookings" />
+                </Tabs>
+
+                {tabValue === 0 && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="h6">Rentail Listngs</Typography>
+                        <List>
+                            <ListItem>
+                                <ListItemText primary="1.1" secondary="1.2" />
+                            </ListItem>
+                        </List>
+                    </Box>
+                )}
+
+                {tabValue === 1 && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="h6">Bookings</Typography>
+                        <List>
+                            <ListItem>
+                                <ListItemText primary="2.1" secondary="2.2" />
+                            </ListItem>
+                        </List>
+                    </Box>
+                )}
             </Paper>
 
             <Dialog open={open} onClose={handleClose}>

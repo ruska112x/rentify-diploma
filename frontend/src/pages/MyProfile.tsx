@@ -87,7 +87,7 @@ const MyProfile: React.FC = () => {
             errors.lastName = 'Last name must be between 1 and 255 characters';
             valid = false;
         }
-        
+
         formData.phone = formData.phone.replace(/[^+\d]/g, '');
         if (!formData.phone || !phoneRegex.test(formData.phone)) {
             errors.phone = 'Phone must follow international format (e.g., +123456789)';
@@ -102,7 +102,7 @@ const MyProfile: React.FC = () => {
         if (!validateForm()) return;
 
         try {
-            await authoredApi.patch(`/api/${userEmail}`, formData);
+            await authoredApi.patch(`/api/user/${userEmail}`, formData);
             await dispatch(fetchUser(userEmail)).unwrap();
             handleClose();
         } catch (err) {
@@ -166,11 +166,12 @@ const MyProfile: React.FC = () => {
                 <Tabs value={tabValue} onChange={handleTabChange} centered>
                     <Tab label="Rentail Listngs" />
                     <Tab label="Bookings" />
+                    <Tab label="Reviews" />
                 </Tabs>
 
                 {tabValue === 0 && (
                     <Box sx={{ mt: 1 }}>
-                        <Typography variant="h6">Rentail Listngs</Typography>
+                        <Typography variant="h5">Rentail Listngs</Typography>
                         <List>
                             <ListItem>
                                 <ListItemText primary="1.1" secondary="1.2" />
@@ -181,10 +182,21 @@ const MyProfile: React.FC = () => {
 
                 {tabValue === 1 && (
                     <Box sx={{ mt: 1 }}>
-                        <Typography variant="h6">Bookings</Typography>
+                        <Typography variant="h5">Bookings</Typography>
                         <List>
                             <ListItem>
                                 <ListItemText primary="2.1" secondary="2.2" />
+                            </ListItem>
+                        </List>
+                    </Box>
+                )}
+
+                {tabValue === 2 && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="h5">Reviews</Typography>
+                        <List>
+                            <ListItem>
+                                <ListItemText primary="3.1" secondary="3.2" />
                             </ListItem>
                         </List>
                     </Box>
@@ -225,7 +237,7 @@ const MyProfile: React.FC = () => {
                         helperText={formErrors.phone || 'Format: +7 (123) 456-7890'}
                         slotProps={{
                             input: {
-                                inputComponent: PhoneMaskInput as any,
+                                inputComponent: PhoneMaskInput,
                             }
                         }}
                     />

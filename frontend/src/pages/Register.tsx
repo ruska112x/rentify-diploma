@@ -204,7 +204,7 @@ const Register: React.FC = () => {
                         helperText={phoneError || fieldErrors.phone || "Use international format"}
                         slotProps={{
                             input: {
-                                inputComponent: PhoneMaskInput as any,
+                                inputComponent: PhoneMaskInput,
                             }
                         }}
                     />

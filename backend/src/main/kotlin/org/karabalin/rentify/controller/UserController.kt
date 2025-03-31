@@ -11,7 +11,7 @@ import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/api/user")
 class UserController(
     private val userService: UserService
 ) {

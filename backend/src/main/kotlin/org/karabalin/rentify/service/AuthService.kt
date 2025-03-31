@@ -57,7 +57,7 @@ class AuthService(
         val userOptional = userRepository.findByEmail(request.email)
 
         val user = userOptional.orElseThrow {
-            throw UsernameNotFoundException("User with this email not found")
+            throw UsernameNotFoundException("User with this email and password not found")
         }
 
         user.lastLoginTime = Instant.now()

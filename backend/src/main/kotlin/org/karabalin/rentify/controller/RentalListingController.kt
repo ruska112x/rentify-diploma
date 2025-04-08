@@ -18,7 +18,7 @@ class RentalListingController (
     }
 
     @GetMapping("/user/{userId}/rentalListings")
-    fun getRentalListingsByUserEmail(
+    fun getRentalListingsByUserId(
         @PathVariable userId: String
     ): ResponseEntity<List<OneRentalListing>> {
         return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId))

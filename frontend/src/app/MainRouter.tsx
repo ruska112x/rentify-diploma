@@ -7,8 +7,9 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../state/store'
 import { useEffect } from 'react'
 import { refresh } from '../state/authSlice'
-import { Box, CircularProgress, Container, Typography } from '@mui/material'
+import { Box, CircularProgress, Container } from '@mui/material'
 import Navbar from '../components/Navbar'
+import HomePage from '../pages/HomePage'
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -36,11 +37,7 @@ const MainRouter: React.FC = () => {
                 <Route path="/login" element={<Login />} />
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<MyProfile />} />
-                <Route path="/" element={
-                    <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                        <Typography variant="h4">Welcome to Rentify</Typography>
-                    </Container>
-                } />
+                <Route path="/" element={<HomePage />} />
             </Routes>
         </Box>
     )

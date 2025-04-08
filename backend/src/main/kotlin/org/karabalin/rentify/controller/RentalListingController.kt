@@ -30,4 +30,9 @@ class RentalListingController (
     ): ResponseEntity<OneRentalListing> {
         return ResponseEntity.ok(rentalListingService.findRentalListingById(rentalListingId))
     }
+
+    @GetMapping("/rentalListings")
+    fun getNewestRentalListings(): ResponseEntity<List<OneRentalListing>>  {
+        return ResponseEntity.ok(rentalListingService.findNewestRentalListings())
+    }
 }

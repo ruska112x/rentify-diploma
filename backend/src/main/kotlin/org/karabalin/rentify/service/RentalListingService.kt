@@ -6,6 +6,7 @@ import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.UserRepository
 import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
@@ -58,5 +59,11 @@ class RentalListingService(
             rentalListing.tariffDescription,
             rentalListing.autoRenew
         )
+    }
+
+    fun findNewestRentalListings(): List<OneRentalListing> {
+        return rentalListingRepository.findAllByOrderByCreatedAtTimeDesc().map {
+            OneRentalListing(it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
+        }
     }
 }

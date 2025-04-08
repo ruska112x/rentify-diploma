@@ -4,9 +4,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens, setUserMail } from '../state/authSlice';
-import { parseJwtPayload } from '../shared/jwtDecode';
-import { ErrorRegisterResponse, JwtPayload, RegisterResponse } from '../shared/types';
+import { setTokens, setUserId } from '../state/authSlice';
+import { ErrorRegisterResponse, RegisterResponse } from '../shared/types';
 import api from '../api/api';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
@@ -78,9 +77,8 @@ const Register: React.FC = () => {
                 },
                 { withCredentials: true }
             );
-            const decodedToken = parseJwtPayload(response.data.accessToken) as JwtPayload;
-            dispatch(setUserMail({
-                userEmail: decodedToken.sub
+            dispatch(setUserId({
+                userId: response.data.userId
             }));
             dispatch(setTokens({
                 accessToken: response.data.accessToken

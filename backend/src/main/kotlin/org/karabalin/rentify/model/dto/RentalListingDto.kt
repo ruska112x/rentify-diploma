@@ -1,7 +1,7 @@
 package org.karabalin.rentify.model.dto
 
 data class AddRentalListingRequest(
-    val userEmail: String,
+    val userId: String,
     val title: String,
     val description: String,
     val address: String,

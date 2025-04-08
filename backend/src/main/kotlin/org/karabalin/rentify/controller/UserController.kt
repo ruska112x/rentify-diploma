@@ -15,21 +15,21 @@ import java.util.*
 class UserController(
     private val userService: UserService
 ) {
-    @GetMapping("/{email}")
-    fun getOne(@PathVariable email: String): ResponseEntity<GetUserResponse> {
-        val userOptional: Optional<GetUserResponse> = userService.findUserByEmail(email)
+    @GetMapping("/{userId}")
+    fun getOne(@PathVariable userId: String): ResponseEntity<GetUserResponse> {
+        val userOptional: Optional<GetUserResponse> = userService.findById(userId)
         val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$email` not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
         }
         return ResponseEntity.ok(user)
     }
 
-    @PatchMapping("/{email}")
+    @PatchMapping("/{userId}")
     fun updateUser(
-        @PathVariable email: String,
+        @PathVariable userId: String,
         @Valid @RequestBody updateUserRequest: UpdateUserRequest
     ): ResponseEntity<String> {
-        userService.updateUserByEmail(email, updateUserRequest)
+        userService.update(userId, updateUserRequest)
         return ResponseEntity.ok("")
     }
 }

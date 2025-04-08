@@ -6,4 +6,5 @@ import java.util.*
 
 interface RentalListingRepository : JpaRepository<RentalListingEntity, UUID> {
     fun findByUserEntityEmail(userEntityEmail: String): List<RentalListingEntity>
+    fun findAllByUserEntityId(userEntityId: UUID): List<RentalListingEntity>
 }

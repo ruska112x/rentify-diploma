@@ -26,7 +26,7 @@ import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
 
 const MyProfile: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
-    const { userEmail } = useSelector((state: RootState) => state.auth);
+    const { userId } = useSelector((state: RootState) => state.auth);
     const { user, loading, error } = useSelector((state: RootState) => state.user);
 
     const [open, setOpen] = useState(false);
@@ -44,12 +44,12 @@ const MyProfile: React.FC = () => {
 
     useEffect(() => {
         const initialize = async () => {
-            if (userEmail && !user) {
-                await dispatch(fetchUser(userEmail)).unwrap();
+            if (userId && !user) {
+                await dispatch(fetchUser(userId)).unwrap();
             }
         };
         initialize();
-    }, [dispatch, userEmail, user]);
+    }, [dispatch, userId, user]);
 
     useEffect(() => {
         if (user) {
@@ -102,8 +102,8 @@ const MyProfile: React.FC = () => {
         if (!validateForm()) return;
 
         try {
-            await authoredApi.patch(`/api/user/${userEmail}`, formData);
-            await dispatch(fetchUser(userEmail)).unwrap();
+            await authoredApi.patch(`/api/user/${userId}`, formData);
+            await dispatch(fetchUser(userId)).unwrap();
             handleClose();
         } catch (err) {
             console.error('Update error:', err);

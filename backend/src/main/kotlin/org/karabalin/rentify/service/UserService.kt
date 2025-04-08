@@ -12,8 +12,8 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository
 ) {
-    fun findUserByEmail(email: String): Optional<GetUserResponse> {
-        val userEntity = userRepository.findByEmail(email)
+    fun findUserByEmail(userEmail: String): Optional<GetUserResponse> {
+        val userEntity = userRepository.findByEmail(userEmail)
         var user: Optional<GetUserResponse> = Optional.empty()
         userEntity.ifPresent {
             user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name))
@@ -21,10 +21,19 @@ class UserService(
         return user
     }
 
-    fun updateUserByEmail(email: String, updateUserRequest: UpdateUserRequest) {
-        val userOptional = userRepository.findByEmail(email)
+    fun findById(userId: String): Optional<GetUserResponse> {
+        val userEntity = userRepository.findById(UUID.fromString(userId))
+        var user: Optional<GetUserResponse> = Optional.empty()
+        userEntity.ifPresent {
+            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name))
+        }
+        return user
+    }
+
+    fun update(userId: String, updateUserRequest: UpdateUserRequest) {
+        val userOptional = userRepository.findById(UUID.fromString(userId))
         val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$email` not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
         }
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName

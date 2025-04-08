@@ -39,5 +39,6 @@ data class LoginRequest(
 )
 
 data class AuthResponse(
-    val accessToken: String
+    val accessToken: String,
+    val userId: String
 )

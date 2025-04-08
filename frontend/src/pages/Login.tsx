@@ -4,10 +4,9 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens, setUserMail } from '../state/authSlice';
+import { setTokens, setUserId } from '../state/authSlice';
 import authoredApi from '../api/authoredApi';
-import { parseJwtPayload } from '../shared/jwtDecode';
-import { ErrorRegisterResponse, JwtPayload, LoginResponse } from '../shared/types';
+import { ErrorRegisterResponse, LoginResponse } from '../shared/types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -27,9 +26,8 @@ const Login: React.FC = () => {
         email,
         password,
       });
-      const decodedToken = parseJwtPayload(response.data.accessToken) as JwtPayload;
-      dispatch(setUserMail({
-        userEmail: decodedToken.sub
+      dispatch(setUserId({
+        userId: response.data.userId
       }));
       dispatch(setTokens({
         accessToken: response.data.accessToken
@@ -58,7 +56,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Paper component={Container} maxWidth="xs" sx={{ mt: 4, p: 4}}>
+    <Paper component={Container} maxWidth="xs" sx={{ mt: 4, p: 4 }}>
       <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
         <Typography component="h1" variant="h5">
           Sign in

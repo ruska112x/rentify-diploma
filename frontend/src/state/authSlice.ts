@@ -1,11 +1,10 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { JwtPayload, RefreshResponse } from '../shared/types';
-import { parseJwtPayload } from '../shared/jwtDecode';
+import { RefreshResponse } from '../shared/types';
 import api from '../api/api';
 
 interface AuthState {
   accessToken: string | null;
-  userEmail: string;
+  userId: string;
   isAuthenticated: boolean;
   isRefreshing: boolean;
   refreshError: string | null;
@@ -13,7 +12,7 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  userEmail: "",
+  userId: "",
   isAuthenticated: false,
   isRefreshing: false,
   refreshError: null,
@@ -51,8 +50,8 @@ const authSlice = createSlice({
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
     },
-    setUserMail: (state, action: PayloadAction<{ userEmail: string; }>) => {
-      state.userEmail = action.payload.userEmail;
+    setUserId: (state, action: PayloadAction<{ userId: string; }>) => {
+      state.userId = action.payload.userId;
     },
     logout: (state) => {
       state.accessToken = null;
@@ -73,7 +72,7 @@ const authSlice = createSlice({
       })
       .addCase(refresh.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
-        state.userEmail = (parseJwtPayload(action.payload.accessToken) as JwtPayload).sub;
+        state.userId = action.payload.userId;
         state.isAuthenticated = true;
         state.isRefreshing = false;
       })
@@ -86,5 +85,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, setUserMail, logout } = authSlice.actions;
+export const { setTokens, setUserId, logout } = authSlice.actions;
 export default authSlice.reducer;

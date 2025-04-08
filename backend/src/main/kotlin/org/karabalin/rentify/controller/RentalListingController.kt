@@ -17,10 +17,10 @@ class RentalListingController (
         rentalListingService.addRentalListing(addRentalListingRequest)
     }
 
-    @GetMapping("/{email}")
+    @GetMapping("/{userId}")
     fun getRentalListingsByUserEmail(
-        @PathVariable email: String
+        @PathVariable userId: String
     ): ResponseEntity<List<OneRentalListing>> {
-        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityEmail(email))
+        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId))
     }
 }

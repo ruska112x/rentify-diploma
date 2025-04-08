@@ -4,9 +4,9 @@ import authoredApi from '../api/authoredApi';
 
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
-    async (email: string, { rejectWithValue }) => {
+    async (id: string, { rejectWithValue }) => {
         try {
-            const response = await authoredApi.get(`/api/user/${email}`);
+            const response = await authoredApi.get(`/api/user/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error);

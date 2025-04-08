@@ -48,7 +48,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
         }
     }
 
@@ -65,7 +65,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
         } catch (e: UsernameNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
@@ -85,7 +85,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
         } else {
             val cookie = Cookie("refreshToken", "").apply {
                 isHttpOnly = true

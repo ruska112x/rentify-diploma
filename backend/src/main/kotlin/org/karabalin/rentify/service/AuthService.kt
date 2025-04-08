@@ -45,12 +45,12 @@ class AuthService(
             lastLoginTime = Instant.now(),
             roleEntity = userRole
         )
-        userRepository.save(userEntity)
+        val savedUser = userRepository.save(userEntity)
 
         val accessToken = jwtUtil.generateAccessToken(userEntity.email)
         val refreshToken = jwtUtil.generateRefreshToken(userEntity.email)
 
-        return AuthTokens(accessToken, refreshToken)
+        return AuthTokens(accessToken, refreshToken, savedUser.id.toString())
     }
 
     fun login(request: LoginRequest): AuthTokens {
@@ -69,9 +69,9 @@ class AuthService(
         val accessToken = jwtUtil.generateAccessToken(user.email)
         val refreshToken = jwtUtil.generateRefreshToken(user.email)
 
-        userRepository.save(user)
+        val savedUser = userRepository.save(user)
 
-        return AuthTokens(accessToken, refreshToken)
+        return AuthTokens(accessToken, refreshToken, savedUser.id.toString())
     }
 
     fun refreshToken(refreshToken: String): AuthTokens {
@@ -80,8 +80,11 @@ class AuthService(
         }
 
         val email = jwtUtil.getEmailFromToken(refreshToken) ?: throw IllegalArgumentException("Invalid token")
-
+        val userOptional = userRepository.findByEmail(email)
+        val user = userOptional.orElseThrow {
+            throw UsernameNotFoundException("User with this email and password not found")
+        }
         val accessToken = jwtUtil.generateAccessToken(email)
-        return AuthTokens(accessToken, refreshToken)
+        return AuthTokens(accessToken, refreshToken, user.id.toString())
     }
 }

@@ -1,13 +1,16 @@
 export interface RegisterResponse {
     accessToken: string;
+    userId: string;
 }
 
 export interface LoginResponse {
     accessToken: string;
+    userId: string;
 }
 
 export interface RefreshResponse {
     accessToken: string;
+    userId: string;
 }
 
 export interface ErrorRegisterResponse {

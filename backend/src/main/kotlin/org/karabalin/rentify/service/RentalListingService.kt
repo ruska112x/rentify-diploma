@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
+import java.util.*
 
 @Service
 class RentalListingService(
@@ -17,11 +18,11 @@ class RentalListingService(
 ) {
     @Transactional
     fun addRentalListing(addRentalListingRequest: AddRentalListingRequest) {
-        val userOptional = userRepository.findByEmail(addRentalListingRequest.userEmail)
+        val userOptional = userRepository.findById(UUID.fromString(addRentalListingRequest.userId))
         val user = userOptional.orElseThrow {
             ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "User with email `${addRentalListingRequest.userEmail}` not found"
+                "User with email `${addRentalListingRequest.userId}` not found"
             )
         }
         rentalListingRepository.save(
@@ -36,8 +37,8 @@ class RentalListingService(
         )
     }
 
-    fun findRentalListingsByUserEntityEmail(email: String): List<OneRentalListing> {
-        return rentalListingRepository.findByUserEntityEmail(email).map {
+    fun findRentalListingsByUserEntityId(userId: String): List<OneRentalListing> {
+        return rentalListingRepository.findAllByUserEntityId(UUID.fromString(userId)).map {
             OneRentalListing(it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
     }

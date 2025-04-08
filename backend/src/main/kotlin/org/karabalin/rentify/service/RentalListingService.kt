@@ -22,7 +22,7 @@ class RentalListingService(
         val user = userOptional.orElseThrow {
             ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "User with email `${addRentalListingRequest.userId}` not found"
+                "User with id `${addRentalListingRequest.userId}` not found"
             )
         }
         rentalListingRepository.save(
@@ -41,5 +41,22 @@ class RentalListingService(
         return rentalListingRepository.findAllByUserEntityId(UUID.fromString(userId)).map {
             OneRentalListing(it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
+    }
+
+    fun findRentalListingById(rentalListingId: String): OneRentalListing {
+        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListing = rentalListingOptional.orElseThrow {
+            ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "RentalListing with id `${rentalListingId}` not found"
+            )
+        }
+        return OneRentalListing(
+            rentalListing.title,
+            rentalListing.description,
+            rentalListing.address,
+            rentalListing.tariffDescription,
+            rentalListing.autoRenew
+        )
     }
 }

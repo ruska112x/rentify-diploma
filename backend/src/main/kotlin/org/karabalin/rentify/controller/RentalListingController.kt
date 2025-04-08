@@ -8,23 +8,23 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/rentalListing")
+@RequestMapping("/api")
 class RentalListingController (
     private val rentalListingService: RentalListingService
 ) {
-    @PostMapping("/create")
+    @PostMapping("/rentalListings/create")
     fun create(@Valid @RequestBody addRentalListingRequest: AddRentalListingRequest) {
         rentalListingService.addRentalListing(addRentalListingRequest)
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/user/{userId}/rentalListings")
     fun getRentalListingsByUserEmail(
         @PathVariable userId: String
     ): ResponseEntity<List<OneRentalListing>> {
         return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId))
     }
 
-    @GetMapping("/{rentalListingId}")
+    @GetMapping("/rentalListings/{rentalListingId}")
     fun getRentalListingById(
         @PathVariable rentalListingId: String
     ): ResponseEntity<OneRentalListing> {

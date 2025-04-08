@@ -23,6 +23,7 @@ import { AppDispatch, RootState } from '../state/store';
 import { fetchUser } from '../state/userSlice';
 import authoredApi from '../api/authoredApi';
 import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
+import { OneRentalListing } from '../shared/types';
 
 const MyProfile: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -41,6 +42,8 @@ const MyProfile: React.FC = () => {
         phone: '',
     });
     const [tabValue, setTabValue] = useState(0);
+
+    const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
 
     useEffect(() => {
         const initialize = async () => {
@@ -112,6 +115,17 @@ const MyProfile: React.FC = () => {
     };
 
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+        const initializeRentalListings = async () => {
+            await authoredApi.get(`/api/rentalListing/${userId}`)
+                .then((response) => {
+                    setRentalListings(response.data);
+                }
+                ).catch((error) => {
+                    console.error('Error fetching rental listings:', error);
+                }
+                );
+        };
+        initializeRentalListings();
         setTabValue(newValue);
     };
 
@@ -141,46 +155,83 @@ const MyProfile: React.FC = () => {
                 <Typography variant="h4" gutterBottom>
                     Account Details
                 </Typography>
-                <Box sx={{ mt: 2 }}>
-                    <List>
-                        <ListItem>
-                            <ListItemText primary="Email" secondary={user.email} />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="First Name" secondary={user.firstName} />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Last Name" secondary={user.lastName} />
-                        </ListItem>
-                        <ListItem>
-                            <ListItemText primary="Phone" secondary={user.phone} />
-                        </ListItem>
-                    </List>
-                    <Button variant="contained" onClick={handleOpen} sx={{ mt: 2 }}>
-                        Edit Profile
-                    </Button>
-                </Box>
             </Paper>
 
             <Paper elevation={3} sx={{ mt: 1, p: 3 }}>
                 <Tabs value={tabValue} onChange={handleTabChange} centered>
+                    <Tab label="Profile" />
                     <Tab label="Rentail Listngs" />
                     <Tab label="Bookings" />
                     <Tab label="Reviews" />
                 </Tabs>
 
                 {tabValue === 0 && (
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="h5">Rentail Listngs</Typography>
+                    <Box sx={{ mt: 2 }}>
                         <List>
                             <ListItem>
-                                <ListItemText primary="1.1" secondary="1.2" />
+                                <ListItemText primary="Email" secondary={user.email} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="First Name" secondary={user.firstName} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Last Name" secondary={user.lastName} />
+                            </ListItem>
+                            <ListItem>
+                                <ListItemText primary="Phone" secondary={user.phone} />
                             </ListItem>
                         </List>
+                        <Button variant="contained" onClick={handleOpen} sx={{ mt: 2 }}>
+                            Edit Profile
+                        </Button>
                     </Box>
                 )}
 
                 {tabValue === 1 && (
+                    <Box sx={{ mt: 1 }}>
+                        <Typography variant="h5">Rentail Listngs</Typography>
+                        {
+                            rentalListings.length === 0 ?
+                                (<Typography variant="body1" sx={{ mt: 2 }}>
+                                    No rental listings found.
+                                </Typography>
+                                ) : (
+                                    <List>
+                                        {rentalListings.map((rental, index) => (
+                                            <Paper key={index} elevation={2} sx={{ mb: 2 }}>
+                                                <ListItem>
+                                                    <ListItemText
+                                                        primary={rental.title}
+                                                        secondary={
+                                                            <>
+                                                                <Typography component="span" variant="body2">
+                                                                    {rental.description}
+                                                                </Typography>
+                                                                <br />
+                                                                <Typography component="span" variant="body2">
+                                                                    Address: {rental.address}
+                                                                </Typography>
+                                                                <br />
+                                                                <Typography component="span" variant="body2">
+                                                                    Tariff: {rental.tariffDescription}
+                                                                </Typography>
+                                                                <br />
+                                                                <Typography component="span" variant="body2">
+                                                                    Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
+                                                                </Typography>
+                                                            </>
+                                                        }
+                                                    />
+                                                </ListItem>
+                                            </Paper>
+                                        ))}
+                                    </List>
+                                )
+                        }
+                    </Box>
+                )}
+
+                {tabValue === 2 && (
                     <Box sx={{ mt: 1 }}>
                         <Typography variant="h5">Bookings</Typography>
                         <List>
@@ -191,7 +242,7 @@ const MyProfile: React.FC = () => {
                     </Box>
                 )}
 
-                {tabValue === 2 && (
+                {tabValue === 3 && (
                     <Box sx={{ mt: 1 }}>
                         <Typography variant="h5">Reviews</Typography>
                         <List>

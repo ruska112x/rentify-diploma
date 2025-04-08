@@ -31,3 +31,11 @@ export interface User {
     phone: string;
     roleName: string;
 }
+
+export interface OneRentalListing {
+    title: string;
+    description: string;
+    address: string;
+    tariffDescription: string;
+    autoRenew: boolean;
+}

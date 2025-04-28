@@ -63,4 +63,4 @@ dist-ssr
 *.sln
 *.sw?
 
-backend/config/application.yaml
+/backend/config/application.yaml

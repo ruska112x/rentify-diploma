@@ -22,7 +22,7 @@ export const logoutUser = createAsyncThunk(
   'auth/logoutUser',
   async (_, { rejectWithValue }) => {
     try {
-      await api.post('http://localhost:8080/api/auth/logout', {}, { withCredentials: true });
+      await api.post('/auth/logout', {}, { withCredentials: true });
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -33,7 +33,7 @@ export const refresh = createAsyncThunk(
   'auth/refresh',
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.post('http://localhost:8080/api/auth/refresh', {}, { withCredentials: true });
+      const response = await api.post('/auth/refresh', {}, { withCredentials: true });
       const responseData = response.data as RefreshResponse;
       return responseData;
     } catch (err) {

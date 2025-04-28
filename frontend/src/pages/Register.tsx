@@ -67,7 +67,7 @@ const Register: React.FC = () => {
 
         try {
             const response = await api.post<RegisterResponse>(
-                'http://localhost:8080/api/auth/register',
+                '/auth/register',
                 {
                     email,
                     password,

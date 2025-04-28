@@ -24,7 +24,7 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
     const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
     const [loading, setLoading] = useState(true);
     const initializeRentalListings = async () => {
-        await authoredApi.get(`/api/user/${userId}/rentalListings`)
+        await authoredApi.get(`/user/${userId}/rentalListings`)
             .then((response) => {
                 setRentalListings(response.data);
             }).catch((error) => {
@@ -82,7 +82,7 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
 
     const handleSubmit = async () => {
         try {
-            await authoredApi.post('/api/rentalListings/create', {
+            await authoredApi.post('/rentalListings/create', {
                 userId: userId,
                 title: formData.title,
                 description: formData.description,

@@ -84,7 +84,7 @@ const ProfileCard: React.FC<{userId: string }> = ({ userId }) => {
         if (!validateForm()) return;
 
         try {
-            await authoredApi.patch(`/api/user/${userId}`, formData);
+            await authoredApi.patch(`/user/${userId}`, formData);
             await dispatch(fetchUser(userId)).unwrap();
             handleClose();
         } catch (err) {

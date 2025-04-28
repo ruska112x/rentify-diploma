@@ -6,7 +6,7 @@ export const fetchUser = createAsyncThunk(
     'user/fetchUser',
     async (id: string, { rejectWithValue }) => {
         try {
-            const response = await authoredApi.get(`/api/user/${id}`);
+            const response = await authoredApi.get(`/user/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error);

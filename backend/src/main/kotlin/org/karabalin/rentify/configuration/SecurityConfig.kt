@@ -54,7 +54,8 @@ class SecurityConfig(
             authorizeHttpRequests {
                 authorize("/swagger-ui/**", permitAll)
                 authorize("/v3/api-docs/**", permitAll)
-                authorize("/api/auth/**", permitAll)
+                authorize("/unauthorizedApi/**", permitAll)
+                authorize("/authorizedApi/**", authenticated)
                 authorize(anyRequest, authenticated)
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(

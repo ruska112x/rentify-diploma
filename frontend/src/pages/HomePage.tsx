@@ -1,13 +1,14 @@
-import { CircularProgress, Container, List, ListItem, ListItemText, Paper, Typography } from "@mui/material";
+import { CircularProgress, Container, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OneRentalListing } from "../shared/types";
-import authoredApi from "../api/authoredApi";
+import api from "../api/api";
+import RentalListingBigCard from "../components/RentalListingBigCard";
 
 const HomePage = () => {
     const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
     const [loading, setLoading] = useState(true);
     const initializeRentalListings = async () => {
-        await authoredApi.get(`/api/rentalListings`)
+        await api.get(`/rentalListings`)
             .then((response) => {
                 setRentalListings(response.data);
             }).catch((error) => {
@@ -30,40 +31,27 @@ const HomePage = () => {
     }
     return (
         <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 4 }}>
-            <Typography variant="h4">Welcome to Rentify</Typography>
+            <Paper sx={{ minHeight: '10vh', minWidth: '50vw', maxWidth: '50vw', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
+                <Typography variant="h4">Welcome to Rentify</Typography>
+            </Paper>
             {
                 rentalListings.length === 0 ?
                     (<Typography variant="body1" sx={{ mt: 2 }}>
                         No rental listings found.
                     </Typography>
                     ) : (
-                        <List>
-                            {rentalListings.map((rental, index) => (
-                                <Paper key={index} elevation={2} sx={{ mb: 2 }}>
-                                    <ListItem>
-                                        <ListItemText
-                                            primary={rental.title}
-                                            secondary={
-                                                <>
-                                                    <Typography component="span" variant="body2">
-                                                        {rental.description}
-                                                    </Typography>
-                                                    <br />
-                                                    <Typography component="span" variant="body2">
-                                                        Address: {rental.address}
-                                                    </Typography>
-                                                    <br />
-                                                    <Typography component="span" variant="body2">
-                                                        Tariff: {rental.tariffDescription}
-                                                    </Typography>
-                                                    <br />
-                                                </>
-                                            }
-                                        />
-                                    </ListItem>
-                                </Paper>
+                        <Container sx={{
+                            display: 'grid',
+                            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                            gap: 2,
+                            mt: 2,
+                            width: '100%',
+                            maxWidth: '50vw',
+                        }}>
+                            {rentalListings.map((rental) => (
+                                <RentalListingBigCard rental={rental} />
                             ))}
-                        </List>
+                        </Container>
                     )
             }
         </Container>

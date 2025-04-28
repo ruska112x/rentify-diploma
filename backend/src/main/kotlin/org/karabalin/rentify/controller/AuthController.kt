@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
-@RequestMapping("/api/auth")
+@RequestMapping("/unauthorizedApi/v1/auth")
 class AuthController(
     private val authService: AuthService,
     private val userService: UserService,

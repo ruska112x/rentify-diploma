@@ -21,10 +21,10 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" sx={{ borderRadius: '0 0 10px 10px' }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-          <Button color="inherit" component={Link} to="/">
+          <Button color="inherit" sx={{ fontWeight: 700 }} component={Link} to="/">
             Rentify
           </Button>
         </Typography>

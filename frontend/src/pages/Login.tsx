@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
 import { setTokens, setUserId } from '../state/authSlice';
-import authoredApi from '../api/authoredApi';
+import api from '../api/api';
 import { ErrorRegisterResponse, LoginResponse } from '../shared/types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
@@ -22,7 +22,7 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await authoredApi.post<LoginResponse>('http://localhost:8080/api/auth/login', {
+      const response = await api.post<LoginResponse>('/auth/login', {
         email,
         password,
       });

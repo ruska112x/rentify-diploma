@@ -31,7 +31,7 @@ const MainRouter: React.FC = () => {
     }
 
     return (
-        <Box sx={{ minHeight: '100vh' }}>
+        <Box sx={{ minHeight: '100vh', maxWidth: '70vw', display: 'flex', flexDirection: 'column', margin: '0 auto' }}>
             <Navbar />
             <Routes>
                 <Route path="/login" element={<Login />} />

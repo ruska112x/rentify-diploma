@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api")
+@RequestMapping("/authorizedApi/v1")
 class RentalListingController (
     private val rentalListingService: RentalListingService
 ) {
@@ -30,7 +30,13 @@ class RentalListingController (
     ): ResponseEntity<OneRentalListing> {
         return ResponseEntity.ok(rentalListingService.findRentalListingById(rentalListingId))
     }
+}
 
+@RestController
+@RequestMapping("/unauthorizedApi/v1")
+class RentalListingUnauthorizedController(
+    private val rentalListingService: RentalListingService
+) {
     @GetMapping("/rentalListings")
     fun getNewestRentalListings(): ResponseEntity<List<OneRentalListing>>  {
         return ResponseEntity.ok(rentalListingService.findNewestRentalListings())

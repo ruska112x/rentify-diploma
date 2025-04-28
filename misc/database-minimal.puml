@@ -16,6 +16,7 @@ entity "User" as user {
     * firstName: String
     * lastName: String
     * phone: String
+    * photoLink: String
     * lastLoginTime: Instant
     * createdAtTime: Instant
     * updatedAtTime: Instant
@@ -45,6 +46,7 @@ entity "RentalListing" as rentalListing {
     * address: String
     * tariffDescription: String
     * autoRenew: boolean
+    * mainPhotoLink: String
     * createdAtTime: Instant
     * updatedAtTime: Instant
     * userId: UUID <<FK>>
@@ -56,6 +58,13 @@ entity "RentalListingStatus" as rentalListingStatus {
     * id: Long <<generated>> <<PK>>
     ---
     * name: String
+}
+
+entity "RentalListingPhoto" as rentalListingPhoto {
+    * id: UUID <<generated>> <<PK>>
+    ---
+    * link: String
+    * rentalListingId: UUID <<FK>>
 }
 
 entity "Booking" as booking {
@@ -83,6 +92,7 @@ user ||--|| userStatus
 
 rentalListing }o--|| user
 rentalListing ||--|| rentalListingStatus
+rentalListing ||--o{ rentalListingPhoto
 
 booking }o--|| rentalListing
 booking }o--|| user

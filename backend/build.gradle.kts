@@ -21,12 +21,13 @@ repositories {
 
 val jjwtVersion = "0.12.6"
 val springDocVersion = "2.8.5"
+val awsSdkVersion = "2.31.30"
 
 dependencies {
-    implementation("software.amazon.awssdk:s3")
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
+    implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")

@@ -23,6 +23,7 @@ val jjwtVersion = "0.12.6"
 val springDocVersion = "2.8.5"
 
 dependencies {
+    implementation("software.amazon.awssdk:s3")
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")

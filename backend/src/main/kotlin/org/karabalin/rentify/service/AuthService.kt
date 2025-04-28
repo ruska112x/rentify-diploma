@@ -33,7 +33,7 @@ class AuthService(
         }
     }
 
-    fun register(request: RegisterRequest): AuthTokens {
+    fun register(request: RegisterRequest, photoLink: String): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
 
         val userEntity = UserEntity(
@@ -42,6 +42,7 @@ class AuthService(
             firstName = request.firstName,
             lastName = request.lastName,
             phone = request.phone,
+            photoLink = photoLink,
             lastLoginTime = Instant.now(),
             roleEntity = userRole
         )

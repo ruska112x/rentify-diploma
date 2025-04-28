@@ -9,6 +9,7 @@ import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
 import org.karabalin.rentify.service.AuthService
 import org.karabalin.rentify.service.RefreshTokenService
+import org.karabalin.rentify.service.S3Service
 import org.karabalin.rentify.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
@@ -17,7 +18,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
@@ -26,19 +29,22 @@ class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
     private val refreshTokenService: RefreshTokenService,
+    private val s3Service: S3Service,
     @Value("\${jwt.refreshTokenValidity}")
     private val refreshTokenValidity: Long
 ) {
     @PostMapping("/register")
     fun register(
-        @Valid @RequestBody request: RegisterRequest,
-        response: HttpServletResponse
+        @Valid @RequestPart("data") request: RegisterRequest,
+        response: HttpServletResponse,
+        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile
     ): ResponseEntity<AuthResponse> {
         val user = userService.findUserByEmail(request.email)
         if (user.isPresent) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists!")
         } else {
-            val authTokens = authService.register(request)
+            val photoLink = s3Service.uploadFile(profilePicture)
+            val authTokens = authService.register(request, photoLink)
             refreshTokenService.create(authTokens.refreshToken)
             val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
                 isHttpOnly = true

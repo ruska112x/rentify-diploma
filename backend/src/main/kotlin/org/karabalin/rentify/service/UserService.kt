@@ -16,7 +16,7 @@ class UserService(
         val userEntity = userRepository.findByEmail(userEmail)
         var user: Optional<GetUserResponse> = Optional.empty()
         userEntity.ifPresent {
-            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name))
+            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, it.photoLink?:""))
         }
         return user
     }
@@ -25,7 +25,7 @@ class UserService(
         val userEntity = userRepository.findById(UUID.fromString(userId))
         var user: Optional<GetUserResponse> = Optional.empty()
         userEntity.ifPresent {
-            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name))
+            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, it.photoLink?:""))
         }
         return user
     }

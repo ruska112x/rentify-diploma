@@ -26,6 +26,9 @@ class UserEntity(
     @Column(nullable = false)
     var phone: String,
 
+    @Column(nullable = true)
+    var photoLink: String?,
+
     @Column(nullable = false)
     var lastLoginTime: Instant,
 

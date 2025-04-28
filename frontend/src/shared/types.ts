@@ -30,6 +30,7 @@ export interface User {
     lastName: string;
     phone: string;
     roleName: string;
+    photoLink: string;
 }
 
 export interface OneRentalListing {

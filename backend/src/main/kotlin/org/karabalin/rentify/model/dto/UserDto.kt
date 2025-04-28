@@ -9,7 +9,8 @@ data class GetUserResponse(
     val firstName: String,
     val lastName: String,
     val phone: String,
-    val roleName: String
+    val roleName: String,
+    val photoLink: String
 )
 
 data class UpdateUserRequest(

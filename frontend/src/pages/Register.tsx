@@ -1,4 +1,4 @@
-import React, { useState, FormEvent } from 'react';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
 import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton, Paper } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
@@ -25,10 +25,16 @@ const Register: React.FC = () => {
         firstName?: string;
         lastName?: string;
         phone?: string;
+        profilePicture?: string;
     }>({});
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [profilePicture, setProfilePicture] = useState<File | null>(null);
+    const [imagePreview, setImagePreview] = useState<string | null>(null);
+
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
+
+    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const validatePhone = (value: string): string | null => {
         const cleanValue = value.replace(/[^+\d]/g, '');
@@ -45,6 +51,40 @@ const Register: React.FC = () => {
 
     const handleClickShowPassword = () => {
         setShowPassword((prev) => !prev);
+    };
+
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            if (file.size > MAX_FILE_SIZE) {
+                setFieldErrors(prev => ({
+                    ...prev,
+                    profilePicture: 'Image size must be less than 5MB'
+                }));
+                setProfilePicture(null);
+                setImagePreview(null);
+                return;
+            }
+
+            if (!file.type.startsWith('image/')) {
+                setFieldErrors(prev => ({
+                    ...prev,
+                    profilePicture: 'Please upload an image file'
+                }));
+                setProfilePicture(null);
+                setImagePreview(null);
+                return;
+            }
+
+            setProfilePicture(file);
+            setFieldErrors(prev => ({ ...prev, profilePicture: undefined }));
+
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setImagePreview(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -65,17 +105,30 @@ const Register: React.FC = () => {
 
         const cleanPhone = phone.replace(/[^+\d]/g, '');
 
+        const formFields = {
+            email,
+            password,
+            firstName,
+            lastName,
+            phone: cleanPhone,
+        };
+
+        const formData = new FormData();
+        formData.append('data', new Blob([JSON.stringify(formFields)], { type: 'application/json' }));
+        if (profilePicture) {
+            formData.append('profilePicture', profilePicture);
+        }
+
         try {
             const response = await api.post<RegisterResponse>(
                 '/auth/register',
+                formData,
                 {
-                    email,
-                    password,
-                    firstName,
-                    lastName,
-                    phone: cleanPhone,
-                },
-                { withCredentials: true }
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
             );
             dispatch(setUserId({
                 userId: response.data.userId
@@ -102,6 +155,7 @@ const Register: React.FC = () => {
                     firstName: errorData.firstName,
                     lastName: errorData.lastName,
                     phone: errorData.phone,
+                    profilePicture: errorData.profilePicture,
                 });
             } else {
                 console.error("Register error:", error);
@@ -123,6 +177,35 @@ const Register: React.FC = () => {
                             {error}
                         </Alert>
                     )}
+                    <Box sx={{ mt: 2 }}>
+                        <Button
+                            variant="contained"
+                            component="label"
+                            fullWidth
+                        >
+                            Upload Profile Picture
+                            <input
+                                type="file"
+                                hidden
+                                accept="image/*"
+                                onChange={handleImageChange}
+                            />
+                        </Button>
+                        {fieldErrors.profilePicture && (
+                            <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                                {fieldErrors.profilePicture}
+                            </Typography>
+                        )}
+                        {imagePreview && (
+                            <Box sx={{ mt: 2, textAlign: 'center' }}>
+                                <img
+                                    src={imagePreview}
+                                    alt="Profile preview"
+                                    style={{ maxWidth: '100%', maxHeight: '200px' }}
+                                />
+                            </Box>
+                        )}
+                    </Box>
                     <TextField
                         margin="normal"
                         required

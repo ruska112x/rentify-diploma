@@ -20,7 +20,7 @@ import { fetchUser } from '../state/userSlice';
 import authoredApi from '../api/authoredApi';
 import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
 
-const ProfileCard: React.FC<{userId: string }> = ({ userId }) => {
+const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
     const { user, loading, error } = useSelector((state: RootState) => state.user);
 
@@ -127,6 +127,13 @@ const ProfileCard: React.FC<{userId: string }> = ({ userId }) => {
     return (
         <>
             <Box sx={{ mt: 2 }}>
+                <Box sx={{ mt: 2, textAlign: 'center' }}>
+                    <img
+                        src={user.photoLink}
+                        alt="Profile preview"
+                        style={{ maxWidth: '100%', maxHeight: '200px' }}
+                    />
+                </Box>
                 <List>
                     <ListItem>
                         <ListItemText primary="Email" secondary={user.email} />

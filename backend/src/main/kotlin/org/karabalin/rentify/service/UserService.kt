@@ -10,13 +10,15 @@ import java.util.*
 
 @Service
 class UserService(
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val s3Service: S3Service
 ) {
     fun findUserByEmail(userEmail: String): Optional<GetUserResponse> {
         val userEntity = userRepository.findByEmail(userEmail)
         var user: Optional<GetUserResponse> = Optional.empty()
         userEntity.ifPresent {
-            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, it.photoLink?:""))
+            val photoLink = s3Service.generatePresignedLink(it.photoLink?:"")
+            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, photoLink))
         }
         return user
     }
@@ -25,7 +27,8 @@ class UserService(
         val userEntity = userRepository.findById(UUID.fromString(userId))
         var user: Optional<GetUserResponse> = Optional.empty()
         userEntity.ifPresent {
-            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, it.photoLink?:""))
+            val photoLink = s3Service.generatePresignedLink(it.photoLink?:"")
+            user = Optional.of(GetUserResponse(it.email, it.firstName, it.lastName, it.phone, it.roleEntity.name, photoLink))
         }
         return user
     }

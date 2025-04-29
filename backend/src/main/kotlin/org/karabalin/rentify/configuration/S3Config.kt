@@ -8,6 +8,7 @@ import software.amazon.awssdk.auth.credentials.StaticCredentialsProvider
 import software.amazon.awssdk.http.apache.ApacheHttpClient
 import software.amazon.awssdk.regions.Region
 import software.amazon.awssdk.services.s3.S3Client
+import software.amazon.awssdk.services.s3.presigner.S3Presigner
 import java.net.URI
 
 @Configuration
@@ -30,6 +31,22 @@ class S3Config(
             )
             .endpointOverride(URI.create("https://storage.yandexcloud.net"))
             .httpClientBuilder(ApacheHttpClient.builder())
+            .build()
+    }
+
+    @Bean
+    fun s3Presigner(): S3Presigner {
+        return S3Presigner.builder()
+            .region(Region.of("ru-central1"))
+            .credentialsProvider(
+                StaticCredentialsProvider.create(
+                    AwsBasicCredentials.create(
+                        accessKey,
+                        secretKey
+                    )
+                )
+            )
+            .endpointOverride(URI.create("https://storage.yandexcloud.net"))
             .build()
     }
 }

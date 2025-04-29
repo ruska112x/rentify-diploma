@@ -40,6 +40,7 @@ const Register: React.FC = () => {
         const cleanValue = value.replace(/[^+\d]/g, '');
         if (!cleanValue) return "Phone number is required";
         if (!phoneRegex.test(cleanValue)) return "Phone number must follow the international format";
+        if (cleanValue.length < 12) return "Phone number must be full length"
         return null;
     };
 
@@ -54,6 +55,8 @@ const Register: React.FC = () => {
     };
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const allowedFileTypes = ["image/png", "image/jpeg"];
+
         const file = e.target.files?.[0];
         if (file) {
             if (file.size > MAX_FILE_SIZE) {
@@ -66,7 +69,7 @@ const Register: React.FC = () => {
                 return;
             }
 
-            if (!file.type.startsWith('image/')) {
+            if (!allowedFileTypes.includes(file.type)) {
                 setFieldErrors(prev => ({
                     ...prev,
                     profilePicture: 'Please upload an image file'

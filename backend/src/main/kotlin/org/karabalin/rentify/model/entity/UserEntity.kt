@@ -40,7 +40,11 @@ class UserEntity(
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false)
-    val roleEntity: RoleEntity
+    val roleEntity: RoleEntity,
+
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    var userStatusEntity: UserStatusEntity
 ) {
     @PreUpdate
     fun onUpdate() {

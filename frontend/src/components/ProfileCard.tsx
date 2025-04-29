@@ -16,12 +16,15 @@ import {
     TextField,
 } from '@mui/material';
 import { AppDispatch, RootState } from '../state/store';
-import { fetchUser } from '../state/userSlice';
+import { clearUserInfo, fetchUser } from '../state/userSlice';
 import authoredApi from '../api/authoredApi';
 import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
+import { logoutUser } from '../state/authSlice';
+import { useNavigate } from 'react-router';
 
 const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
+    const navigate = useNavigate();
     const { user, loading, error } = useSelector((state: RootState) => state.user);
 
     useEffect(() => {
@@ -92,6 +95,19 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
             alert('Failed to update profile. Please try again.');
         }
     };
+
+    const handleDelete = async () => {
+        try {
+            await authoredApi.delete(`/user`);
+            await dispatch(logoutUser()).unwrap();
+            await dispatch(clearUserInfo());
+            navigate('/login');
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete account. Please try again.');
+        }
+    }
+
     const [open, setOpen] = useState(false);
     const [formData, setFormData] = useState({
         firstName: '',
@@ -130,7 +146,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
                 <Box sx={{ mt: 2, textAlign: 'center' }}>
                     <img
                         src={user.photoLink}
-                        alt="Profile preview"
+                        alt="Profile photo preview"
                         style={{ maxWidth: '100%', maxHeight: '200px' }}
                     />
                 </Box>
@@ -150,6 +166,9 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
                 </List>
                 <Button variant="contained" onClick={handleOpen} sx={{ mt: 2 }}>
                     Edit Profile
+                </Button>
+                <Button variant="contained" onClick={handleDelete} sx={{ mt: 2 }}>
+                    Delete Account
                 </Button>
             </Box>
 

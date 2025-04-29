@@ -37,13 +37,16 @@ class AuthController(
     fun register(
         @Valid @RequestPart("data") request: RegisterRequest,
         response: HttpServletResponse,
-        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile
+        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?
     ): ResponseEntity<AuthResponse> {
         val user = userService.findUserByEmail(request.email)
         if (user.isPresent) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists!")
         } else {
-            val photoLink = s3Service.uploadFile(profilePicture)
+            var photoLink: String? = null
+            if (profilePicture != null) {
+                photoLink = s3Service.uploadFile(profilePicture)
+            }
             val authTokens = authService.register(request, photoLink)
             refreshTokenService.create(authTokens.refreshToken)
             val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {

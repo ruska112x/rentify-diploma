@@ -36,19 +36,17 @@ class S3Service(
     }
 
     fun generatePresignedLink(keyName: String): String {
-        s3Presigner.use { presigner ->
-            val objectRequest: GetObjectRequest? = GetObjectRequest.builder()
-                .bucket(bucketName)
-                .key(keyName)
-                .build()
-            val presignRequest: GetObjectPresignRequest? = GetObjectPresignRequest.builder()
-                .signatureDuration(Duration.ofMinutes(10)) // The URL will expire in 10 minutes.
-                .getObjectRequest(objectRequest)
-                .build()
+        val objectRequest: GetObjectRequest? = GetObjectRequest.builder()
+            .bucket(bucketName)
+            .key(keyName)
+            .build()
+        val presignRequest: GetObjectPresignRequest? = GetObjectPresignRequest.builder()
+            .signatureDuration(Duration.ofMinutes(10))
+            .getObjectRequest(objectRequest)
+            .build()
 
-            val presignedRequest = presigner.presignGetObject(presignRequest)
+        val presignedRequest = s3Presigner.presignGetObject(presignRequest)
 
-            return presignedRequest.url().toExternalForm()
-        }
+        return presignedRequest.url().toExternalForm()
     }
 }

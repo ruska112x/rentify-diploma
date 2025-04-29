@@ -6,35 +6,47 @@ import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
 import org.karabalin.rentify.model.entity.RoleEntity
 import org.karabalin.rentify.model.entity.UserEntity
+import org.karabalin.rentify.model.entity.UserStatusEntity
 import org.karabalin.rentify.repository.RoleRepository
 import org.karabalin.rentify.repository.UserRepository
+import org.karabalin.rentify.repository.UserStatusRepository
 import org.karabalin.rentify.util.JwtUtil
+import org.springframework.http.HttpStatus
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
 
 @Service
 class AuthService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
+    private val userStatusRepository: UserStatusRepository,
     private val jwtUtil: JwtUtil,
     private val authenticationManager: AuthenticationManager,
     private val passwordEncoder: PasswordEncoder
 ) {
     @PostConstruct
-    fun initRoles() {
+    fun postConstruct() {
         listOf("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR").forEach { roleName ->
             if (roleRepository.findByName(roleName) == null) {
                 roleRepository.save(RoleEntity(name = roleName))
             }
         }
+        listOf("ACTIVE", "DELETED").forEach { userStatusName ->
+            if (userStatusRepository.findByName(userStatusName) == null) {
+                userStatusRepository.save(UserStatusEntity(name = userStatusName))
+            }
+        }
     }
 
-    fun register(request: RegisterRequest, photoLink: String): AuthTokens {
+    fun register(request: RegisterRequest, photoLink: String?): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
+        val userStatus =
+            userStatusRepository.findByName("ACTIVE") ?: throw IllegalStateException("User Status ACTIVE not found")
 
         val userEntity = UserEntity(
             email = request.email,
@@ -44,7 +56,8 @@ class AuthService(
             phone = request.phone,
             photoLink = photoLink,
             lastLoginTime = Instant.now(),
-            roleEntity = userRole
+            roleEntity = userRole,
+            userStatusEntity = userStatus
         )
         val savedUser = userRepository.save(userEntity)
 
@@ -59,6 +72,10 @@ class AuthService(
 
         val user = userOptional.orElseThrow {
             throw UsernameNotFoundException("User with this email and password not found")
+        }
+
+        if (user.userStatusEntity.name != "ACTIVE") {
+            throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email deleted")
         }
 
         user.lastLoginTime = Instant.now()

@@ -104,6 +104,18 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
         }
     };
 
+    const handleDelete = async (id: string) => {
+            try {
+                await authoredApi.delete(`/rentalListings/${id}`);
+                rentalListings.filter((rental) => rental.id !== id);
+                setRentalListings(rentalListings);
+                initializeRentalListings();
+            } catch (err) {
+                console.error('Delete error:', err);
+                alert('Failed to delete rental listing. Please try again.');
+            }
+        }
+
     if (loading) {
         return (
             <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
@@ -123,28 +135,30 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
                         ) : (
                             <List>
                                 {rentalListings.map((rental, index) => (
-                                    <Paper key={index} elevation={2} sx={{ mb: 2 }}>
+                                    <Paper key={index} elevation={2} sx={{ mb: 2, display: 'flex', padding: 2 }}>
                                         <ListItem>
                                             <ListItemText
-                                                primary={rental.title}
+                                                primary={
+                                                    rental.title
+                                                }
                                                 secondary={
-                                                    <>
+                                                    <Box display={'flex'} flexDirection="column">
                                                         <Typography component="span" variant="body2">
                                                             {rental.description}
                                                         </Typography>
-                                                        <br />
                                                         <Typography component="span" variant="body2">
                                                             Address: {rental.address}
                                                         </Typography>
-                                                        <br />
                                                         <Typography component="span" variant="body2">
                                                             Tariff: {rental.tariffDescription}
                                                         </Typography>
-                                                        <br />
                                                         <Typography component="span" variant="body2">
                                                             Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
                                                         </Typography>
-                                                    </>
+                                                        <Button variant="contained" color="primary" sx={{maxWidth: '8vw', mt: 1}}  onClick={() => handleDelete(rental.id)}>
+                                                            Delete
+                                                        </Button>
+                                                    </Box>
                                                 }
                                             />
                                         </ListItem>

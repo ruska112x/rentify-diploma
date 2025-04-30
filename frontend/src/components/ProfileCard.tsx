@@ -144,11 +144,16 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
         <>
             <Box sx={{ mt: 2 }}>
                 <Box sx={{ mt: 2, textAlign: 'center' }}>
-                    <img
-                        src={user.photoLink}
-                        alt="Profile photo preview"
-                        style={{ maxWidth: '100%', maxHeight: '200px' }}
-                    />
+                    {user.photoLink != "" ?
+                        <img
+                            src={user.photoLink}
+                            alt="Profile photo preview"
+                            style={{ maxWidth: '100%', maxHeight: '200px' }}
+                        />
+                        :
+                        <></>
+                    }
+
                 </Box>
                 <List>
                     <ListItem>

@@ -34,6 +34,7 @@ export interface User {
 }
 
 export interface OneRentalListing {
+    id: string;
     title: string;
     description: string;
     address: string;

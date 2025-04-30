@@ -10,6 +10,7 @@ data class AddRentalListingRequest(
 )
 
 data class OneRentalListing(
+    val id: String,
     val title: String,
     val description: String,
     val address: String,

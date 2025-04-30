@@ -6,7 +6,6 @@ import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.UserRepository
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.web.server.ResponseStatusException
@@ -40,7 +39,7 @@ class RentalListingService(
 
     fun findRentalListingsByUserEntityId(userId: String): List<OneRentalListing> {
         return rentalListingRepository.findAllByUserEntityId(UUID.fromString(userId)).map {
-            OneRentalListing(it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
+            OneRentalListing(it.id.toString(), it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
     }
 
@@ -53,6 +52,7 @@ class RentalListingService(
             )
         }
         return OneRentalListing(
+            rentalListing.id.toString(),
             rentalListing.title,
             rentalListing.description,
             rentalListing.address,
@@ -63,7 +63,11 @@ class RentalListingService(
 
     fun findNewestRentalListings(): List<OneRentalListing> {
         return rentalListingRepository.findAllByOrderByCreatedAtTimeDesc().map {
-            OneRentalListing(it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
+            OneRentalListing(it.id.toString(), it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
+    }
+
+    fun deleteById(rentalListingId: String) {
+        rentalListingRepository.deleteById(UUID.fromString(rentalListingId))
     }
 }

@@ -30,6 +30,13 @@ class RentalListingController (
     ): ResponseEntity<OneRentalListing> {
         return ResponseEntity.ok(rentalListingService.findRentalListingById(rentalListingId))
     }
+
+    @DeleteMapping("/rentalListings/{rentalListingId}")
+    fun deleteRentalListingById(
+        @PathVariable rentalListingId: String
+    ) {
+        rentalListingService.deleteById(rentalListingId)
+    }
 }
 
 @RestController

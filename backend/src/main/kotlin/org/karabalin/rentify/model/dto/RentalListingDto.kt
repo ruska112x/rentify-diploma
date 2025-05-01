@@ -17,3 +17,11 @@ data class OneRentalListing(
     val tariffDescription: String,
     val autoRenew: Boolean
 )
+
+data class UpdateRentalListingRequest(
+    val title: String,
+    val description: String,
+    val address: String,
+    val tariffDescription: String,
+    val autoRenew: Boolean
+)

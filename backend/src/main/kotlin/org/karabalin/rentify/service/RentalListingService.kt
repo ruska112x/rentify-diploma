@@ -2,6 +2,7 @@ package org.karabalin.rentify.service
 
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
 import org.karabalin.rentify.model.dto.OneRentalListing
+import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.UserRepository
@@ -38,7 +39,9 @@ class RentalListingService(
     }
 
     fun findRentalListingsByUserEntityId(userId: String): List<OneRentalListing> {
-        return rentalListingRepository.findAllByUserEntityId(UUID.fromString(userId)).map {
+        return rentalListingRepository.findAllByUserEntityId(UUID.fromString(userId))
+            .sortedBy { it.createdAtTime }
+            .map {
             OneRentalListing(it.id.toString(), it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
     }
@@ -65,6 +68,25 @@ class RentalListingService(
         return rentalListingRepository.findAllByOrderByCreatedAtTimeDesc().map {
             OneRentalListing(it.id.toString(), it.title, it.description, it.address, it.tariffDescription, it.autoRenew)
         }
+    }
+
+    fun updateRentalListingById(
+        rentalListingId: String,
+        updateRentalListingRequest: UpdateRentalListingRequest
+    ) {
+        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListing = rentalListingOptional.orElseThrow {
+            ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "RentalListing with id `${rentalListingId}` not found"
+            )
+        }
+        rentalListing.title = updateRentalListingRequest.title
+        rentalListing.description = updateRentalListingRequest.description
+        rentalListing.address = updateRentalListingRequest.address
+        rentalListing.tariffDescription = updateRentalListingRequest.tariffDescription
+        rentalListing.autoRenew = updateRentalListingRequest.autoRenew
+        rentalListingRepository.save(rentalListing)
     }
 
     fun deleteById(rentalListingId: String) {

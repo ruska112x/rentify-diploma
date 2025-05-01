@@ -12,19 +12,19 @@ class RentalListingEntity (
     val id: UUID? = null,
 
     @Column(nullable = false)
-    val title: String,
+    var title: String,
 
     @Column(nullable = false)
-    val description: String,
+    var description: String,
 
     @Column(nullable = false)
-    val address: String,
+    var address: String,
 
     @Column(nullable = false)
-    val tariffDescription: String,
+    var tariffDescription: String,
 
     @Column(nullable = false)
-    val autoRenew: Boolean,
+    var autoRenew: Boolean,
 
     @Column(nullable = false, updatable = false)
     var createdAtTime: Instant = Instant.now(),

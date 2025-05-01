@@ -10,15 +10,10 @@ import {
     ListItemText,
     Container,
     CircularProgress,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    TextField,
-    FormControlLabel,
-    DialogActions,
     Button,
-    Switch
 } from '@mui/material';
+import RentalListingAddDialog from "../dialogs/RentalListingAddDialog";
+import RentalListingEditDialog from "../dialogs/RentalListingEditDialog";
 
 const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
     const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
@@ -37,8 +32,9 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
     }, [])
 
     const [open, setOpen] = useState(false);
-
-    const [formData, setFormData] = useState({
+    const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
+    const [rentalToPass, setRentalToPass] = useState<OneRentalListing>({
+        id: '',
         title: '',
         description: '',
         address: '',
@@ -46,75 +42,30 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
         autoRenew: false,
     });
 
-    const [formErrors, setFormErrors] = useState({
-        title: '',
-        description: '',
-        address: '',
-        tariffDescription: '',
-        autoRenew: ''
-    });
-
     const handleClose = () => {
         setOpen(false);
-        setFormErrors({
-            title: '',
-            description: '',
-            address: '',
-            tariffDescription: '',
-            autoRenew: ''
-        });
     };
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const { name, value } = e.target;
-        setFormData((prev) => ({
-            ...prev,
-            [name]: value,
-        }));
-    };
+    const handleOpenEditDialog = (rental: OneRentalListing) => {
+        setOpenUpdateDialog(true)
+        setRentalToPass(rental);
+    }
 
-    const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setFormData((prev) => ({
-            ...prev,
-            autoRenew: e.target.checked,
-        }));
-    };
-
-    const handleSubmit = async () => {
-        try {
-            await authoredApi.post('/rentalListings/create', {
-                userId: userId,
-                title: formData.title,
-                description: formData.description,
-                address: formData.address,
-                tariffDescription: formData.tariffDescription,
-                autoRenew: formData.autoRenew,
-            });
-            handleClose();
-            initializeRentalListings();
-            setFormData({
-                title: '',
-                description: '',
-                address: '',
-                tariffDescription: '',
-                autoRenew: false,
-            });
-        } catch (error) {
-            console.error('Error creating rental listing:', error);
-        }
-    };
+    const handleCloseUpdateDialog = () => {
+        setOpenUpdateDialog(false);
+    }
 
     const handleDelete = async (id: string) => {
-            try {
-                await authoredApi.delete(`/rentalListings/${id}`);
-                rentalListings.filter((rental) => rental.id !== id);
-                setRentalListings(rentalListings);
-                initializeRentalListings();
-            } catch (err) {
-                console.error('Delete error:', err);
-                alert('Failed to delete rental listing. Please try again.');
-            }
+        try {
+            await authoredApi.delete(`/rentalListings/${id}`);
+            rentalListings.filter((rental) => rental.id !== id);
+            setRentalListings(rentalListings);
+            initializeRentalListings();
+        } catch (err) {
+            console.error('Delete error:', err);
+            alert('Failed to delete rental listing. Please try again.');
         }
+    }
 
     if (loading) {
         return (
@@ -129,7 +80,7 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
                 <Typography variant="h5">Rentail Listngs</Typography>
                 {
                     rentalListings.length === 0 ?
-                        (<Typography variant="body1" sx={{ mt: 2 }}>
+                        (<Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
                             No rental listings found.
                         </Typography>
                         ) : (
@@ -155,9 +106,14 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
                                                         <Typography component="span" variant="body2">
                                                             Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
                                                         </Typography>
-                                                        <Button variant="contained" color="primary" sx={{maxWidth: '8vw', mt: 1}}  onClick={() => handleDelete(rental.id)}>
-                                                            Delete
-                                                        </Button>
+                                                        <Box sx={{ mt: 2 }}>
+                                                            <Button variant="contained" color="primary" sx={{ maxWidth: '8vw', mt: 1, mr: 2 }} onClick={() => handleOpenEditDialog(rental)}>
+                                                                Edit
+                                                            </Button>
+                                                            <Button variant="contained" color="primary" sx={{ maxWidth: '8vw', mt: 1, mr: 2 }} onClick={() => handleDelete(rental.id)}>
+                                                                Delete
+                                                            </Button>
+                                                        </Box>
                                                     </Box>
                                                 }
                                             />
@@ -171,63 +127,9 @@ const RentalListingsCard: React.FC<{ userId: string }> = ({ userId }) => {
                     Add Rental Listing
                 </Button>
             </Box>
-
-            <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Create New Rental Listing</DialogTitle>
-                <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-                        <TextField
-                            label="Title"
-                            name="title"
-                            value={formData.title}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Description"
-                            name="description"
-                            value={formData.description}
-                            onChange={handleChange}
-                            fullWidth
-                            multiline
-                            rows={3}
-                        />
-                        <TextField
-                            label="Address"
-                            name="address"
-                            value={formData.address}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                        />
-                        <TextField
-                            label="Tariff Description"
-                            name="tariffDescription"
-                            value={formData.tariffDescription}
-                            onChange={handleChange}
-                            fullWidth
-                            required
-                        />
-                        <FormControlLabel
-                            control={
-                                <Switch
-                                    checked={formData.autoRenew}
-                                    onChange={handleSwitchChange}
-                                    name="autoRenew"
-                                />
-                            }
-                            label="Auto Renew"
-                        />
-                    </Box>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
-                    <Button onClick={handleSubmit} variant="contained" color="primary">
-                        Create
-                    </Button>
-                </DialogActions>
-            </Dialog>
+            
+            <RentalListingAddDialog isOpen={open} userId={userId} handleClose={handleClose} initializeRentalListings={initializeRentalListings} />
+            <RentalListingEditDialog isOpen={openUpdateDialog} rental={rentalToPass} handleClose={handleCloseUpdateDialog} initializeRentalListings={initializeRentalListings} />
         </>
     );
 }

@@ -63,7 +63,7 @@ entity "RentalListingStatus" as rentalListingStatus {
 entity "RentalListingPhoto" as rentalListingPhoto {
     * id: Long <<generated>> <<PK>>
     ---
-    * link: String
+    * fileKey: String
     * rentalListingId: UUID <<FK>>
 }
 

@@ -21,11 +21,11 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
     >
       <Box sx={{ flexShrink: 0, mr: 4 }}>
         <img
-          src={''}
+          src={rental.mainPhotoLink}
           alt={`${rental.title} main photo`}
           style={{
             width: '100%',
-            maxWidth: '200px',
+            maxWidth: '300px',
             height: 'auto',
             borderRadius: '8px',
           }}

@@ -11,6 +11,7 @@ import org.karabalin.rentify.repository.UserRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
@@ -23,13 +24,23 @@ class RentalListingService(
 ) {
     @Transactional
     fun addRentalListing(
-        addRentalListingRequest: AddRentalListingRequest, mainPhotoKey: String, additionalPhotoKeys: List<String>
+        addRentalListingRequest: AddRentalListingRequest,
+        mainImage: MultipartFile,
+        additionalImages: List<MultipartFile>?
     ) {
         val userOptional = userRepository.findById(UUID.fromString(addRentalListingRequest.userId))
         val user = userOptional.orElseThrow {
             ResponseStatusException(
                 HttpStatus.NOT_FOUND, "User with id `${addRentalListingRequest.userId}` not found"
             )
+        }
+        val mainPhotoKey = s3Service.uploadFile(mainImage)
+        val additionalPhotoKeys = mutableListOf<String>()
+        if (additionalImages != null) {
+            for (image in additionalImages) {
+                val link = s3Service.uploadFile(image)
+                additionalPhotoKeys.add(link)
+            }
         }
         val rentalListing = RentalListingEntity(
             title = addRentalListingRequest.title,
@@ -104,8 +115,12 @@ class RentalListingService(
         }
     }
 
+    @Transactional
     fun updateRentalListingById(
-        rentalListingId: String, updateRentalListingRequest: UpdateRentalListingRequest
+        rentalListingId: String,
+        updateRentalListingRequest: UpdateRentalListingRequest,
+        mainImage: MultipartFile?,
+        additionalImages: List<MultipartFile>?
     ) {
         val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
         val rentalListing = rentalListingOptional.orElseThrow {
@@ -118,10 +133,47 @@ class RentalListingService(
         rentalListing.address = updateRentalListingRequest.address
         rentalListing.tariffDescription = updateRentalListingRequest.tariffDescription
         rentalListing.autoRenew = updateRentalListingRequest.autoRenew
+        if (mainImage != null) {
+            s3Service.deleteFile(rentalListing.mainPhotoKey)
+            val mainPhotoKey = s3Service.uploadFile(mainImage)
+            rentalListing.mainPhotoKey = mainPhotoKey
+        }
+        val additionalPhotoKeys = mutableListOf<String>()
+        val rentalListingPhotoEntityList =
+            rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!)
+        for (photo in rentalListingPhotoEntityList) {
+            s3Service.deleteFile(photo.fileKey)
+        }
+        rentalListingPhotoRepository.deleteAllById(rentalListingPhotoEntityList.map { it.id })
+        if (additionalImages != null) {
+            for (image in additionalImages) {
+                val link = s3Service.uploadFile(image)
+                additionalPhotoKeys.add(link)
+            }
+        }
         rentalListingRepository.save(rentalListing)
+        rentalListingPhotoRepository.saveAll(
+            additionalPhotoKeys.map {
+                RentalListingPhotoEntity(
+                    fileKey = it, rentalListingEntity = rentalListing
+                )
+            })
     }
 
+    @Transactional
     fun deleteById(rentalListingId: String) {
-        rentalListingRepository.deleteById(UUID.fromString(rentalListingId))
+        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        if (rentalListingOptional.isPresent) {
+            val rentalListingPhotoEntityList =
+                rentalListingPhotoRepository.findAllByRentalListingEntityId(UUID.fromString(rentalListingId))
+            for (photo in rentalListingPhotoEntityList) {
+                s3Service.deleteFile(photo.fileKey)
+            }
+            rentalListingPhotoRepository.deleteAllById(rentalListingPhotoEntityList.map { it.id })
+
+            rentalListingRepository.deleteById(UUID.fromString(rentalListingId))
+
+            s3Service.deleteFile(rentalListingOptional.get().mainPhotoKey)
+        }
     }
 }

@@ -49,7 +49,7 @@ const MyProfile: React.FC = () => {
     }
 
     return (
-        <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>
+        <Container sx={{ maxWidth: '40vw', mt: 4, mb: 4 }}>
             <Paper elevation={3} sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
                     Account Details

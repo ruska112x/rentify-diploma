@@ -9,7 +9,9 @@ import {
     Button,
     Switch,
     Typography,
+    IconButton,
 } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import authoredApi from '../api/authoredApi';
 
@@ -50,7 +52,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
-    const MAX_ADDITIONAL_IMAGES = 5;
+    const MAX_ADDITIONAL_IMAGES = 4;
     const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg'];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -175,7 +177,20 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         });
     };
 
+    const handleDeleteAdditionalImage = (index: number) => {
+        setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
+        setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+    };
+
     const handleSubmit = async () => {
+        if (!mainImage) {
+            setFormErrors((prev) => ({
+                ...prev,
+                mainImage: 'Main image is required',
+            }));
+            return;
+        }
+
         try {
             const formDataToSend = new FormData();
             formDataToSend.append(
@@ -328,12 +343,20 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         {additionalImagesPreviews.length > 0 && (
                             <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
                                 {additionalImagesPreviews.map((preview, index) => (
-                                    <img
-                                        key={index}
-                                        src={preview}
-                                        alt={`Additional image ${index + 1}`}
-                                        style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px' }}
-                                    />
+                                    <Box key={index} sx={{ position: 'relative' }}>
+                                        <img
+                                            src={preview}
+                                            alt={`Additional image ${index + 1}`}
+                                            style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px' }}
+                                        />
+                                        <IconButton
+                                            sx={{ position: 'absolute', top: 0, right: 0 }}
+                                            onClick={() => handleDeleteAdditionalImage(index)}
+                                        >
+                                            <DeleteIcon color="error" />
+                                        </IconButton>
+                                    </Box>
+
                                 ))}
                             </Box>
                         )}

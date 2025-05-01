@@ -21,15 +21,7 @@ class RentalListingController(
         @RequestPart("mainImage") mainImage: MultipartFile,
         @RequestPart("additionalImages") additionalImages: List<MultipartFile>?
     ) {
-        val mainPhotoKey = s3Service.uploadFile(mainImage)
-        val additionalPhotoKeys = mutableListOf<String>()
-        if (additionalImages != null) {
-            for (image in additionalImages) {
-                val link = s3Service.uploadFile(image)
-                additionalPhotoKeys.add(link)
-            }
-        }
-        rentalListingService.addRentalListing(addRentalListingRequest, mainPhotoKey, additionalPhotoKeys)
+        rentalListingService.addRentalListing(addRentalListingRequest, mainImage, additionalImages)
     }
 
     @GetMapping("/user/{userId}/rentalListings")
@@ -48,9 +40,14 @@ class RentalListingController(
 
     @PatchMapping("/rentalListings/{rentalListingId}")
     fun updateRentalListingById(
-        @PathVariable rentalListingId: String, @RequestBody updateRentalListingRequest: UpdateRentalListingRequest
+        @PathVariable rentalListingId: String,
+        @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
+        @RequestPart("mainImage") mainImage: MultipartFile?,
+        @RequestPart("additionalImages") additionalImages: List<MultipartFile>?
     ) {
-        rentalListingService.updateRentalListingById(rentalListingId, updateRentalListingRequest)
+        rentalListingService.updateRentalListingById(
+            rentalListingId, updateRentalListingRequest, mainImage, additionalImages
+        )
     }
 
     @DeleteMapping("/rentalListings/{rentalListingId}")

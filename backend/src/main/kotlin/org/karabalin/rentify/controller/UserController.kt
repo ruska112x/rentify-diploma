@@ -5,11 +5,13 @@ import jakarta.validation.Valid
 import org.karabalin.rentify.model.dto.GetUserResponse
 import org.karabalin.rentify.model.dto.UpdateUserRequest
 import org.karabalin.rentify.service.RefreshTokenService
+import org.karabalin.rentify.service.S3Service
 import org.karabalin.rentify.service.UserService
 import org.karabalin.rentify.util.JwtUtil
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
@@ -18,6 +20,7 @@ import java.util.*
 class UserController(
     private val refreshTokenService: RefreshTokenService,
     private val userService: UserService,
+    private val s3Service: S3Service,
     private val jwtUtil: JwtUtil
 ) {
     @GetMapping("/{userId}")
@@ -32,9 +35,14 @@ class UserController(
     @PatchMapping("/{userId}")
     fun updateUser(
         @PathVariable userId: String,
-        @Valid @RequestBody updateUserRequest: UpdateUserRequest
+        @Valid @RequestPart("data") updateUserRequest: UpdateUserRequest,
+        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?
     ): ResponseEntity<String> {
-        userService.update(userId, updateUserRequest)
+        var photoKey: String? = null
+        if (profilePicture != null) {
+            photoKey = s3Service.uploadFile(profilePicture)
+        }
+        userService.update(userId, updateUserRequest, photoKey)
         return ResponseEntity.ok("")
     }
 

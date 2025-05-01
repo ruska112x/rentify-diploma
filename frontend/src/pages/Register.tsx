@@ -40,7 +40,7 @@ const Register: React.FC = () => {
         const cleanValue = value.replace(/[^+\d]/g, '');
         if (!cleanValue) return "Phone number is required";
         if (!phoneRegex.test(cleanValue)) return "Phone number must follow the international format";
-        if (cleanValue.length < 12) return "Phone number must be full length"
+        if (cleanValue.length < 12) return "Phone number must be full length";
         return null;
     };
 
@@ -54,40 +54,57 @@ const Register: React.FC = () => {
         setShowPassword((prev) => !prev);
     };
 
-    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const allowedFileTypes = ["image/png", "image/jpeg"];
+    const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+    };
 
+    const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const file = e.dataTransfer.files?.[0];
+        if (file) {
+            processImage(file);
+        }
+    };
+
+    const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            if (file.size > MAX_FILE_SIZE) {
-                setFieldErrors(prev => ({
-                    ...prev,
-                    profilePicture: 'Image size must be less than 5MB'
-                }));
-                setProfilePicture(null);
-                setImagePreview(null);
-                return;
-            }
-
-            if (!allowedFileTypes.includes(file.type)) {
-                setFieldErrors(prev => ({
-                    ...prev,
-                    profilePicture: 'Please upload an image file'
-                }));
-                setProfilePicture(null);
-                setImagePreview(null);
-                return;
-            }
-
-            setProfilePicture(file);
-            setFieldErrors(prev => ({ ...prev, profilePicture: undefined }));
-
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
-            reader.readAsDataURL(file);
+            processImage(file);
         }
+    };
+
+    const processImage = (file: File) => {
+        const allowedFileTypes = ["image/png", "image/jpeg"];
+        if (file.size > MAX_FILE_SIZE) {
+            setFieldErrors(prev => ({
+                ...prev,
+                profilePicture: 'Image size must be less than 5MB'
+            }));
+            setProfilePicture(null);
+            setImagePreview(null);
+            return;
+        }
+
+        if (!allowedFileTypes.includes(file.type)) {
+            setFieldErrors(prev => ({
+                ...prev,
+                profilePicture: 'Please upload a PNG or JPEG image'
+            }));
+            setProfilePicture(null);
+            setImagePreview(null);
+            return;
+        }
+
+        setProfilePicture(file);
+        setFieldErrors(prev => ({ ...prev, profilePicture: undefined }));
+
+        const reader = new FileReader();
+        reader.onloadend = () => {
+            setImagePreview(reader.result as string);
+        };
+        reader.readAsDataURL(file);
     };
 
     const handleSubmit = async (e: FormEvent) => {
@@ -180,22 +197,43 @@ const Register: React.FC = () => {
                             {error}
                         </Alert>
                     )}
-                    <Box sx={{ mt: 2 }}>
+                    <Box
+                        sx={{
+                            mt: 2,
+                            border: '2px dashed',
+                            borderColor: fieldErrors.profilePicture ? 'error.main' : 'grey.500',
+                            borderRadius: 2,
+                            p: 3,
+                            textAlign: 'center',
+                            bgcolor: 'grey.50',
+                            '&:hover': { bgcolor: 'grey.100' },
+                            minHeight: '120px',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}
+                        onDragOver={handleDragOver}
+                        onDrop={handleDrop}
+                    >
+                        <Typography variant="body1" sx={{ mb: 2 }}>
+                            {profilePicture ? `Selected: ${profilePicture.name}` : 'Drag and drop your profile picture here'}
+                        </Typography>
                         <Button
-                            variant="contained"
+                            variant="outlined"
                             component="label"
-                            fullWidth
+                            sx={{ textTransform: 'none' }}
                         >
-                            Upload Profile Picture
+                            Choose File
                             <input
                                 type="file"
                                 hidden
-                                accept="image/*"
+                                accept="image/png,image/jpeg"
                                 onChange={handleImageChange}
                             />
                         </Button>
                         {fieldErrors.profilePicture && (
-                            <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                            <Typography color="error" variant="caption" sx={{ mt: 1 }}>
                                 {fieldErrors.profilePicture}
                             </Typography>
                         )}
@@ -204,7 +242,7 @@ const Register: React.FC = () => {
                                 <img
                                     src={imagePreview}
                                     alt="Profile preview"
-                                    style={{ maxWidth: '100%', maxHeight: '200px' }}
+                                    style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }}
                                 />
                             </Box>
                         )}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import {
     Container,
@@ -10,18 +10,43 @@ import {
     ListItemText,
     Tabs,
     Tab,
+    CircularProgress,
 } from '@mui/material';
 import ProfileCard from '../components/ProfileCard';
 import { RootState } from '../state/store';
 import RentalListingsCard from '../components/RentalListingsCard';
+import { Navigate } from 'react-router';
 
 const MyProfile: React.FC = () => {
-    const { userId } = useSelector((state: RootState) => state.auth);
+    const { userId, accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
+    const [loading, setLoading] = useState(true);
 
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
+
+    useEffect(() => {
+        if (isRefreshing) {
+            setLoading(true);
+        } else {
+            setLoading(false);
+        }
+    }, [isRefreshing])
+
+    if (loading) {
+        return (
+            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (!accessToken) {
+        return (
+            <Navigate to="/login" replace={true} />
+        );
+    }
 
     return (
         <Container maxWidth="md" sx={{ mt: 4, mb: 4 }}>

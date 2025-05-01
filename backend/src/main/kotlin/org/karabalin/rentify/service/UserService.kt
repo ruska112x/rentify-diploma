@@ -60,7 +60,7 @@ class UserService(
         return user
     }
 
-    fun update(userId: String, updateUserRequest: UpdateUserRequest) {
+    fun update(userId: String, updateUserRequest: UpdateUserRequest, photoKey: String?) {
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
@@ -68,6 +68,10 @@ class UserService(
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
         user.phone = updateUserRequest.phone
+        if (user.photoLink != null) {
+            s3Service.deleteFile(user.photoLink!!)
+        }
+        user.photoLink = photoKey
         userRepository.save(user)
     }
 

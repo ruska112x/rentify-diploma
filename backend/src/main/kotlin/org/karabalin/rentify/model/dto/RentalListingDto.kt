@@ -15,7 +15,9 @@ data class OneRentalListing(
     val description: String,
     val address: String,
     val tariffDescription: String,
-    val autoRenew: Boolean
+    val autoRenew: Boolean,
+    val mainPhotoLink: String,
+    val additionalPhotoLinks: List<String>
 )
 
 data class UpdateRentalListingRequest(

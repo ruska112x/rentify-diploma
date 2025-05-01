@@ -5,7 +5,7 @@ import java.time.Instant
 import java.util.*
 
 @Entity
-@Table(name = "rentalListing")
+@Table(name = "rentalListings")
 class RentalListingEntity (
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -25,6 +25,9 @@ class RentalListingEntity (
 
     @Column(nullable = false)
     var autoRenew: Boolean,
+
+    @Column(nullable = false)
+    var mainPhotoKey: String,
 
     @Column(nullable = false, updatable = false)
     var createdAtTime: Instant = Instant.now(),

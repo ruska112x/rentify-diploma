@@ -40,4 +40,6 @@ export interface OneRentalListing {
     address: string;
     tariffDescription: string;
     autoRenew: boolean;
+    mainPhotoLink: string;
+    additionalPhotoLinks: string[];
 }

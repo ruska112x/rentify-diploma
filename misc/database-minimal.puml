@@ -61,7 +61,7 @@ entity "RentalListingStatus" as rentalListingStatus {
 }
 
 entity "RentalListingPhoto" as rentalListingPhoto {
-    * id: UUID <<generated>> <<PK>>
+    * id: Long <<generated>> <<PK>>
     ---
     * link: String
     * rentalListingId: UUID <<FK>>

@@ -19,7 +19,6 @@ interface ImageSquareProps {
     border?: string;
     borderRadius?: number | string;
     sx?: SxProps<Theme>;
-    alt?: string;
     showFullScreen?: boolean;
 }
 
@@ -30,7 +29,6 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
     border = 'none',
     borderRadius = 4,
     sx = {},
-    alt = 'Image',
     showFullScreen = false,
 }) => {
     const [isFullScreenOpen, setIsFullScreenOpen] = useState(false);
@@ -64,7 +62,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     <>
                         <img
                             src={imageUrl}
-                            alt={alt}
+                            alt={fallbackText}
                             style={{
                                 width: '100%',
                                 height: '100%',
@@ -132,7 +130,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     >
                         <img
                             src={imageUrl}
-                            alt={alt}
+                            alt={fallbackText}
                             style={{
                                 maxWidth: '100%',
                                 maxHeight: '80vh',

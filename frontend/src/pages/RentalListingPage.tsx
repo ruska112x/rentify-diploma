@@ -11,6 +11,7 @@ import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router';
 import api from '../api/api';
 import LoadingSpinner from '../components/LoadingSpinner';
+import ImageSquare from '../components/ImageSquare';
 
 const RentalListingPage: React.FC = () => {
     const { rentalListingId } = useParams<{ rentalListingId: string }>();
@@ -84,57 +85,9 @@ const RentalListingPage: React.FC = () => {
                         {listing.title}
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                        {listing.mainPhotoLink ? (
-                            <Box sx={{ position: 'relative' }}>
-                                <img
-                                    src={listing.mainPhotoLink}
-                                    alt={`${listing.title} main`}
-                                    style={{
-                                        width: '200px',
-                                        height: '200px',
-                                        objectFit: 'cover',
-                                        borderRadius: '8px',
-                                        border: '2px solid #1976d2',
-                                    }}
-                                    loading="lazy"
-                                />
-                                <Typography
-                                    variant="caption"
-                                    sx={{
-                                        position: 'absolute',
-                                        top: 8,
-                                        left: 8,
-                                        bgcolor: 'primary.main',
-                                        color: 'white',
-                                        px: 1,
-                                        borderRadius: 1,
-                                    }}
-                                >
-                                    Main Image
-                                </Typography>
-                            </Box>
-                        ) : (
-                            <Typography
-                                variant="body2"
-                                color="text.secondary"
-                                sx={{ width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-                            >
-                                No main image
-                            </Typography>
-                        )}
+                        <ImageSquare imageUrl={listing.mainPhotoLink} fallbackText="Rental Main Photo" size={256} />
                         {listing.additionalPhotoLinks.map((url, idx) => (
-                            <img
-                                key={idx}
-                                src={url}
-                                alt={`${listing.title} additional ${idx + 1}`}
-                                style={{
-                                    width: '150px',
-                                    height: '150px',
-                                    objectFit: 'cover',
-                                    borderRadius: '4px',
-                                }}
-                                loading="lazy"
-                            />
+                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} size={196} />
                         ))}
                     </Box>
                     <Box>
@@ -149,33 +102,25 @@ const RentalListingPage: React.FC = () => {
                         </Typography>
                     </Box>
                 </Box>
-                <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Box marginTop={4} sx={{ backgroundColor: '#f5f5f5', padding: 2, borderRadius: 2, width: '300px' }}>
-                        <Typography variant="h5" gutterBottom>
+                <Box marginTop={4} sx={{ backgroundColor: '#f5f5f5', padding: 2, borderRadius: 2, width: '300px' }}>
+                    <Typography variant="h5" gutterBottom>
+                        <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: 'none' }}>
                             Owner
-                        </Typography>
-                        <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            {user.photoLink != "" ?
-                                <img
-                                    src={user.photoLink}
-                                    alt="Profile photo preview"
-                                    style={{ maxWidth: '100%', maxHeight: '200px' }}
-                                />
-                                :
-                                <></>
-                            }
-                        </Box>
-                        <Typography variant="h6" gutterBottom>
-                            {user.firstName + " " + user.lastName}
-                        </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            Email: {user.email}
-                        </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            Phone: {user.phone}
-                        </Typography>
+                        </Link>
+                    </Typography>
+                    <Box sx={{ mt: 2, textAlign: 'center' }}>
+                        <ImageSquare imageUrl={user.photoLink} fallbackText="User Photo" />
                     </Box>
-                </Link>
+                    <Typography variant="h6" gutterBottom>
+                        {user.firstName + " " + user.lastName}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                        Email: {user.email}
+                    </Typography>
+                    <Typography variant="h6" gutterBottom>
+                        Phone: {user.phone}
+                    </Typography>
+                </Box>
             </Paper>
         </Container>
     );

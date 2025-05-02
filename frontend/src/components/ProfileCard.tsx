@@ -16,6 +16,7 @@ import { logoutUser } from '../state/authSlice';
 import { useNavigate } from 'react-router';
 import ProfileEditDialog from '../dialogs/ProfileEditDialog';
 import LoadingSpinner from './LoadingSpinner';
+import ImageSquare from './ImageSquare';
 
 const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -73,17 +74,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     return (
         <>
             <Box sx={{ mt: 2 }}>
-                <Box sx={{ mt: 2, textAlign: 'center' }}>
-                    {user.photoLink != "" ?
-                        <img
-                            src={user.photoLink}
-                            alt="Profile photo preview"
-                            style={{ maxWidth: '100%', maxHeight: '200px' }}
-                        />
-                        :
-                        <></>
-                    }
-                </Box>
+                <ImageSquare imageUrl={user.photoLink} fallbackText='Profile Photo' />
                 <List>
                     <ListItem>
                         <ListItemText primary="Email" secondary={user.email} />
@@ -101,12 +92,12 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
                 <Button variant="contained" onClick={handleOpen} sx={{ mt: 2, mr: 2 }}>
                     Edit Profile
                 </Button>
-                <Button variant="contained" onClick={handleDelete} sx={{ mt: 2, mr: 2 }}>
+                <Button variant="contained" color="error" onClick={handleDelete} sx={{ mt: 2, mr: 2 }}>
                     Delete Account
                 </Button>
             </Box>
 
-            <ProfileEditDialog isOpen={open} userId={userId} user={user} handleClose={handleClose}/>
+            <ProfileEditDialog isOpen={open} userId={userId} user={user} handleClose={handleClose} />
         </>
     );
 }

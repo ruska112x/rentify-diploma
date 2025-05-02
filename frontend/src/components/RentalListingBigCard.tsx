@@ -1,5 +1,6 @@
 import { Box, Paper, Typography } from "@mui/material";
 import { OneRentalListing } from "../shared/types";
+import ImageSquare from "./ImageSquare";
 
 interface RentalListingBigCardProps {
   rental: OneRentalListing;
@@ -20,16 +21,7 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
       }}
     >
       <Box sx={{ flexShrink: 0, mr: 4 }}>
-        <img
-          src={rental.mainPhotoLink}
-          alt={`${rental.title} main photo`}
-          style={{
-            width: '100%',
-            maxWidth: '300px',
-            height: 'auto',
-            borderRadius: '8px',
-          }}
-        />
+        <ImageSquare imageUrl={rental.mainPhotoLink} fallbackText="Rental Main Photo" size={256} />
       </Box>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="h6" component="h3">

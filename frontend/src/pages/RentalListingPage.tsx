@@ -85,9 +85,9 @@ const RentalListingPage: React.FC = () => {
                         {listing.title}
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                        <ImageSquare imageUrl={listing.mainPhotoLink} fallbackText="Rental Main Photo" size={256} />
+                        <ImageSquare imageUrl={listing.mainPhotoLink} fallbackText="Rental Main Photo" showFullScreen={true} size={256} />
                         {listing.additionalPhotoLinks.map((url, idx) => (
-                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} size={196} />
+                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} showFullScreen={true} size={196} />
                         ))}
                     </Box>
                     <Box>

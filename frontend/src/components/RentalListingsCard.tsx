@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import RentalListingAddDialog from "../dialogs/RentalListingAddDialog";
 import RentalListingEditDialog from "../dialogs/RentalListingEditDialog";
+import { Link } from "react-router";
+import api from "../api/api";
 
 interface RentalListingsCardProps {
     userId: string;
@@ -26,7 +28,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
     const initializeRentalListings = async () => {
         setLoading(true);
         try {
-            const response = await authoredApi.get(`/user/${userId}/rentalListings`);
+            const response = await api.get(`/users/${userId}/rentalListings`);
             const listings: OneRentalListing[] = response.data;
             setRentalListings(listings);
         } catch (error) {
@@ -51,6 +53,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
         autoRenew: false,
         mainPhotoLink: '',
         additionalPhotoLinks: [],
+        userId: '',
     });
 
     const handleClose = () => {
@@ -96,95 +99,97 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                 ) : (
                     <List>
                         {rentalListings.map((rental, index) => (
-                            <Paper key={index} elevation={2} sx={{ mb: 2, p: 2 }}>
-                                <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                                        {rental.mainPhotoLink ? (
-                                            <Box sx={{ position: 'relative' }}>
+                            <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>
+                                <Paper key={index} elevation={2} sx={{ mb: 2, p: 2 }}>
+                                    <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+                                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                                            {rental.mainPhotoLink ? (
+                                                <Box sx={{ position: 'relative' }}>
+                                                    <img
+                                                        src={rental.mainPhotoLink}
+                                                        alt={`${rental.title} main`}
+                                                        style={{
+                                                            width: '150px',
+                                                            height: '150px',
+                                                            objectFit: 'cover',
+                                                            borderRadius: '8px',
+                                                            border: '2px solid #1976d2',
+                                                        }}
+                                                    />
+                                                    <Typography
+                                                        variant="caption"
+                                                        sx={{
+                                                            position: 'absolute',
+                                                            top: 8,
+                                                            left: 8,
+                                                            bgcolor: 'primary.main',
+                                                            color: 'white',
+                                                            px: 1,
+                                                            borderRadius: 1,
+                                                        }}
+                                                    >
+                                                        Main Image
+                                                    </Typography>
+                                                </Box>
+                                            ) : (
+                                                <Typography variant="body2" color="text.secondary" sx={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                                    No main image
+                                                </Typography>
+                                            )}
+                                            {rental.additionalPhotoLinks.map((url, idx) => (
                                                 <img
-                                                    src={rental.mainPhotoLink}
-                                                    alt={`${rental.title} main`}
+                                                    key={idx}
+                                                    src={url}
+                                                    alt={`${rental.title} additional ${idx + 1}`}
                                                     style={{
                                                         width: '150px',
                                                         height: '150px',
                                                         objectFit: 'cover',
-                                                        borderRadius: '8px',
-                                                        border: '2px solid #1976d2',
+                                                        borderRadius: '4px',
                                                     }}
                                                 />
-                                                <Typography
-                                                    variant="caption"
-                                                    sx={{
-                                                        position: 'absolute',
-                                                        top: 8,
-                                                        left: 8,
-                                                        bgcolor: 'primary.main',
-                                                        color: 'white',
-                                                        px: 1,
-                                                        borderRadius: 1,
-                                                    }}
-                                                >
-                                                    Main Image
-                                                </Typography>
-                                            </Box>
-                                        ) : (
-                                            <Typography variant="body2" color="text.secondary" sx={{ width: '150px', height: '150px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                                No main image
-                                            </Typography>
-                                        )}
-                                        {rental.additionalPhotoLinks.map((url, idx) => (
-                                            <img
-                                                key={idx}
-                                                src={url}
-                                                alt={`${rental.title} additional ${idx + 1}`}
-                                                style={{
-                                                    width: '150px',
-                                                    height: '150px',
-                                                    objectFit: 'cover',
-                                                    borderRadius: '4px',
-                                                }}
-                                            />
-                                        ))}
-                                    </Box>
-                                    <ListItemText
-                                        primary={<Typography variant="h6">{rental.title}</Typography>}
-                                        secondary={
-                                            <Box display="flex" flexDirection="column">
-                                                <Typography component="span" variant="body2" sx={{ mt: 1 }}>
-                                                    {rental.description}
-                                                </Typography>
-                                                <Typography component="span" variant="body2">
-                                                    Address: {rental.address}
-                                                </Typography>
-                                                <Typography component="span" variant="body2">
-                                                    Tariff: {rental.tariffDescription}
-                                                </Typography>
-                                                <Typography component="span" variant="body2">
-                                                    Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
-                                                </Typography>
-                                                <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="primary"
-                                                        size="small"
-                                                        onClick={() => handleOpenEditDialog(rental)}
-                                                    >
-                                                        Edit
-                                                    </Button>
-                                                    <Button
-                                                        variant="contained"
-                                                        color="error"
-                                                        size="small"
-                                                        onClick={() => handleDelete(rental.id)}
-                                                    >
-                                                        Delete
-                                                    </Button>
+                                            ))}
+                                        </Box>
+                                        <ListItemText
+                                            primary={<Typography variant="h6">{rental.title}</Typography>}
+                                            secondary={
+                                                <Box display="flex" flexDirection="column">
+                                                    <Typography component="span" variant="body2" sx={{ mt: 1 }}>
+                                                        {rental.description}
+                                                    </Typography>
+                                                    <Typography component="span" variant="body2">
+                                                        Address: {rental.address}
+                                                    </Typography>
+                                                    <Typography component="span" variant="body2">
+                                                        Tariff: {rental.tariffDescription}
+                                                    </Typography>
+                                                    <Typography component="span" variant="body2">
+                                                        Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
+                                                    </Typography>
+                                                    <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="primary"
+                                                            size="small"
+                                                            onClick={() => handleOpenEditDialog(rental)}
+                                                        >
+                                                            Edit
+                                                        </Button>
+                                                        <Button
+                                                            variant="contained"
+                                                            color="error"
+                                                            size="small"
+                                                            onClick={() => handleDelete(rental.id)}
+                                                        >
+                                                            Delete
+                                                        </Button>
+                                                    </Box>
                                                 </Box>
-                                            </Box>
-                                        }
-                                    />
-                                </ListItem>
-                            </Paper>
+                                            }
+                                        />
+                                    </ListItem>
+                                </Paper>
+                            </Link>
                         ))}
                     </List>
                 )}

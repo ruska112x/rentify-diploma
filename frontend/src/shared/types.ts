@@ -42,4 +42,5 @@ export interface OneRentalListing {
     autoRenew: boolean;
     mainPhotoLink: string;
     additionalPhotoLinks: string[];
+    userId: string;
 }

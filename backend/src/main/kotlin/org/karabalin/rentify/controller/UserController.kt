@@ -16,22 +16,13 @@ import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
 @RestController
-@RequestMapping("/authorizedApi/v1/user")
+@RequestMapping("/authorizedApi/v1/users")
 class UserController(
     private val refreshTokenService: RefreshTokenService,
     private val userService: UserService,
     private val s3Service: S3Service,
     private val jwtUtil: JwtUtil
 ) {
-    @GetMapping("/{userId}")
-    fun getOne(@PathVariable userId: String): ResponseEntity<GetUserResponse> {
-        val userOptional: Optional<GetUserResponse> = userService.findById(userId)
-        val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
-        }
-        return ResponseEntity.ok(user)
-    }
-
     @PatchMapping("/{userId}")
     fun updateUser(
         @PathVariable userId: String,
@@ -55,5 +46,20 @@ class UserController(
             userService.deleteUserByEmail(userEmail)
             refreshTokenService.delete(refreshToken)
         }
+    }
+}
+
+@RestController
+@RequestMapping("/unauthorizedApi/v1/users")
+class UserUnauthorizedController(
+    private val userService: UserService
+) {
+    @GetMapping("/{userId}")
+    fun getOne(@PathVariable userId: String): ResponseEntity<GetUserResponse> {
+        val userOptional: Optional<GetUserResponse> = userService.findById(userId)
+        val user = userOptional.orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+        }
+        return ResponseEntity.ok(user)
     }
 }

@@ -24,20 +24,6 @@ class RentalListingController(
         rentalListingService.addRentalListing(addRentalListingRequest, mainImage, additionalImages)
     }
 
-    @GetMapping("/user/{userId}/rentalListings")
-    fun getRentalListingsByUserId(
-        @PathVariable userId: String
-    ): ResponseEntity<List<OneRentalListing>> {
-        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId))
-    }
-
-    @GetMapping("/rentalListings/{rentalListingId}")
-    fun getRentalListingById(
-        @PathVariable rentalListingId: String
-    ): ResponseEntity<OneRentalListing> {
-        return ResponseEntity.ok(rentalListingService.findRentalListingById(rentalListingId))
-    }
-
     @PatchMapping("/rentalListings/{rentalListingId}")
     fun updateRentalListingById(
         @PathVariable rentalListingId: String,
@@ -66,5 +52,19 @@ class RentalListingUnauthorizedController(
     @GetMapping("/rentalListings")
     fun getNewestRentalListings(): ResponseEntity<List<OneRentalListing>> {
         return ResponseEntity.ok(rentalListingService.findNewestRentalListings())
+    }
+
+    @GetMapping("/rentalListings/{rentalListingId}")
+    fun getRentalListingById(
+        @PathVariable rentalListingId: String
+    ): ResponseEntity<OneRentalListing> {
+        return ResponseEntity.ok(rentalListingService.findRentalListingById(rentalListingId))
+    }
+
+    @GetMapping("/users/{userId}/rentalListings")
+    fun getRentalListingsByUserId(
+        @PathVariable userId: String
+    ): ResponseEntity<List<OneRentalListing>> {
+        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId))
     }
 }

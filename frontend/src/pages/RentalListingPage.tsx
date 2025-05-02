@@ -1,0 +1,186 @@
+import { useEffect, useState } from 'react';
+import { OneRentalListing, User } from '../shared/types';
+import {
+    Box,
+    Container,
+    Typography,
+    Paper,
+    CircularProgress,
+    Button,
+} from '@mui/material';
+import { useNavigate, useParams } from 'react-router';
+import { Link } from 'react-router';
+import api from '../api/api';
+
+const RentalListingPage: React.FC = () => {
+    const { rentalListingId } = useParams<{ rentalListingId: string }>();
+    const [listing, setListing] = useState<OneRentalListing | null>(null);
+    const [user, setUser] = useState<User>({
+        email: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        roleName: "",
+        photoLink: ""
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const navigate = useNavigate();
+
+    const fetchRentalListing = async () => {
+        if (!rentalListingId) {
+            setError('Invalid rental listing ID');
+            setLoading(false);
+            return;
+        }
+
+        setLoading(true);
+        try {
+            const response = await api.get(`/rentalListings/${rentalListingId}`);
+            setListing(response.data);
+            const userResponse = await api.get(`/users/${response.data.userId}`);
+            setUser(userResponse.data);
+            setError(null);
+        } catch (err) {
+            console.error('Error fetching rental listing:', err);
+            setError('Failed to load rental listing. Please try again.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchRentalListing();
+    }, [rentalListingId]);
+
+    if (loading) {
+        return (
+            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <CircularProgress />
+            </Container>
+        );
+    }
+
+    if (error || !listing) {
+        return (
+            <Container sx={{ mt: 4 }}>
+                <Typography variant="h6" color="error">
+                    {error || 'Rental listing not found'}
+                </Typography>
+                <Button
+                    variant="contained"
+                    onClick={() => navigate('/')}
+                    sx={{ mt: 2 }}
+                >
+                    Back to Listings
+                </Button>
+            </Container>
+        );
+    }
+
+    return (
+        <Container sx={{ mt: 4, mb: 4 }}>
+            <Paper elevation={2} sx={{ p: 3, display: 'flex', flexDirection: 'row', gap: 2 }}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                    <Typography variant="h4" gutterBottom>
+                        {listing.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                        {listing.mainPhotoLink ? (
+                            <Box sx={{ position: 'relative' }}>
+                                <img
+                                    src={listing.mainPhotoLink}
+                                    alt={`${listing.title} main`}
+                                    style={{
+                                        width: '200px',
+                                        height: '200px',
+                                        objectFit: 'cover',
+                                        borderRadius: '8px',
+                                        border: '2px solid #1976d2',
+                                    }}
+                                    loading="lazy"
+                                />
+                                <Typography
+                                    variant="caption"
+                                    sx={{
+                                        position: 'absolute',
+                                        top: 8,
+                                        left: 8,
+                                        bgcolor: 'primary.main',
+                                        color: 'white',
+                                        px: 1,
+                                        borderRadius: 1,
+                                    }}
+                                >
+                                    Main Image
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Typography
+                                variant="body2"
+                                color="text.secondary"
+                                sx={{ width: '200px', height: '200px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                            >
+                                No main image
+                            </Typography>
+                        )}
+                        {listing.additionalPhotoLinks.map((url, idx) => (
+                            <img
+                                key={idx}
+                                src={url}
+                                alt={`${listing.title} additional ${idx + 1}`}
+                                style={{
+                                    width: '150px',
+                                    height: '150px',
+                                    objectFit: 'cover',
+                                    borderRadius: '4px',
+                                }}
+                                loading="lazy"
+                            />
+                        ))}
+                    </Box>
+                    <Box>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Description:</strong> {listing.description || 'No description provided'}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Address:</strong> {listing.address}
+                        </Typography>
+                        <Typography variant="body1" sx={{ mb: 1 }}>
+                            <strong>Tariff:</strong> {listing.tariffDescription}
+                        </Typography>
+                    </Box>
+                </Box>
+                <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box marginTop={4} sx={{ backgroundColor: '#f5f5f5', padding: 2, borderRadius: 2, width: '300px' }}>
+                        <Typography variant="h5" gutterBottom>
+                            Owner
+                        </Typography>
+                        <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            {user.photoLink != "" ?
+                                <img
+                                    src={user.photoLink}
+                                    alt="Profile photo preview"
+                                    style={{ maxWidth: '100%', maxHeight: '200px' }}
+                                />
+                                :
+                                <></>
+                            }
+                        </Box>
+                        <Typography variant="h6" gutterBottom>
+                            {user.firstName + " " + user.lastName}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                            Email: {user.email}
+                        </Typography>
+                        <Typography variant="h6" gutterBottom>
+                            Phone: {user.phone}
+                        </Typography>
+                    </Box>
+                </Link>
+            </Paper>
+        </Container>
+    );
+};
+
+export default RentalListingPage;

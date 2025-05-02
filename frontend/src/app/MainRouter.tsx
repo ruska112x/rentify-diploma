@@ -10,6 +10,8 @@ import { refresh } from '../state/authSlice'
 import { Box, CircularProgress, Container } from '@mui/material'
 import Navbar from '../components/Navbar'
 import HomePage from '../pages/HomePage'
+import RentalListingPage from '../pages/RentalListingPage'
+import UserProfilePage from '../pages/UserProfilePage'
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -38,6 +40,8 @@ const MainRouter: React.FC = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<MyProfile />} />
                 <Route path="/" element={<HomePage />} />
+                <Route path="/rentalListings/:rentalListingId" element={<RentalListingPage />} />
+                <Route path="/users/:userId" element={<UserProfilePage />} />
             </Routes>
         </Box>
     )

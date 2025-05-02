@@ -75,7 +75,8 @@ class RentalListingService(
                     s3Service.generatePresignedLink(it.mainPhotoKey),
                     rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
                         s3Service.generatePresignedLink(photo.fileKey)
-                    })
+                    },
+                    it.userEntity.id.toString())
             }
     }
 
@@ -96,7 +97,8 @@ class RentalListingService(
             s3Service.generatePresignedLink(rentalListing.mainPhotoKey),
             rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!).map { photo ->
                 s3Service.generatePresignedLink(photo.fileKey)
-            })
+            },
+            rentalListing.userEntity.id.toString())
     }
 
     fun findNewestRentalListings(): List<OneRentalListing> {
@@ -111,7 +113,8 @@ class RentalListingService(
                 s3Service.generatePresignedLink(it.mainPhotoKey),
                 rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
                     s3Service.generatePresignedLink(photo.fileKey)
-                })
+                },
+                it.userEntity.id.toString())
         }
     }
 

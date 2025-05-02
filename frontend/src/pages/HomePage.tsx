@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { OneRentalListing } from "../shared/types";
 import api from "../api/api";
 import RentalListingBigCard from "../components/RentalListingBigCard";
+import { Link } from "react-router";
 
 const HomePage = () => {
     const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
@@ -49,7 +50,9 @@ const HomePage = () => {
                             maxWidth: '50vw',
                         }}>
                             {rentalListings.map((rental) => (
-                                <RentalListingBigCard rental={rental} />
+                                <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>
+                                    <RentalListingBigCard rental={rental} />
+                                </Link>
                             ))}
                         </Container>
                     )

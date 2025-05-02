@@ -5,12 +5,12 @@ import {
     Container,
     Typography,
     Paper,
-    CircularProgress,
     Button,
 } from '@mui/material';
 import { useNavigate, useParams } from 'react-router';
 import { Link } from 'react-router';
 import api from '../api/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const RentalListingPage: React.FC = () => {
     const { rentalListingId } = useParams<{ rentalListingId: string }>();
@@ -55,9 +55,7 @@ const RentalListingPage: React.FC = () => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

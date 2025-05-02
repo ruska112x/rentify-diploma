@@ -10,12 +10,12 @@ import {
     ListItemText,
     Tabs,
     Tab,
-    CircularProgress,
 } from '@mui/material';
 import ProfileCard from '../components/ProfileCard';
 import { RootState } from '../state/store';
 import RentalListingsCard from '../components/RentalListingsCard';
 import { Navigate } from 'react-router';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const MyProfile: React.FC = () => {
     const { userId, accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
@@ -36,9 +36,7 @@ const MyProfile: React.FC = () => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

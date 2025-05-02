@@ -7,11 +7,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { AppDispatch, RootState } from '../state/store'
 import { useEffect } from 'react'
 import { refresh } from '../state/authSlice'
-import { Box, CircularProgress, Container } from '@mui/material'
+import { Box } from '@mui/material'
 import Navbar from '../components/Navbar'
 import HomePage from '../pages/HomePage'
 import RentalListingPage from '../pages/RentalListingPage'
 import UserProfilePage from '../pages/UserProfilePage'
+import LoadingSpinner from '../components/LoadingSpinner'
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -26,9 +27,7 @@ const MainRouter: React.FC = () => {
 
     if (isRefreshing) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

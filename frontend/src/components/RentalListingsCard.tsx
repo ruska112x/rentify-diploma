@@ -8,14 +8,13 @@ import {
     List,
     ListItem,
     ListItemText,
-    Container,
-    CircularProgress,
     Button,
 } from '@mui/material';
 import RentalListingAddDialog from "../dialogs/RentalListingAddDialog";
 import RentalListingEditDialog from "../dialogs/RentalListingEditDialog";
 import { Link } from "react-router";
 import api from "../api/api";
+import LoadingSpinner from "./LoadingSpinner";
 
 interface RentalListingsCardProps {
     userId: string;
@@ -82,9 +81,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

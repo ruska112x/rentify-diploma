@@ -1,9 +1,10 @@
-import { CircularProgress, Container, Paper, Typography } from "@mui/material";
+import { Container, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { OneRentalListing } from "../shared/types";
 import api from "../api/api";
 import RentalListingBigCard from "../components/RentalListingBigCard";
 import { Link } from "react-router";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 const HomePage = () => {
     const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
@@ -24,10 +25,7 @@ const HomePage = () => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <Typography variant="h4">Welcome to Rentify</Typography>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
     return (

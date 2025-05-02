@@ -6,13 +6,13 @@ import {
     Container,
     Typography,
     Paper,
-    CircularProgress,
     Button,
     List,
     ListItem,
     ListItemText,
 } from '@mui/material';
 import api from '../api/api';
+import LoadingSpinner from '../components/LoadingSpinner';
 
 const UserProfilePage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();
@@ -50,9 +50,7 @@ const UserProfilePage: React.FC = () => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

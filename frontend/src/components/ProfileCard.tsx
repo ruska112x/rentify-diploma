@@ -6,7 +6,6 @@ import {
     List,
     ListItem,
     ListItemText,
-    CircularProgress,
     Alert,
     Button
 } from '@mui/material';
@@ -16,6 +15,7 @@ import authoredApi from '../api/authoredApi';
 import { logoutUser } from '../state/authSlice';
 import { useNavigate } from 'react-router';
 import ProfileEditDialog from '../dialogs/ProfileEditDialog';
+import LoadingSpinner from './LoadingSpinner';
 
 const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -54,9 +54,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
 
     if (loading) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
-                <CircularProgress />
-            </Container>
+            <LoadingSpinner />
         );
     }
 

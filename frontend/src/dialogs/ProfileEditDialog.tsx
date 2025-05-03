@@ -159,7 +159,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         }
 
         try {
-            await authoredApi.patch(`/user/${userId}`, finalFormData, {
+            await authoredApi.patch(`/users/${userId}`, finalFormData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
                 },

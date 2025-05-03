@@ -43,7 +43,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
 
     const handleDelete = async () => {
         try {
-            await authoredApi.delete(`/user`);
+            await authoredApi.delete(`/users`);
             await dispatch(logoutUser()).unwrap();
             await dispatch(clearUserInfo());
             navigate('/login');

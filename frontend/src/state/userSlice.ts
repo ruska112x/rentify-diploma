@@ -1,12 +1,12 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { User } from '../shared/types';
-import api from '../api/api';
+import { ExtendedUser } from '../shared/types';
+import authoredApi from '../api/authoredApi';
 
 export const fetchUser = createAsyncThunk(
     'user/fetchUser',
     async (id: string, { rejectWithValue }) => {
         try {
-            const response = await api.get(`/users/${id}`);
+            const response = await authoredApi.get(`/users/${id}`);
             return response.data;
         } catch (error) {
             return rejectWithValue(error);
@@ -15,7 +15,7 @@ export const fetchUser = createAsyncThunk(
 );
 
 interface UserState {
-    user: User | null;
+    user: ExtendedUser | null;
     loading: boolean;
     error: string | null;
 }

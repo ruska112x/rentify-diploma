@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Link, Navigate } from 'react-router';
 import { ExtendedRentalListing, ExtendedUser } from '../shared/types';
 import {
     Box,
@@ -13,8 +13,12 @@ import {
 import LoadingSpinner from '../components/LoadingSpinner';
 import ImageSquare from '../components/ImageSquare';
 import authoredApi from '../api/authoredApi';
+import { RootState } from '../state/store';
+import { useSelector } from 'react-redux';
+import { parseJwtPayload } from '../shared/jwtDecode';
 
 const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ userId }) => {
+    const { accessToken } = useSelector((state: RootState) => state.auth);
     const [user, setUser] = useState<ExtendedUser | null>(null);
     const [rentalListings, setRentalListings] = useState<ExtendedRentalListing[]>([]);
     const [loading, setLoading] = useState(true);
@@ -68,6 +72,10 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                 </Button>
             </Container>
         );
+    }
+
+    if (accessToken != null && userId === parseJwtPayload(accessToken).sub) {
+        return <Navigate to="/profile" />;
     }
 
     return (

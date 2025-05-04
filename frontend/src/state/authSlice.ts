@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { RefreshResponse } from '../shared/types';
+import { AccessToken } from '../shared/types';
 import api from '../api/api';
 
 interface AuthState {
@@ -32,7 +32,7 @@ export const refresh = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await api.post('/auth/refresh', {}, { withCredentials: true });
-      const responseData = response.data as RefreshResponse;
+      const responseData = response.data as AccessToken;
       return responseData;
     } catch (err) {
       return rejectWithValue(err);

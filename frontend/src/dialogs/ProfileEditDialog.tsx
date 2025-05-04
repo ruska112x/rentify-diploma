@@ -157,8 +157,13 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         const finalFormData = new FormData();
         finalFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
         if (profilePicture) {
-            finalFormData.append('mainImageAction', "change")
-            finalFormData.append('mainImageFile', profilePicture);
+            if (user?.imageData.link) {
+                finalFormData.append('mainImageAction', "change")
+                finalFormData.append('mainImageFile', profilePicture);
+            } else {
+                finalFormData.append('mainImageAction', "add")
+                finalFormData.append('mainImageFile', profilePicture);
+            }
         } else {
             if (deleteMainImage) {
                 finalFormData.append('mainImageAction', "delete");

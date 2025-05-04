@@ -89,6 +89,11 @@ class UserService(
                 val newImageKey = s3Repository.uploadFile(mainImageFile!!)
                 user.photoKey = newImageKey
             }
+
+            if (mainImageAction == "add") {
+                val newImageKey = s3Repository.uploadFile(mainImageFile!!)
+                user.photoKey = newImageKey
+            }
         }
 
         userRepository.save(user)

@@ -14,6 +14,7 @@ import {
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useState } from 'react';
 import authoredApi from '../api/authoredApi';
+import TransparentLoadingSpinner from '../components/TransparentLoadingSpinner';
 
 interface RentalListingAddDialogProps {
     isOpen: boolean;
@@ -50,6 +51,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
     const [additionalImages, setAdditionalImages] = useState<File[]>([]);
     const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     const MAX_ADDITIONAL_IMAGES = 4;
@@ -191,6 +194,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             return;
         }
 
+        setIsLoading(true);
+
         try {
             const formDataToSend = new FormData();
             formDataToSend.append(
@@ -239,6 +244,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             setAdditionalImagesPreviews([]);
         } catch (error) {
             console.error('Error creating rental listing:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -421,6 +428,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                     Create
                 </Button>
             </DialogActions>
+            <TransparentLoadingSpinner isLoading={isLoading}/>
         </Dialog>
     );
 };

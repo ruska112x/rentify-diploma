@@ -15,6 +15,7 @@ import { useEffect, useState } from 'react';
 import authoredApi from '../api/authoredApi';
 import { ExtendedRentalListing, ImageAction } from '../shared/types';
 import DeleteIcon from '@mui/icons-material/Delete';
+import TransparentLoadingSpinner from '../components/TransparentLoadingSpinner';
 
 interface RentalListingEditDialogProps {
     isOpen: boolean;
@@ -43,6 +44,8 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const [additionalImages, setAdditionalImages] = useState<File[]>([]);
     const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
     const [additionalImageActions, setAdditionalImageActions] = useState<ImageAction[]>([]);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formErrors, setFormErrors] = useState({
         title: '',
@@ -238,6 +241,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     };
 
     const handleSubmitUpdateDialog = async (id: string) => {
+        setIsLoading(true);
         try {
             const formDataToSend = new FormData();
             formDataToSend.append(
@@ -296,6 +300,8 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             setAdditionalImageActions([]);
         } catch (error) {
             console.error('Error updating rental listing:', error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -466,6 +472,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                     Update
                 </Button>
             </DialogActions>
+            <TransparentLoadingSpinner isLoading={isLoading}/>
         </Dialog>
     );
 };

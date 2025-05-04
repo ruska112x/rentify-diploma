@@ -15,6 +15,7 @@ import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../state/store';
 import { fetchUser } from '../state/userSlice';
 import { ExtendedUser } from '../shared/types';
+import TransparentLoadingSpinner from '../components/TransparentLoadingSpinner';
 
 interface ProfileEditDialogProps {
     isOpen: boolean;
@@ -30,6 +31,8 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [deleteMainImage, setDeleteMainImage] = useState<boolean>(false);
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -154,6 +157,8 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
+        setIsLoading(true);
+
         const finalFormData = new FormData();
         finalFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
         if (profilePicture) {
@@ -181,6 +186,8 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         } catch (err) {
             console.error('Update error:', err);
             alert('Failed to update profile. Please try again.');
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -288,6 +295,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                     Save
                 </Button>
             </DialogActions>
+            <TransparentLoadingSpinner isLoading={isLoading}/>
         </Dialog>
     )
 }

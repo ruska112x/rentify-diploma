@@ -225,19 +225,20 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     };
 
     const handleDeleteAdditionalImage = (index: number) => {
-        const action = additionalImageActions[index];
-        if (action.action === 'add') {
-            setAdditionalImages((prev) => prev.filter((_, i) => i !== index - (additionalImagesPreviews.length - prev.length)));
-            setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
-            setAdditionalImageActions((prev) => prev.filter((_, i) => i !== index));
-        } else {
-            setAdditionalImageActions((prev) =>
-                prev.map((act, i) =>
+        setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
+        setAdditionalImageActions((prev) => {
+            const action = prev[index];
+            if (action.action === 'add') {
+                setAdditionalImages((prevImages) =>
+                    prevImages.filter((_, i) => i !== index - (prev.length - prevImages.length))
+                );
+                return prev.filter((_, i) => i !== index);
+            } else {
+                return prev.map((act, i) =>
                     i === index ? { ...act, action: 'delete', newFileName: null } : act
-                )
-            );
-            setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
-        }
+                );
+            }
+        });
     };
 
     const handleSubmitUpdateDialog = async (id: string) => {
@@ -472,7 +473,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                     Update
                 </Button>
             </DialogActions>
-            <TransparentLoadingSpinner isLoading={isLoading}/>
+            <TransparentLoadingSpinner isLoading={isLoading} />
         </Dialog>
     );
 };

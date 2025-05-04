@@ -13,10 +13,21 @@ export interface JwtPayload {
     exp?: number;
 }
 
+export interface ImageData {
+    key: string | null,
+    link: string
+}
+
+export interface ImageAction {
+    key: string,
+    action: string,
+    newFileName: string | null
+}
+
 export interface PartialUser {
     firstName: string;
     lastName: string;
-    photoLink: string;
+    imageData: ImageData;
 }
 
 export interface PartialRentalListing {
@@ -26,8 +37,8 @@ export interface PartialRentalListing {
     address: string;
     tariffDescription: string;
     autoRenew: boolean;
-    mainPhotoLink: string;
-    additionalPhotoLinks: string[];
+    mainImageData: ImageData;
+    additionalImagesData: ImageData[];
     userId: string;
 }
 
@@ -37,7 +48,7 @@ export interface ExtendedUser {
     lastName: string;
     phone: string;
     roleName: string;
-    photoLink: string;
+    imageData: ImageData;
 }
 
 export interface ExtendedRentalListing {
@@ -47,7 +58,7 @@ export interface ExtendedRentalListing {
     address: string;
     tariffDescription: string;
     autoRenew: boolean;
-    mainPhotoLink: string;
-    additionalPhotoLinks: string[];
+    mainImageData: ImageData;
+    additionalImagesData: ImageData[];
     userId: string;
 }

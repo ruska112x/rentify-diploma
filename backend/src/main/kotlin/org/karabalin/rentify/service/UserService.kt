@@ -1,6 +1,7 @@
 package org.karabalin.rentify.service
 
 import org.karabalin.rentify.model.domain.User
+import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.UpdateUserRequest
 import org.karabalin.rentify.repository.S3Repository
 import org.karabalin.rentify.repository.UserRepository
@@ -22,8 +23,8 @@ class UserService(
         var user: Optional<User> = Optional.empty()
         userEntity.ifPresent {
             var photoLink = ""
-            if (it.photoLink != null && it.photoLink != "") {
-                photoLink = s3Repository.generatePresignedLink(it.photoLink!!)
+            if (it.photoKey != null && it.photoKey != "") {
+                photoLink = s3Repository.generatePresignedLink(it.photoKey!!)
             }
 
             user = Optional.of(
@@ -33,7 +34,10 @@ class UserService(
                     it.lastName,
                     it.phone,
                     it.roleEntity.name,
-                    photoLink
+                    ImageData(
+                        it.photoKey,
+                        photoLink
+                    )
                 )
             )
         }
@@ -45,8 +49,8 @@ class UserService(
         var user: Optional<User> = Optional.empty()
         userEntity.ifPresent {
             var photoLink = ""
-            if (it.photoLink != null && it.photoLink != "") {
-                photoLink = s3Repository.generatePresignedLink(it.photoLink!!)
+            if (it.photoKey != null && it.photoKey != "") {
+                photoLink = s3Repository.generatePresignedLink(it.photoKey!!)
             }
             user = Optional.of(
                 User(
@@ -55,14 +59,17 @@ class UserService(
                     it.lastName,
                     it.phone,
                     it.roleEntity.name,
-                    photoLink
+                    ImageData(
+                        it.photoKey,
+                        photoLink
+                    )
                 )
             )
         }
         return user
     }
 
-    fun update(userId: String, updateUserRequest: UpdateUserRequest, profilePicture: MultipartFile?) {
+    fun update(userId: String, updateUserRequest: UpdateUserRequest, mainImageAction: String?, mainImageFile: MultipartFile?) {
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
@@ -70,11 +77,20 @@ class UserService(
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
         user.phone = updateUserRequest.phone
-        var photoKey: String? = null
-        if (user.photoLink != null) {
-            s3Repository.deleteFile(user.photoLink!!)
+
+        if (mainImageAction != null) {
+            if (mainImageAction == "delete") {
+                s3Repository.deleteFile(user.photoKey!!)
+                user.photoKey = null
+            }
+
+            if (mainImageAction == "change") {
+                s3Repository.deleteFile(user.photoKey!!)
+                val newImageKey = s3Repository.uploadFile(mainImageFile!!)
+                user.photoKey = newImageKey
+            }
         }
-        user.photoLink = photoKey
+
         userRepository.save(user)
     }
 

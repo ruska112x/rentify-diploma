@@ -4,6 +4,7 @@ import jakarta.validation.Valid
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
 import org.karabalin.rentify.model.dto.GetExtendedRentalListingResponse
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
+import org.karabalin.rentify.model.dto.ImageAction
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.service.RentalListingService
 import org.springframework.http.ResponseEntity
@@ -28,8 +29,8 @@ class RentalListingController(
                 rentalListing.address,
                 rentalListing.tariffDescription,
                 rentalListing.autoRenew,
-                rentalListing.mainPhotoLink,
-                rentalListing.additionalPhotoLinks,
+                rentalListing.mainImageData,
+                rentalListing.additionalImagesData,
                 rentalListing.userId
             )
         )
@@ -47,8 +48,8 @@ class RentalListingController(
                 it.address,
                 it.tariffDescription,
                 it.autoRenew,
-                it.mainPhotoLink,
-                it.additionalPhotoLinks,
+                it.mainImageData,
+                it.additionalImagesData,
                 it.userId
             )
         })
@@ -67,11 +68,18 @@ class RentalListingController(
     fun updateRentalListingById(
         @PathVariable rentalListingId: String,
         @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
-        @RequestPart("mainImage") mainImage: MultipartFile?,
-        @RequestPart("additionalImages") additionalImages: List<MultipartFile>?
+        @RequestPart(value = "mainImageAction", required = false) mainImageAction: String?,
+        @RequestPart("mainImageFile", required = false) mainImageFile: MultipartFile?,
+        @RequestPart("additionalImageActions", required = false) additionalImageActions: List<ImageAction>?,
+        @RequestPart("additionalImageFiles", required = false) additionalImageFiles: List<MultipartFile>?
     ) {
         rentalListingService.updateRentalListingById(
-            rentalListingId, updateRentalListingRequest, mainImage, additionalImages
+            rentalListingId,
+            updateRentalListingRequest,
+            mainImageAction,
+            mainImageFile,
+            additionalImageActions,
+            additionalImageFiles
         )
     }
 
@@ -97,8 +105,8 @@ class RentalListingUnauthorizedController(
                 it.description,
                 it.address,
                 it.tariffDescription,
-                it.mainPhotoLink,
-                it.additionalPhotoLinks,
+                it.mainImageData,
+                it.additionalImagesData,
                 it.userId
             )
         })
@@ -116,8 +124,8 @@ class RentalListingUnauthorizedController(
                 rentalListing.description,
                 rentalListing.address,
                 rentalListing.tariffDescription,
-                rentalListing.mainPhotoLink,
-                rentalListing.additionalPhotoLinks,
+                rentalListing.mainImageData,
+                rentalListing.additionalImagesData,
                 rentalListing.userId
             )
         )
@@ -134,8 +142,8 @@ class RentalListingUnauthorizedController(
                 it.description,
                 it.address,
                 it.tariffDescription,
-                it.mainPhotoLink,
-                it.additionalPhotoLinks,
+                it.mainImageData,
+                it.additionalImagesData,
                 it.userId
             )
         })

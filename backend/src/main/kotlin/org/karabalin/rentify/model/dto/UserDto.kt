@@ -10,13 +10,13 @@ data class GetExtendedUserResponse(
     val lastName: String,
     val phone: String,
     val roleName: String,
-    val photoLink: String
+    val imageData: ImageData
 )
 
 data class GetPartialUserResponse(
     val firstName: String,
     val lastName: String,
-    val photoLink: String
+    val imageData: ImageData
 )
 
 data class UpdateUserRequest(

@@ -2,6 +2,8 @@ package org.karabalin.rentify.service
 
 import org.karabalin.rentify.model.domain.RentalListing
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
+import org.karabalin.rentify.model.dto.ImageAction
+import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.model.entity.RentalListingPhotoEntity
@@ -73,9 +75,15 @@ class RentalListingService(
                     it.address,
                     it.tariffDescription,
                     it.autoRenew,
-                    s3Repository.generatePresignedLink(it.mainPhotoKey),
+                    ImageData(
+                        it.mainPhotoKey,
+                        s3Repository.generatePresignedLink(it.mainPhotoKey)
+                    ),
                     rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
-                        s3Repository.generatePresignedLink(photo.fileKey)
+                        ImageData(
+                            photo.fileKey,
+                            s3Repository.generatePresignedLink(photo.fileKey)
+                        )
                     },
                     it.userEntity.id.toString()
                 )
@@ -96,9 +104,15 @@ class RentalListingService(
             rentalListing.address,
             rentalListing.tariffDescription,
             rentalListing.autoRenew,
-            s3Repository.generatePresignedLink(rentalListing.mainPhotoKey),
+            ImageData(
+                rentalListing.mainPhotoKey,
+                s3Repository.generatePresignedLink(rentalListing.mainPhotoKey)
+            ),
             rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!).map { photo ->
-                s3Repository.generatePresignedLink(photo.fileKey)
+                ImageData(
+                    photo.fileKey,
+                    s3Repository.generatePresignedLink(photo.fileKey)
+                )
             },
             rentalListing.userEntity.id.toString()
         )
@@ -113,9 +127,15 @@ class RentalListingService(
                 it.address,
                 it.tariffDescription,
                 it.autoRenew,
-                s3Repository.generatePresignedLink(it.mainPhotoKey),
+                ImageData(
+                    it.mainPhotoKey,
+                    s3Repository.generatePresignedLink(it.mainPhotoKey)
+                ),
                 rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
-                    s3Repository.generatePresignedLink(photo.fileKey)
+                    ImageData(
+                        photo.fileKey,
+                        s3Repository.generatePresignedLink(photo.fileKey)
+                    )
                 },
                 it.userEntity.id.toString()
             )
@@ -126,8 +146,10 @@ class RentalListingService(
     fun updateRentalListingById(
         rentalListingId: String,
         updateRentalListingRequest: UpdateRentalListingRequest,
-        mainImage: MultipartFile?,
-        additionalImages: List<MultipartFile>?
+        mainImageAction: String?,
+        mainImageFile: MultipartFile?,
+        additionalImageActions: List<ImageAction>?,
+        additionalImageFiles: List<MultipartFile>?
     ) {
         val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
         val rentalListing = rentalListingOptional.orElseThrow {
@@ -140,31 +162,41 @@ class RentalListingService(
         rentalListing.address = updateRentalListingRequest.address
         rentalListing.tariffDescription = updateRentalListingRequest.tariffDescription
         rentalListing.autoRenew = updateRentalListingRequest.autoRenew
-        if (mainImage != null) {
-            s3Repository.deleteFile(rentalListing.mainPhotoKey)
-            val mainPhotoKey = s3Repository.uploadFile(mainImage)
-            rentalListing.mainPhotoKey = mainPhotoKey
-        }
-        val additionalPhotoKeys = mutableListOf<String>()
-        val rentalListingPhotoEntityList =
-            rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!)
-        for (photo in rentalListingPhotoEntityList) {
-            s3Repository.deleteFile(photo.fileKey)
-        }
-        rentalListingPhotoRepository.deleteAllById(rentalListingPhotoEntityList.map { it.id })
-        if (additionalImages != null) {
-            for (image in additionalImages) {
-                val link = s3Repository.uploadFile(image)
-                additionalPhotoKeys.add(link)
+
+        if (mainImageAction != null) {
+            if (mainImageAction == "change") {
+                s3Repository.deleteFile(rentalListing.mainPhotoKey)
+                val mainPhotoKey = s3Repository.uploadFile(mainImageFile!!)
+                rentalListing.mainPhotoKey = mainPhotoKey
             }
         }
+
+        val rentalListingPhotoEntityList =
+            rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!).toMutableList()
+
+        if (additionalImageActions != null && !additionalImageActions.isEmpty()) {
+            for (imageAction in additionalImageActions) {
+                if (imageAction.action == "delete") {
+                    s3Repository.deleteFile(imageAction.key)
+                    val rentalListingPhotoEntity =
+                        rentalListingPhotoEntityList.find { it.fileKey == imageAction.key }
+                    rentalListingPhotoRepository.delete(rentalListingPhotoEntity!!)
+                }
+            }
+            if (additionalImageFiles != null && !additionalImageFiles.isEmpty()) {
+                for (imageAction in additionalImageActions) {
+                    if (imageAction.action == "add") {
+                        val newFile = additionalImageFiles.find { it.originalFilename == imageAction.newFileName }
+                        val newFileKey = s3Repository.uploadFile(newFile!!)
+                        val rentalListingPhotoEntity =
+                            RentalListingPhotoEntity(fileKey = newFileKey, rentalListingEntity = rentalListing)
+                        rentalListingPhotoRepository.save(rentalListingPhotoEntity)
+                    }
+                }
+            }
+        }
+
         rentalListingRepository.save(rentalListing)
-        rentalListingPhotoRepository.saveAll(
-            additionalPhotoKeys.map {
-                RentalListingPhotoEntity(
-                    fileKey = it, rentalListingEntity = rentalListing
-                )
-            })
     }
 
     @Transactional

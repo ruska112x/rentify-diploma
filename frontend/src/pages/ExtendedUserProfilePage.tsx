@@ -87,7 +87,7 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 3 }}>
                         <Box sx={{ flexShrink: 0, textAlign: 'center' }}>
-                            <ImageSquare imageUrl={user.photoLink} fallbackText="User Photo" />
+                            <ImageSquare imageUrl={user.imageData.link} fallbackText="User Photo" />
                         </Box>
                         <Box sx={{ flexGrow: 1 }}>
                             <Typography variant="body1" sx={{ mb: 1 }}>
@@ -112,9 +112,9 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                                     <Paper key={index} elevation={1} sx={{ mb: 2, p: 2 }}>
                                         <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                                             <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                                                <ImageSquare imageUrl={listing.mainPhotoLink} fallbackText="Rental Main Photo" />
-                                                {listing.additionalPhotoLinks.map((url, idx) => (
-                                                    <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} />
+                                                <ImageSquare imageUrl={listing.mainImageData.link} fallbackText="Rental Main Photo" />
+                                                {listing.additionalImagesData.map((imageData, idx) => (
+                                                    <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} fallbackText={`Additional Image ${idx}`} />
                                                 ))}
                                             </Box>
                                             <Typography

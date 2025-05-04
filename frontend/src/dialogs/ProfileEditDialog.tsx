@@ -14,12 +14,12 @@ import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../state/store';
 import { fetchUser } from '../state/userSlice';
-import { User } from '../shared/types';
+import { ExtendedUser } from '../shared/types';
 
 interface ProfileEditDialogProps {
     isOpen: boolean;
     userId: string;
-    user: User | null;
+    user: ExtendedUser | null;
     handleClose: () => void;
 }
 
@@ -29,6 +29,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
 
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
+    const [deleteMainImage, setDeleteMainImage] = useState<boolean>(false);
 
     const [formData, setFormData] = useState({
         firstName: '',
@@ -49,7 +50,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                 lastName: user.lastName,
                 phone: user.phone,
             });
-            setImagePreview(user.photoLink);
+            setImagePreview(user.imageData.link);
         }
     }, [user]);
 
@@ -147,6 +148,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         if (input) {
             input.value = '';
         }
+        setDeleteMainImage(true);
     };
 
     const handleSubmit = async () => {
@@ -155,7 +157,12 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         const finalFormData = new FormData();
         finalFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
         if (profilePicture) {
-            finalFormData.append('profilePicture', profilePicture);
+            finalFormData.append('mainImageAction', "change")
+            finalFormData.append('mainImageFile', profilePicture);
+        } else {
+            if (deleteMainImage) {
+                finalFormData.append('mainImageAction', "delete");
+            }
         }
 
         try {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import authoredApi from "../api/authoredApi";
-import { OneRentalListing } from "../shared/types";
+import { ExtendedRentalListing } from "../shared/types";
 import {
     Paper,
     Typography,
@@ -21,14 +21,14 @@ interface RentalListingsCardProps {
 }
 
 const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
-    const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
+    const [rentalListings, setRentalListings] = useState<Array<ExtendedRentalListing>>([]);
     const [loading, setLoading] = useState(true);
 
     const initializeRentalListings = async () => {
         setLoading(true);
         try {
             const response = await api.get(`/users/${userId}/rentalListings`);
-            const listings: OneRentalListing[] = response.data;
+            const listings: ExtendedRentalListing[] = response.data;
             setRentalListings(listings);
         } catch (error) {
             console.error('Error fetching rental listings:', error);
@@ -43,15 +43,18 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
 
     const [open, setOpen] = useState(false);
     const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-    const [rentalToPass, setRentalToPass] = useState<OneRentalListing>({
+    const [rentalToPass, setRentalToPass] = useState<ExtendedRentalListing>({
         id: '',
         title: '',
         description: '',
         address: '',
         tariffDescription: '',
         autoRenew: false,
-        mainPhotoLink: '',
-        additionalPhotoLinks: [],
+        mainImageData: {
+            key: null,
+            link: '',
+        },
+        additionalImagesData: [],
         userId: '',
     });
 
@@ -59,7 +62,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
         setOpen(false);
     };
 
-    const handleOpenEditDialog = (rental: OneRentalListing) => {
+    const handleOpenEditDialog = (rental: ExtendedRentalListing) => {
         setOpenUpdateDialog(true);
         setRentalToPass(rental);
     };
@@ -99,9 +102,9 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                             <Paper key={rental.id} elevation={2} sx={{ mb: 2, p: 2 }}>
                                 <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                                        <ImageSquare imageUrl={rental.mainPhotoLink} fallbackText="Rental Main Photo" />
-                                        {rental.additionalPhotoLinks.map((url, idx) => (
-                                            <ImageSquare key={`${rental.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} />
+                                        <ImageSquare imageUrl={rental.mainImageData.link} fallbackText="Rental Main Photo" />
+                                        {rental.additionalImagesData.map((imageData, idx)  => (
+                                            <ImageSquare key={`${rental.id}-additional-${idx}`} imageUrl={imageData.link} fallbackText={`Additional Image ${idx}`} />
                                         ))}
                                     </Box>
                                     <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>

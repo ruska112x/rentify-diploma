@@ -21,7 +21,10 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined}
         lastName: "",
         phone: "",
         roleName: "",
-        photoLink: ""
+        imageData: {
+            key: "",
+            link: ""
+        }
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -84,9 +87,9 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined}
                         {listing.title}
                     </Typography>
                     <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                        <ImageSquare imageUrl={listing.mainPhotoLink} fallbackText="Rental Main Photo" showFullScreen={true} size={256} />
-                        {listing.additionalPhotoLinks.map((url, idx) => (
-                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={url} fallbackText={`Additional Image ${idx}`} showFullScreen={true} size={196} />
+                        <ImageSquare imageUrl={listing.mainImageData.link} fallbackText="Rental Main Photo" showFullScreen={true} size={256} />
+                        {listing.additionalImagesData.map((imageData, idx) => (
+                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} fallbackText={`Additional Image ${idx}`} showFullScreen={true} size={196} />
                         ))}
                     </Box>
                     <Box>
@@ -108,7 +111,7 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined}
                         </Link>
                     </Typography>
                     <Box sx={{ mt: 2, textAlign: 'center' }}>
-                        <ImageSquare imageUrl={user.photoLink} fallbackText="User Photo" />
+                        <ImageSquare imageUrl={user.imageData.link} fallbackText="User Photo" />
                     </Box>
                     <Typography variant="h6" gutterBottom>
                         {user.firstName + " " + user.lastName}

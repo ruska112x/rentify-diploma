@@ -29,16 +29,17 @@ class UserController(
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
         }
-        return ResponseEntity.ok(GetExtendedUserResponse(user.email, user.firstName, user.lastName, user.phone, user.roleName, user.photoLink))
+        return ResponseEntity.ok(GetExtendedUserResponse(user.email, user.firstName, user.lastName, user.phone, user.roleName, user.imageData))
     }
 
     @PatchMapping("/{userId}")
     fun updateUser(
         @PathVariable userId: String,
         @Valid @RequestPart("data") updateUserRequest: UpdateUserRequest,
-        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?
+        @RequestPart(value = "mainImageAction", required = false) mainImageAction: String?,
+        @RequestPart(value = "mainImageFile", required = false) mainImageFile: MultipartFile?,
     ): ResponseEntity<String> {
-        userService.update(userId, updateUserRequest, profilePicture)
+        userService.update(userId, updateUserRequest, mainImageAction, mainImageFile)
         return ResponseEntity.ok("")
     }
 
@@ -69,6 +70,6 @@ class UserUnauthorizedController(
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
         }
-        return ResponseEntity.ok(GetPartialUserResponse(user.firstName, user.lastName, user.photoLink))
+        return ResponseEntity.ok(GetPartialUserResponse(user.firstName, user.lastName, user.imageData))
     }
 }

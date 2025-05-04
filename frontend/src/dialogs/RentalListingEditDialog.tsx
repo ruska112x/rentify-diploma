@@ -13,12 +13,12 @@ import {
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import authoredApi from '../api/authoredApi';
-import { OneRentalListing } from '../shared/types';
+import { ExtendedRentalListing, ImageAction } from '../shared/types';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 interface RentalListingEditDialogProps {
     isOpen: boolean;
-    rental: OneRentalListing;
+    rental: ExtendedRentalListing;
     handleClose: () => void;
     initializeRentalListings: () => void;
 }
@@ -39,8 +39,11 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     });
     const [mainImage, setMainImage] = useState<File | null>(null);
     const [mainImagePreview, setMainImagePreview] = useState<string | null>(null);
+    const [mainImageAction, setMainImageAction] = useState<string | null>(null);
     const [additionalImages, setAdditionalImages] = useState<File[]>([]);
     const [additionalImagesPreviews, setAdditionalImagesPreviews] = useState<string[]>([]);
+    const [additionalImageActions, setAdditionalImageActions] = useState<ImageAction[]>([]);
+
     const [formErrors, setFormErrors] = useState({
         title: '',
         description: '',
@@ -65,9 +68,17 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             autoRenew: rental.autoRenew,
         });
         setMainImage(null);
-        setMainImagePreview(rental.mainPhotoLink || null);
+        setMainImagePreview(rental.mainImageData.link || null);
+        setMainImageAction(null);
         setAdditionalImages([]);
-        setAdditionalImagesPreviews(rental.additionalPhotoLinks || []);
+        setAdditionalImagesPreviews(rental.additionalImagesData.map(it => it.link) || []);
+        setAdditionalImageActions(
+            rental.additionalImagesData.map(it => ({
+                key: it.key,
+                action: 'keep',
+                newFileName: null,
+            } as ImageAction))
+        );
         setFormErrors({
             title: '',
             description: '',
@@ -132,6 +143,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         }
 
         setMainImage(file);
+        setMainImageAction('change');
         setFormErrors((prev) => ({ ...prev, mainImage: '' }));
 
         const reader = new FileReader();
@@ -188,6 +200,14 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         setAdditionalImages((prev) => [...prev, ...validFiles]);
         setFormErrors((prev) => ({ ...prev, additionalImages: '' }));
 
+        const newActions = validFiles.map((file) => ({
+            key: `new-${Date.now()}-${Math.random()}`,
+            action: 'add',
+            newFileName: file.name,
+        }));
+
+        setAdditionalImageActions((prev) => [...prev, ...newActions]);
+
         const previews = validFiles.map((file) => {
             return new Promise<string>((resolve) => {
                 const reader = new FileReader();
@@ -202,8 +222,21 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     };
 
     const handleDeleteAdditionalImage = (index: number) => {
-        setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
-        setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
+        const action = additionalImageActions[index];
+        if (action.action === 'add') {
+            // Remove newly added image
+            setAdditionalImages((prev) => prev.filter((_, i) => i !== index - (additionalImagesPreviews.length - prev.length)));
+            setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
+            setAdditionalImageActions((prev) => prev.filter((_, i) => i !== index));
+        } else {
+            // Mark existing image for deletion
+            setAdditionalImageActions((prev) =>
+                prev.map((act, i) =>
+                    i === index ? { ...act, action: 'delete', newFileName: null } : act
+                )
+            );
+            setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
+        }
     };
 
     const handleSubmitUpdateDialog = async (id: string) => {
@@ -225,12 +258,20 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                 )
             );
 
-            if (mainImage) {
-                formDataToSend.append('mainImage', mainImage);
+            if (mainImage && mainImageAction) {
+                formDataToSend.append('mainImageAction', mainImageAction);
+                formDataToSend.append('mainImageFile', mainImage);
+            }
+
+            if (additionalImageActions.length > 0) {
+                formDataToSend.append(
+                    'additionalImageActions',
+                    new Blob([JSON.stringify(additionalImageActions)], { type: 'application/json' })
+                );
             }
 
             additionalImages.forEach((image) => {
-                formDataToSend.append('additionalImages', image);
+                formDataToSend.append('additionalImageFiles', image);
             });
 
             await authoredApi.patch(`/rentalListings/${id}`, formDataToSend, {
@@ -251,8 +292,10 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             });
             setMainImage(null);
             setMainImagePreview(null);
+            setMainImageAction(null);
             setAdditionalImages([]);
             setAdditionalImagesPreviews([]);
+            setAdditionalImageActions([]);
         } catch (error) {
             console.error('Error updating rental listing:', error);
         }

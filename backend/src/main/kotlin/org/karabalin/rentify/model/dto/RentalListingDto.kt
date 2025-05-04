@@ -16,8 +16,8 @@ data class GetExtendedRentalListingResponse(
     val address: String,
     val tariffDescription: String,
     val autoRenew: Boolean,
-    val mainPhotoLink: String,
-    val additionalPhotoLinks: List<String>,
+    val mainImageData: ImageData,
+    val additionalImagesData: List<ImageData>,
     val userId: String
 )
 
@@ -27,8 +27,8 @@ data class GetPartialRentalListingResponse(
     val description: String,
     val address: String,
     val tariffDescription: String,
-    val mainPhotoLink: String,
-    val additionalPhotoLinks: List<String>,
+    val mainImageData: ImageData,
+    val additionalImagesData: List<ImageData>,
     val userId: String
 )
 

@@ -52,9 +52,9 @@ class AuthService(
         val userStatus =
             userStatusRepository.findByName("ACTIVE") ?: throw IllegalStateException("User Status ACTIVE not found")
 
-        var photoLink: String? = null
+        var photoKey: String? = null
         if (profilePicture != null) {
-            photoLink = s3Repository.uploadFile(profilePicture)
+            photoKey = s3Repository.uploadFile(profilePicture)
         }
 
         val userEntity = UserEntity(
@@ -63,7 +63,7 @@ class AuthService(
             firstName = request.firstName,
             lastName = request.lastName,
             phone = request.phone,
-            photoLink = photoLink,
+            photoKey = photoKey,
             lastLoginTime = Instant.now(),
             roleEntity = userRole,
             userStatusEntity = userStatus

@@ -9,13 +9,24 @@ data class AddRentalListingRequest(
     val autoRenew: Boolean
 )
 
-data class OneRentalListing(
+data class GetExtendedRentalListingResponse(
     val id: String,
     val title: String,
     val description: String,
     val address: String,
     val tariffDescription: String,
     val autoRenew: Boolean,
+    val mainPhotoLink: String,
+    val additionalPhotoLinks: List<String>,
+    val userId: String
+)
+
+data class GetPartialRentalListingResponse(
+    val id: String,
+    val title: String,
+    val description: String,
+    val address: String,
+    val tariffDescription: String,
     val mainPhotoLink: String,
     val additionalPhotoLinks: List<String>,
     val userId: String

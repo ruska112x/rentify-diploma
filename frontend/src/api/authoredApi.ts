@@ -1,7 +1,6 @@
-// authoredApi.ts
 import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { refresh, logout } from '../state/authSlice'; // Import thunks
-import { AppDispatch } from '../state/store'; // Import types
+import { refresh, logout } from '../state/authSlice';
+import { AppDispatch } from '../state/store';
 
 const apiUrl = import.meta.env.VITE_API_URL;
 

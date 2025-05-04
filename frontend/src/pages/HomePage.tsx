@@ -1,13 +1,13 @@
 import { Container, Paper, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
-import { OneRentalListing } from "../shared/types";
+import { PartialRentalListing } from "../shared/types";
 import api from "../api/api";
 import RentalListingBigCard from "../components/RentalListingBigCard";
 import { Link } from "react-router";
 import LoadingSpinner from "../components/LoadingSpinner";
 
 const HomePage = () => {
-    const [rentalListings, setRentalListings] = useState<Array<OneRentalListing>>([]);
+    const [rentalListings, setRentalListings] = useState<Array<PartialRentalListing>>([]);
     const [loading, setLoading] = useState(true);
     const initializeRentalListings = async () => {
         await api.get(`/rentalListings`)

@@ -4,7 +4,6 @@ import api from '../api/api';
 
 interface AuthState {
   accessToken: string | null;
-  userId: string;
   isAuthenticated: boolean;
   isRefreshing: boolean;
   refreshError: string | null;
@@ -12,7 +11,6 @@ interface AuthState {
 
 const initialState: AuthState = {
   accessToken: null,
-  userId: "",
   isAuthenticated: false,
   isRefreshing: false,
   refreshError: null,
@@ -46,12 +44,9 @@ const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setTokens: (state, action: PayloadAction<{ accessToken: string; }>) => {
+    setAccessToken: (state, action: PayloadAction<{ accessToken: string; }>) => {
       state.accessToken = action.payload.accessToken;
       state.isAuthenticated = true;
-    },
-    setUserId: (state, action: PayloadAction<{ userId: string; }>) => {
-      state.userId = action.payload.userId;
     },
     logout: (state) => {
       state.accessToken = null;
@@ -72,7 +67,6 @@ const authSlice = createSlice({
       })
       .addCase(refresh.fulfilled, (state, action) => {
         state.accessToken = action.payload.accessToken;
-        state.userId = action.payload.userId;
         state.isAuthenticated = true;
         state.isRefreshing = false;
       })
@@ -85,5 +79,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { setTokens, setUserId, logout } = authSlice.actions;
+export const { setAccessToken, logout } = authSlice.actions;
 export default authSlice.reducer;

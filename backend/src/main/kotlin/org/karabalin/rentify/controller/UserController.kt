@@ -2,10 +2,11 @@ package org.karabalin.rentify.controller
 
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.validation.Valid
-import org.karabalin.rentify.model.dto.GetUserResponse
+import org.karabalin.rentify.model.domain.User
+import org.karabalin.rentify.model.dto.GetExtendedUserResponse
+import org.karabalin.rentify.model.dto.GetPartialUserResponse
 import org.karabalin.rentify.model.dto.UpdateUserRequest
 import org.karabalin.rentify.service.RefreshTokenService
-import org.karabalin.rentify.service.S3Service
 import org.karabalin.rentify.service.UserService
 import org.karabalin.rentify.util.JwtUtil
 import org.springframework.http.HttpStatus
@@ -20,31 +21,39 @@ import java.util.*
 class UserController(
     private val refreshTokenService: RefreshTokenService,
     private val userService: UserService,
-    private val s3Service: S3Service,
     private val jwtUtil: JwtUtil
 ) {
+    @GetMapping("/{userId}")
+    fun getOne(@PathVariable userId: String): ResponseEntity<GetExtendedUserResponse> {
+        val userOptional: Optional<User> = userService.findById(userId)
+        val user = userOptional.orElseThrow {
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+        }
+        return ResponseEntity.ok(GetExtendedUserResponse(user.email, user.firstName, user.lastName, user.phone, user.roleName, user.photoLink))
+    }
+
     @PatchMapping("/{userId}")
     fun updateUser(
         @PathVariable userId: String,
         @Valid @RequestPart("data") updateUserRequest: UpdateUserRequest,
         @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?
     ): ResponseEntity<String> {
-        var photoKey: String? = null
-        if (profilePicture != null) {
-            photoKey = s3Service.uploadFile(profilePicture)
-        }
-        userService.update(userId, updateUserRequest, photoKey)
+        userService.update(userId, updateUserRequest, profilePicture)
         return ResponseEntity.ok("")
     }
 
     @DeleteMapping
     fun deleteUser(request: HttpServletRequest) {
-        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token not found")
-        val userEmail = jwtUtil.getEmailFromToken(refreshToken)
-        if (userEmail != null) {
-            userService.deleteUserByEmail(userEmail)
-            refreshTokenService.delete(refreshToken)
+        val authHeader = request.getHeader("Authorization")
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            val accessToken = authHeader.substring(7)
+            val userId = jwtUtil.getUserIdFromToken(accessToken)
+            if (userId != null) {
+                userService.deleteById(userId)
+                refreshTokenService.delete(accessToken)
+            }
+        } else {
+            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token not found")
         }
     }
 }
@@ -55,11 +64,11 @@ class UserUnauthorizedController(
     private val userService: UserService
 ) {
     @GetMapping("/{userId}")
-    fun getOne(@PathVariable userId: String): ResponseEntity<GetUserResponse> {
-        val userOptional: Optional<GetUserResponse> = userService.findById(userId)
+    fun getOne(@PathVariable userId: String): ResponseEntity<GetPartialUserResponse> {
+        val userOptional: Optional<User> = userService.findById(userId)
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
         }
-        return ResponseEntity.ok(user)
+        return ResponseEntity.ok(GetPartialUserResponse(user.firstName, user.lastName, user.photoLink))
     }
 }

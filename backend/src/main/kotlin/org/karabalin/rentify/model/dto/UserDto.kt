@@ -4,12 +4,18 @@ import jakarta.validation.constraints.NotBlank
 import jakarta.validation.constraints.Pattern
 import org.hibernate.validator.constraints.Length
 
-data class GetUserResponse(
+data class GetExtendedUserResponse(
     val email: String,
     val firstName: String,
     val lastName: String,
     val phone: String,
     val roleName: String,
+    val photoLink: String
+)
+
+data class GetPartialUserResponse(
+    val firstName: String,
+    val lastName: String,
     val photoLink: String
 )
 

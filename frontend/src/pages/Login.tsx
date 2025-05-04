@@ -4,9 +4,9 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens, setUserId } from '../state/authSlice';
+import { setAccessToken } from '../state/authSlice';
 import api from '../api/api';
-import { ErrorRegisterResponse, LoginResponse } from '../shared/types';
+import { ErrorRegisterResponse, AccessToken } from '../shared/types';
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 
@@ -22,14 +22,11 @@ const Login: React.FC = () => {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     try {
-      const response = await api.post<LoginResponse>('/auth/login', {
+      const response = await api.post<AccessToken>('/auth/login', {
         email,
         password,
       });
-      dispatch(setUserId({
-        userId: response.data.userId
-      }));
-      dispatch(setTokens({
+      dispatch(setAccessToken({
         accessToken: response.data.accessToken
       }));
       navigate('/');

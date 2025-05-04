@@ -4,8 +4,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router';
 import { AxiosError } from 'axios';
 import { AppDispatch } from '../state/store';
-import { setTokens, setUserId } from '../state/authSlice';
-import { ErrorRegisterResponse, RegisterResponse } from '../shared/types';
+import { setAccessToken } from '../state/authSlice';
+import { ErrorRegisterResponse, AccessToken } from '../shared/types';
 import api from '../api/api';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
@@ -140,7 +140,7 @@ const Register: React.FC = () => {
         }
 
         try {
-            const response = await api.post<RegisterResponse>(
+            const response = await api.post<AccessToken>(
                 '/auth/register',
                 formData,
                 {
@@ -150,10 +150,7 @@ const Register: React.FC = () => {
                     }
                 }
             );
-            dispatch(setUserId({
-                userId: response.data.userId
-            }));
-            dispatch(setTokens({
+            dispatch(setAccessToken({
                 accessToken: response.data.accessToken
             }));
             navigate('/');

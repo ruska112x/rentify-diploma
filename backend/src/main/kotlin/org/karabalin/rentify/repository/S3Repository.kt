@@ -1,7 +1,7 @@
-package org.karabalin.rentify.service
+package org.karabalin.rentify.repository
 
 import org.springframework.beans.factory.annotation.Value
-import org.springframework.stereotype.Service
+import org.springframework.stereotype.Repository
 import org.springframework.web.multipart.MultipartFile
 import software.amazon.awssdk.core.sync.RequestBody
 import software.amazon.awssdk.services.s3.S3Client
@@ -11,8 +11,8 @@ import software.amazon.awssdk.services.s3.presigner.model.GetObjectPresignReques
 import java.time.Duration
 import java.util.*
 
-@Service
-class S3Service(
+@Repository
+class S3Repository(
     private val s3Client: S3Client,
     private val s3Presigner: S3Presigner,
     @Value("\${s3.bucketName}") private val bucketName: String,

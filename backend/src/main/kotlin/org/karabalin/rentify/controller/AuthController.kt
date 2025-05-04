@@ -9,17 +9,12 @@ import org.karabalin.rentify.model.dto.LoginRequest
 import org.karabalin.rentify.model.dto.RegisterRequest
 import org.karabalin.rentify.service.AuthService
 import org.karabalin.rentify.service.RefreshTokenService
-import org.karabalin.rentify.service.S3Service
 import org.karabalin.rentify.service.UserService
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.userdetails.UsernameNotFoundException
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestPart
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 
@@ -29,9 +24,7 @@ class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
     private val refreshTokenService: RefreshTokenService,
-    private val s3Service: S3Service,
-    @Value("\${jwt.refreshTokenValidity}")
-    private val refreshTokenValidity: Long
+    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long
 ) {
     @PostMapping("/register")
     fun register(
@@ -43,11 +36,7 @@ class AuthController(
         if (user.isPresent) {
             throw ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists!")
         } else {
-            var photoLink: String? = null
-            if (profilePicture != null) {
-                photoLink = s3Service.uploadFile(profilePicture)
-            }
-            val authTokens = authService.register(request, photoLink)
+            val authTokens = authService.register(request, profilePicture)
             refreshTokenService.create(authTokens.refreshToken)
             val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
                 isHttpOnly = true
@@ -57,7 +46,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         }
     }
 
@@ -74,7 +63,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         } catch (e: UsernameNotFoundException) {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, e.message)
         }
@@ -82,8 +71,10 @@ class AuthController(
 
     @PostMapping("/refresh")
     fun refresh(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<AuthResponse> {
-        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token not found")
+        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
+            HttpStatus.UNAUTHORIZED,
+            "Refresh token not found"
+        )
         if (refreshTokenService.isAvailable(refreshToken)) {
             val authTokens = authService.refreshToken(refreshToken)
             val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
@@ -94,7 +85,7 @@ class AuthController(
                 setAttribute("SameSite", "Lax")
             }
             response.addCookie(cookie)
-            return ResponseEntity.ok(AuthResponse(authTokens.accessToken, authTokens.userId))
+            return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         } else {
             val cookie = Cookie("refreshToken", "").apply {
                 isHttpOnly = true
@@ -110,8 +101,10 @@ class AuthController(
 
     @PostMapping("/logout")
     fun logout(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<String> {
-        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value
-            ?: throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token not found")
+        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
+            HttpStatus.UNAUTHORIZED,
+            "Refresh token not found"
+        )
         refreshTokenService.delete(refreshToken)
         val cookie = Cookie("refreshToken", "").apply {
             isHttpOnly = true

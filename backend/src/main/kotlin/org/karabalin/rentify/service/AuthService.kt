@@ -8,6 +8,7 @@ import org.karabalin.rentify.model.entity.RoleEntity
 import org.karabalin.rentify.model.entity.UserEntity
 import org.karabalin.rentify.model.entity.UserStatusEntity
 import org.karabalin.rentify.repository.RoleRepository
+import org.karabalin.rentify.repository.S3Repository
 import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.repository.UserStatusRepository
 import org.karabalin.rentify.util.JwtUtil
@@ -17,14 +18,17 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
+import java.util.*
 
 @Service
 class AuthService(
     private val userRepository: UserRepository,
     private val roleRepository: RoleRepository,
     private val userStatusRepository: UserStatusRepository,
+    private val s3Repository: S3Repository,
     private val jwtUtil: JwtUtil,
     private val authenticationManager: AuthenticationManager,
     private val passwordEncoder: PasswordEncoder
@@ -43,10 +47,15 @@ class AuthService(
         }
     }
 
-    fun register(request: RegisterRequest, photoLink: String?): AuthTokens {
+    fun register(request: RegisterRequest, profilePicture: MultipartFile?): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
         val userStatus =
             userStatusRepository.findByName("ACTIVE") ?: throw IllegalStateException("User Status ACTIVE not found")
+
+        var photoLink: String? = null
+        if (profilePicture != null) {
+            photoLink = s3Repository.uploadFile(profilePicture)
+        }
 
         val userEntity = UserEntity(
             email = request.email,
@@ -61,10 +70,10 @@ class AuthService(
         )
         val savedUser = userRepository.save(userEntity)
 
-        val accessToken = jwtUtil.generateAccessToken(userEntity.email)
-        val refreshToken = jwtUtil.generateRefreshToken(userEntity.email)
+        val accessToken = jwtUtil.generateAccessToken(savedUser.id.toString())
+        val refreshToken = jwtUtil.generateRefreshToken(savedUser.id.toString())
 
-        return AuthTokens(accessToken, refreshToken, savedUser.id.toString())
+        return AuthTokens(accessToken, refreshToken)
     }
 
     fun login(request: LoginRequest): AuthTokens {
@@ -81,15 +90,13 @@ class AuthService(
         user.lastLoginTime = Instant.now()
 
         authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(request.email, request.password)
+            UsernamePasswordAuthenticationToken(user.id, request.password)
         )
 
-        val accessToken = jwtUtil.generateAccessToken(user.email)
-        val refreshToken = jwtUtil.generateRefreshToken(user.email)
+        val accessToken = jwtUtil.generateAccessToken(user.id.toString())
+        val refreshToken = jwtUtil.generateRefreshToken(user.id.toString())
 
-        val savedUser = userRepository.save(user)
-
-        return AuthTokens(accessToken, refreshToken, savedUser.id.toString())
+        return AuthTokens(accessToken, refreshToken)
     }
 
     fun refreshToken(refreshToken: String): AuthTokens {
@@ -97,12 +104,12 @@ class AuthService(
             throw IllegalArgumentException("Invalid refresh token")
         }
 
-        val email = jwtUtil.getEmailFromToken(refreshToken) ?: throw IllegalArgumentException("Invalid token")
-        val userOptional = userRepository.findByEmail(email)
+        val userId = jwtUtil.getUserIdFromToken(refreshToken)
+        val userOptional = userRepository.findById(UUID.fromString(userId))
         val user = userOptional.orElseThrow {
             throw UsernameNotFoundException("User with this email and password not found")
         }
-        val accessToken = jwtUtil.generateAccessToken(email)
-        return AuthTokens(accessToken, refreshToken, user.id.toString())
+        val accessToken = jwtUtil.generateAccessToken(userId!!)
+        return AuthTokens(accessToken, refreshToken)
     }
 }

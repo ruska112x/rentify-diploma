@@ -16,15 +16,18 @@ import { RootState } from '../state/store';
 import RentalListingsCard from '../components/RentalListingsCard';
 import { Navigate } from 'react-router';
 import LoadingSpinner from '../components/LoadingSpinner';
+import { parseJwtPayload } from '../shared/jwtDecode';
 
 const MyProfile: React.FC = () => {
-    const { userId, accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
+    const { accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
     const [loading, setLoading] = useState(true);
 
     const [tabValue, setTabValue] = useState(0);
     const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
         setTabValue(newValue);
     };
+
+    let userId = "";
 
     useEffect(() => {
         if (isRefreshing) {
@@ -44,6 +47,8 @@ const MyProfile: React.FC = () => {
         return (
             <Navigate to="/login" replace={true} />
         );
+    } else {
+        userId = parseJwtPayload(accessToken).sub
     }
 
     return (

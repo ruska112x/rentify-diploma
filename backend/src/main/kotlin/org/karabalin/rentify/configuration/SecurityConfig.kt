@@ -1,5 +1,6 @@
 package org.karabalin.rentify.configuration
 
+import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.security.CustomUserDetailsService
 import org.karabalin.rentify.security.JwtAuthenticationFilter
 import org.karabalin.rentify.util.JwtUtil
@@ -22,7 +23,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 @EnableWebMvc
 @Configuration
 class SecurityConfig(
-    private val jwtUtil: JwtUtil, private val userDetailsService: CustomUserDetailsService
+    private val jwtUtil: JwtUtil,
+    private val userDetailsService: CustomUserDetailsService,
+    private val userRepository: UserRepository
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -60,7 +63,7 @@ class SecurityConfig(
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(
                 JwtAuthenticationFilter(
-                    jwtUtil, userDetailsService
+                    jwtUtil, userDetailsService, userRepository
                 )
             )
         }

@@ -1,11 +1,13 @@
 package org.karabalin.rentify.service
 
-import org.karabalin.rentify.model.dto.GetUserResponse
+import org.karabalin.rentify.model.domain.User
 import org.karabalin.rentify.model.dto.UpdateUserRequest
+import org.karabalin.rentify.repository.S3Repository
 import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.repository.UserStatusRepository
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.util.*
 
@@ -13,19 +15,19 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val userStatusRepository: UserStatusRepository,
-    private val s3Service: S3Service
+    private val s3Repository: S3Repository
 ) {
-    fun findUserByEmail(userEmail: String): Optional<GetUserResponse> {
+    fun findUserByEmail(userEmail: String): Optional<User> {
         val userEntity = userRepository.findByEmail(userEmail)
-        var user: Optional<GetUserResponse> = Optional.empty()
+        var user: Optional<User> = Optional.empty()
         userEntity.ifPresent {
             var photoLink = ""
             if (it.photoLink != null && it.photoLink != "") {
-                photoLink = s3Service.generatePresignedLink(it.photoLink!!)
+                photoLink = s3Repository.generatePresignedLink(it.photoLink!!)
             }
 
             user = Optional.of(
-                GetUserResponse(
+                User(
                     it.email,
                     it.firstName,
                     it.lastName,
@@ -38,16 +40,16 @@ class UserService(
         return user
     }
 
-    fun findById(userId: String): Optional<GetUserResponse> {
+    fun findById(userId: String): Optional<User> {
         val userEntity = userRepository.findById(UUID.fromString(userId))
-        var user: Optional<GetUserResponse> = Optional.empty()
+        var user: Optional<User> = Optional.empty()
         userEntity.ifPresent {
             var photoLink = ""
             if (it.photoLink != null && it.photoLink != "") {
-                photoLink = s3Service.generatePresignedLink(it.photoLink!!)
+                photoLink = s3Repository.generatePresignedLink(it.photoLink!!)
             }
             user = Optional.of(
-                GetUserResponse(
+                User(
                     it.email,
                     it.firstName,
                     it.lastName,
@@ -60,7 +62,7 @@ class UserService(
         return user
     }
 
-    fun update(userId: String, updateUserRequest: UpdateUserRequest, photoKey: String?) {
+    fun update(userId: String, updateUserRequest: UpdateUserRequest, profilePicture: MultipartFile?) {
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user = userOptional.orElseThrow {
             ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
@@ -68,15 +70,16 @@ class UserService(
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
         user.phone = updateUserRequest.phone
+        var photoKey: String? = null
         if (user.photoLink != null) {
-            s3Service.deleteFile(user.photoLink!!)
+            s3Repository.deleteFile(user.photoLink!!)
         }
         user.photoLink = photoKey
         userRepository.save(user)
     }
 
-    fun deleteUserByEmail(userEmail: String) {
-        val userOptional = userRepository.findByEmail(userEmail)
+    fun deleteById(userId: String) {
+        val userOptional = userRepository.findById(UUID.fromString(userId))
         userOptional.ifPresent {
             val userStatus = userStatusRepository.findByName("DELETED")
                 ?: throw IllegalStateException("User Status DELETED not found")

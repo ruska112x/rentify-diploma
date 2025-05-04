@@ -27,3 +27,5 @@ s3:
   accessKey: access
   secretKey: secret
   bucketName: name
+  region: ru-central1
+  endpoint: "https://storage.yandexcloud.net"

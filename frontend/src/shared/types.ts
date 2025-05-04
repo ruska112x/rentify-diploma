@@ -1,16 +1,5 @@
-export interface RegisterResponse {
+export interface AccessToken {
     accessToken: string;
-    userId: string;
-}
-
-export interface LoginResponse {
-    accessToken: string;
-    userId: string;
-}
-
-export interface RefreshResponse {
-    accessToken: string;
-    userId: string;
 }
 
 export interface ErrorRegisterResponse {
@@ -24,7 +13,25 @@ export interface JwtPayload {
     exp?: number;
 }
 
-export interface User {
+export interface PartialUser {
+    firstName: string;
+    lastName: string;
+    photoLink: string;
+}
+
+export interface PartialRentalListing {
+    id: string;
+    title: string;
+    description: string;
+    address: string;
+    tariffDescription: string;
+    autoRenew: boolean;
+    mainPhotoLink: string;
+    additionalPhotoLinks: string[];
+    userId: string;
+}
+
+export interface ExtendedUser {
     email: string;
     firstName: string;
     lastName: string;
@@ -33,7 +40,7 @@ export interface User {
     photoLink: string;
 }
 
-export interface OneRentalListing {
+export interface ExtendedRentalListing {
     id: string;
     title: string;
     description: string;

@@ -224,12 +224,10 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const handleDeleteAdditionalImage = (index: number) => {
         const action = additionalImageActions[index];
         if (action.action === 'add') {
-            // Remove newly added image
             setAdditionalImages((prev) => prev.filter((_, i) => i !== index - (additionalImagesPreviews.length - prev.length)));
             setAdditionalImagesPreviews((prev) => prev.filter((_, i) => i !== index));
             setAdditionalImageActions((prev) => prev.filter((_, i) => i !== index));
         } else {
-            // Mark existing image for deletion
             setAdditionalImageActions((prev) =>
                 prev.map((act, i) =>
                     i === index ? { ...act, action: 'delete', newFileName: null } : act

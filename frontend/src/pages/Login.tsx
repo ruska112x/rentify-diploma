@@ -81,7 +81,7 @@ const Login: React.FC = () => {
             required
             fullWidth
             label="Password"
-            type={showPassword ? 'text' : 'password'} // Переключение типа поля
+            type={showPassword ? 'text' : 'password'}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             slotProps={{

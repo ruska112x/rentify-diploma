@@ -18,8 +18,8 @@ dayjs.extend(utc);
 
 interface GetBookingResponse {
     id: string;
-    startDateTime: string; // ISO 8601 string from Instant
-    endDateTime: string; // ISO 8601 string from Instant
+    startDateTime: string;
+    endDateTime: string;
     rentalListingId: string;
     userId: string;
 }
@@ -67,6 +67,7 @@ interface BookingsCardProps {
 const RentalListingBookingsCard: React.FC<BookingsCardProps> = ({ rentalListingId }) => {
     const [bookings, setBookings] = useState<EnrichedBooking[]>([]);
     const [loading, setLoading] = useState(true);
+    const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
 
     const initializeBookings = async () => {
         setLoading(true);
@@ -106,14 +107,12 @@ const RentalListingBookingsCard: React.FC<BookingsCardProps> = ({ rentalListingI
         initializeBookings();
     }, [rentalListingId]);
 
-    const [isEditDialogOpen, setEditDialogOpen] = useState(false);
-
-    const handleOpenEditDialog = () => {
-        setEditDialogOpen(true);
+    const handleOpenEditDialog = (bookingId: string) => {
+        setSelectedBookingId(bookingId);
     };
 
     const handleCloseEditDialog = () => {
-        setEditDialogOpen(false);
+        setSelectedBookingId(null);
     };
 
     const handleDelete = async (bookingId: string) => {
@@ -128,6 +127,8 @@ const RentalListingBookingsCard: React.FC<BookingsCardProps> = ({ rentalListingI
     if (loading) {
         return <LoadingSpinner />;
     }
+
+    const selectedBooking = bookings.find((booking) => booking.id === selectedBookingId) || null;
 
     return (
         <Box sx={{ mt: 1 }}>
@@ -157,31 +158,36 @@ const RentalListingBookingsCard: React.FC<BookingsCardProps> = ({ rentalListingI
                                     </Typography>
                                 </Box>
                             </ListItem>
-                            <Button
-                                variant="contained"
-                                color="primary"
-                                size="small"
-                                onClick={() => handleOpenEditDialog()}
-                            >
-                                Edit
-                            </Button>
-                            <Button
-                                variant="contained"
-                                color="error"
-                                size="small"
-                                onClick={() => handleDelete(booking.id)}
-                            >
-                                Delete
-                            </Button>
-                            <BookingEditDialog 
-                                isOpen={isEditDialogOpen}
-                                booking={booking}
-                                handleClose={handleCloseEditDialog}
-                                onBookingSuccess={initializeBookings}
-                            />
+                            <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    size="small"
+                                    onClick={() => handleOpenEditDialog(booking.id)}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="contained"
+                                    color="error"
+                                    size="small"
+                                    onClick={() => handleDelete(booking.id)}
+                                >
+                                    Delete
+                                </Button>
+                            </Box>
                         </Paper>
                     ))}
                 </List>
+            )}
+            {selectedBooking && (
+                <BookingEditDialog
+                    isOpen={!!selectedBookingId}
+                    booking={selectedBooking}
+                    bookings={bookings}
+                    handleClose={handleCloseEditDialog}
+                    onBookingSuccess={initializeBookings}
+                />
             )}
         </Box>
     );

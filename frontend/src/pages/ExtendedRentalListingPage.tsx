@@ -45,9 +45,7 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
         setIsBookingDialogOpen(false);
     };
 
-    const handleBookingSuccess = () => {
-        console.log('Booking created successfully');
-    };
+    const handleBookingSuccess = () => { };
 
     const isNotMyRentalListing = () => {
         const userId = parseJwtPayload(accessToken!).sub;

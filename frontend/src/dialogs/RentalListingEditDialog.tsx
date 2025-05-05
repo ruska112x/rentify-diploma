@@ -51,7 +51,7 @@ interface FormErrors {
     server: string;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const MAX_ADDITIONAL_IMAGES = 4;
 const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg'];
 

@@ -11,3 +11,4 @@ jobs:
           github_token: ${{ secrets.github_token }}
       - name: Run tsc with reviewdog
         uses: EPMatt/reviewdog-action-tsc@v1.8.0
+        workdir: frontend

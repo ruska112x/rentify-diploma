@@ -2,7 +2,6 @@ package org.karabalin.rentify.service
 
 import org.karabalin.rentify.model.domain.RentalListing
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
-import org.karabalin.rentify.model.dto.ImageAction
 import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.model.entity.RentalListingEntity
@@ -25,6 +24,9 @@ class RentalListingService(
     private val rentalListingPhotoRepository: RentalListingPhotoRepository,
     private val s3Repository: S3Repository
 ) {
+    private val allowedFileTypes = setOf("image/png", "image/jpeg")
+    private val maxFileSize = 5 * 1024 * 1024
+
     @Transactional
     fun addRentalListing(
         addRentalListingRequest: AddRentalListingRequest,
@@ -145,58 +147,63 @@ class RentalListingService(
     @Transactional
     fun updateRentalListingById(
         rentalListingId: String,
-        updateRentalListingRequest: UpdateRentalListingRequest,
-        mainImageAction: String?,
+        request: UpdateRentalListingRequest,
         mainImageFile: MultipartFile?,
-        additionalImageActions: List<ImageAction>?,
-        additionalImageFiles: List<MultipartFile>?
+        deleteImageKeys: List<String>?,
+        newImageFiles: List<MultipartFile>?
     ) {
-        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
-        val rentalListing = rentalListingOptional.orElseThrow {
-            ResponseStatusException(
-                HttpStatus.NOT_FOUND, "RentalListing with id `${rentalListingId}` not found"
+        val rentalListing = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+            .orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "RentalListing with id `$rentalListingId` not found")
+            }
+
+        with(rentalListing) {
+            title = request.title
+            description = request.description
+            address = request.address
+            tariffDescription = request.tariffDescription
+            autoRenew = request.autoRenew
+        }
+
+        if (mainImageFile != null) {
+            validateImage(mainImageFile)
+            s3Repository.deleteFile(rentalListing.mainPhotoKey)
+            rentalListing.mainPhotoKey = s3Repository.uploadFile(mainImageFile)
+        }
+
+        val existingPhotos = rentalListingPhotoRepository
+            .findAllByRentalListingEntityId(rentalListing.id!!)
+            .associateBy { it.fileKey }
+            .toMutableMap()
+
+        deleteImageKeys?.forEach { key ->
+            existingPhotos[key]?.let {
+                s3Repository.deleteFile(key)
+                rentalListingPhotoRepository.delete(it)
+                existingPhotos.remove(key)
+            }
+        }
+
+        newImageFiles?.forEach { file ->
+            validateImage(file)
+            val newKey = s3Repository.uploadFile(file)
+            val photoEntity = RentalListingPhotoEntity(
+                fileKey = newKey,
+                rentalListingEntity = rentalListing
             )
-        }
-        rentalListing.title = updateRentalListingRequest.title
-        rentalListing.description = updateRentalListingRequest.description
-        rentalListing.address = updateRentalListingRequest.address
-        rentalListing.tariffDescription = updateRentalListingRequest.tariffDescription
-        rentalListing.autoRenew = updateRentalListingRequest.autoRenew
-
-        if (mainImageAction != null) {
-            if (mainImageAction == "change") {
-                s3Repository.deleteFile(rentalListing.mainPhotoKey)
-                val mainPhotoKey = s3Repository.uploadFile(mainImageFile!!)
-                rentalListing.mainPhotoKey = mainPhotoKey
-            }
-        }
-
-        val rentalListingPhotoEntityList =
-            rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!).toMutableList()
-
-        if (additionalImageActions != null && !additionalImageActions.isEmpty()) {
-            for (imageAction in additionalImageActions) {
-                if (imageAction.action == "delete") {
-                    s3Repository.deleteFile(imageAction.key)
-                    val rentalListingPhotoEntity =
-                        rentalListingPhotoEntityList.find { it.fileKey == imageAction.key }
-                    rentalListingPhotoRepository.delete(rentalListingPhotoEntity!!)
-                }
-            }
-            if (additionalImageFiles != null && !additionalImageFiles.isEmpty()) {
-                for (imageAction in additionalImageActions) {
-                    if (imageAction.action == "add") {
-                        val newFile = additionalImageFiles.find { it.originalFilename == imageAction.newFileName }
-                        val newFileKey = s3Repository.uploadFile(newFile!!)
-                        val rentalListingPhotoEntity =
-                            RentalListingPhotoEntity(fileKey = newFileKey, rentalListingEntity = rentalListing)
-                        rentalListingPhotoRepository.save(rentalListingPhotoEntity)
-                    }
-                }
-            }
+            rentalListingPhotoRepository.save(photoEntity)
         }
 
         rentalListingRepository.save(rentalListing)
+    }
+
+    private fun validateImage(file: MultipartFile) {
+        if (file.size > maxFileSize) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Image size exceeds 5MB")
+        }
+        if (file.contentType !in allowedFileTypes) {
+            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Image must be PNG or JPEG")
+        }
     }
 
     @Transactional

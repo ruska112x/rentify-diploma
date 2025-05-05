@@ -4,7 +4,6 @@ import jakarta.validation.Valid
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
 import org.karabalin.rentify.model.dto.GetExtendedRentalListingResponse
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
-import org.karabalin.rentify.model.dto.ImageAction
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.service.RentalListingService
 import org.springframework.http.ResponseEntity
@@ -64,22 +63,20 @@ class RentalListingController(
         rentalListingService.addRentalListing(addRentalListingRequest, mainImage, additionalImages)
     }
 
-    @PatchMapping("/rentalListings/{rentalListingId}")
+    @PatchMapping("/rentalListings/{rentalListingId}", consumes = ["multipart/form-data"])
     fun updateRentalListingById(
         @PathVariable rentalListingId: String,
         @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
-        @RequestPart(value = "mainImageAction", required = false) mainImageAction: String?,
-        @RequestPart("mainImageFile", required = false) mainImageFile: MultipartFile?,
-        @RequestPart("additionalImageActions", required = false) additionalImageActions: List<ImageAction>?,
-        @RequestPart("additionalImageFiles", required = false) additionalImageFiles: List<MultipartFile>?
+        @RequestPart(value = "mainImageFile", required = false) mainImageFile: MultipartFile?,
+        @RequestPart(value = "deleteImageKeys", required = false) deleteImageKeys: List<String>?,
+        @RequestPart(value = "newImageFiles", required = false) newImageFiles: List<MultipartFile>?
     ) {
         rentalListingService.updateRentalListingById(
             rentalListingId,
             updateRentalListingRequest,
-            mainImageAction,
             mainImageFile,
-            additionalImageActions,
-            additionalImageFiles
+            deleteImageKeys,
+            newImageFiles
         )
     }
 

@@ -5,8 +5,7 @@ data class ImageData(
     val link: String
 )
 
-data class ImageAction(
-    val key: String,
-    val action: String,
-    val newFileName: String?
+data class ImageUpdate(
+    val key: String? = null,
+    val action: String
 )

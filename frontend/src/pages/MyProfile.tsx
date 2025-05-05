@@ -17,6 +17,7 @@ import RentalListingsCard from '../components/RentalListingsCard';
 import { Navigate } from 'react-router';
 import LoadingSpinner from '../components/LoadingSpinner';
 import { parseJwtPayload } from '../shared/jwtDecode';
+import BookingsCard from '../components/UserBookingsCard';
 
 const MyProfile: React.FC = () => {
     const { accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
@@ -76,14 +77,7 @@ const MyProfile: React.FC = () => {
                 )}
 
                 {tabValue === 2 && (
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="h5">Bookings</Typography>
-                        <List>
-                            <ListItem>
-                                <ListItemText primary="2.1" secondary="2.2" />
-                            </ListItem>
-                        </List>
-                    </Box>
+                    <BookingsCard userId={userId} />
                 )}
 
                 {tabValue === 3 && (

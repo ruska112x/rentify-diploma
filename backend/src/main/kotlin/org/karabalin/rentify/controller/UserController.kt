@@ -27,7 +27,7 @@ class UserController(
     fun getOne(@PathVariable userId: String): ResponseEntity<GetExtendedUserResponse> {
         val userOptional: Optional<User> = userService.findById(userId)
         val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+            ResponseStatusException(HttpStatus.NOT_FOUND, "User with id `$userId` not found")
         }
         return ResponseEntity.ok(GetExtendedUserResponse(user.email, user.firstName, user.lastName, user.phone, user.roleName, user.imageData))
     }

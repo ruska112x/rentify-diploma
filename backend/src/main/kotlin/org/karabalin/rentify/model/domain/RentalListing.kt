@@ -11,5 +11,5 @@ data class RentalListing(
     val autoRenew: Boolean,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
-    val userId: String
+    val userId: String,
 )

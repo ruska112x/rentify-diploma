@@ -8,25 +8,19 @@ import org.karabalin.rentify.service.BookingService
 import org.karabalin.rentify.util.JwtUtil
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.DeleteMapping
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PatchMapping
-import org.springframework.web.bind.annotation.PathVariable
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.PutMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import org.springframework.web.server.ResponseStatusException
 
 @RestController
 @RequestMapping("/authorizedApi/v1")
 class BookingController(
-    private val bookingService: BookingService, private val jwtUtil: JwtUtil
+    private val bookingService: BookingService,
+    private val jwtUtil: JwtUtil,
 ) {
     @PostMapping("/bookings")
     fun createBooking(
-        request: HttpServletRequest, @RequestBody addBookingRequest: AddBookingRequest
+        request: HttpServletRequest,
+        @RequestBody addBookingRequest: AddBookingRequest,
     ) {
         val authHeader = request.getHeader("Authorization")
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
@@ -43,30 +37,41 @@ class BookingController(
     }
 
     @GetMapping("/bookings/{bookingId}")
-    fun getBookingById(@PathVariable bookingId: String): ResponseEntity<GetBookingResponse> {
+    fun getBookingById(
+        @PathVariable bookingId: String,
+    ): ResponseEntity<GetBookingResponse> {
         val getBookingResponse = bookingService.getBookingById(bookingId)
         return ResponseEntity.ok(getBookingResponse)
     }
 
     @GetMapping("/users/{userId}/bookings")
-    fun getBookingsByUserId(@PathVariable userId: String): ResponseEntity<List<GetBookingResponse>> {
+    fun getBookingsByUserId(
+        @PathVariable userId: String,
+    ): ResponseEntity<List<GetBookingResponse>> {
         val getBookingResponseList = bookingService.getBookingsByUserId(userId)
         return ResponseEntity.ok(getBookingResponseList)
     }
 
     @GetMapping("/rentalListings/{rentalListingId}/bookings")
-    fun getBookingsByRentalListingId(@PathVariable rentalListingId: String): ResponseEntity<List<GetBookingResponse>> {
+    fun getBookingsByRentalListingId(
+        @PathVariable rentalListingId: String,
+    ): ResponseEntity<List<GetBookingResponse>> {
         val getBookingResponseList = bookingService.getBookingsByRentalListingId(rentalListingId)
         return ResponseEntity.ok(getBookingResponseList)
     }
 
     @PutMapping("/bookings/{bookingId}")
-    fun updateBookingById(@PathVariable bookingId: String, @RequestBody updateBookingRequest: UpdateBookingRequest) {
+    fun updateBookingById(
+        @PathVariable bookingId: String,
+        @RequestBody updateBookingRequest: UpdateBookingRequest,
+    ) {
         bookingService.updateBookingById(bookingId, updateBookingRequest)
     }
 
     @DeleteMapping("/bookings/{bookingId}")
-    fun deleteBookingById(@PathVariable bookingId: String) {
+    fun deleteBookingById(
+        @PathVariable bookingId: String,
+    ) {
         bookingService.deleteBookingById(bookingId)
     }
 }

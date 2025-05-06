@@ -21,15 +21,27 @@ import java.util.*
 class UserController(
     private val refreshTokenService: RefreshTokenService,
     private val userService: UserService,
-    private val jwtUtil: JwtUtil
+    private val jwtUtil: JwtUtil,
 ) {
     @GetMapping("/{userId}")
-    fun getOne(@PathVariable userId: String): ResponseEntity<GetExtendedUserResponse> {
+    fun getOne(
+        @PathVariable userId: String,
+    ): ResponseEntity<GetExtendedUserResponse> {
         val userOptional: Optional<User> = userService.findById(userId)
-        val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with id `$userId` not found")
-        }
-        return ResponseEntity.ok(GetExtendedUserResponse(user.email, user.firstName, user.lastName, user.phone, user.roleName, user.imageData))
+        val user =
+            userOptional.orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "User with id `$userId` not found")
+            }
+        return ResponseEntity.ok(
+            GetExtendedUserResponse(
+                user.email,
+                user.firstName,
+                user.lastName,
+                user.phone,
+                user.roleName,
+                user.imageData,
+            ),
+        )
     }
 
     @PatchMapping("/{userId}")
@@ -62,14 +74,17 @@ class UserController(
 @RestController
 @RequestMapping("/unauthorizedApi/v1/users")
 class UserUnauthorizedController(
-    private val userService: UserService
+    private val userService: UserService,
 ) {
     @GetMapping("/{userId}")
-    fun getOne(@PathVariable userId: String): ResponseEntity<GetPartialUserResponse> {
+    fun getOne(
+        @PathVariable userId: String,
+    ): ResponseEntity<GetPartialUserResponse> {
         val userOptional: Optional<User> = userService.findById(userId)
-        val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
-        }
+        val user =
+            userOptional.orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+            }
         return ResponseEntity.ok(GetPartialUserResponse(user.firstName, user.lastName, user.imageData))
     }
 }

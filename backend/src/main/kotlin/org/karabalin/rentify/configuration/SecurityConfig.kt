@@ -25,7 +25,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc
 class SecurityConfig(
     private val jwtUtil: JwtUtil,
     private val userDetailsService: CustomUserDetailsService,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -63,8 +63,10 @@ class SecurityConfig(
             }
             addFilterBefore<UsernamePasswordAuthenticationFilter>(
                 JwtAuthenticationFilter(
-                    jwtUtil, userDetailsService, userRepository
-                )
+                    jwtUtil,
+                    userDetailsService,
+                    userRepository,
+                ),
             )
         }
 

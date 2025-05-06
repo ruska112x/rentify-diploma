@@ -24,13 +24,13 @@ class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
     private val refreshTokenService: RefreshTokenService,
-    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long
+    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long,
 ) {
     @PostMapping("/register")
     fun register(
         @Valid @RequestPart("data") request: RegisterRequest,
         response: HttpServletResponse,
-        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?
+        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?,
     ): ResponseEntity<AuthResponse> {
         val user = userService.findUserByEmail(request.email)
         if (user.isPresent) {
@@ -38,30 +38,35 @@ class AuthController(
         } else {
             val authTokens = authService.register(request, profilePicture)
             refreshTokenService.create(authTokens.refreshToken)
-            val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
-                isHttpOnly = true
-                secure = false
-                path = "/"
-                maxAge = refreshTokenValidity.toInt()
-                setAttribute("SameSite", "Lax")
-            }
+            val cookie =
+                Cookie("refreshToken", authTokens.refreshToken).apply {
+                    isHttpOnly = true
+                    secure = false
+                    path = "/"
+                    maxAge = refreshTokenValidity.toInt()
+                    setAttribute("SameSite", "Lax")
+                }
             response.addCookie(cookie)
             return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         }
     }
 
     @PostMapping("/login")
-    fun login(@Valid @RequestBody request: LoginRequest, response: HttpServletResponse): ResponseEntity<AuthResponse> {
+    fun login(
+        @Valid @RequestBody request: LoginRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<AuthResponse> {
         try {
             val authTokens = authService.login(request)
             refreshTokenService.create(authTokens.refreshToken)
-            val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
-                isHttpOnly = true
-                secure = false
-                path = "/"
-                maxAge = refreshTokenValidity.toInt()
-                setAttribute("SameSite", "Lax")
-            }
+            val cookie =
+                Cookie("refreshToken", authTokens.refreshToken).apply {
+                    isHttpOnly = true
+                    secure = false
+                    path = "/"
+                    maxAge = refreshTokenValidity.toInt()
+                    setAttribute("SameSite", "Lax")
+                }
             response.addCookie(cookie)
             return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         } catch (e: UsernameNotFoundException) {
@@ -70,49 +75,60 @@ class AuthController(
     }
 
     @PostMapping("/refresh")
-    fun refresh(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<AuthResponse> {
-        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
-            HttpStatus.UNAUTHORIZED,
-            "Refresh token not found"
-        )
+    fun refresh(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<AuthResponse> {
+        val refreshToken =
+            request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Refresh token not found",
+            )
         if (refreshTokenService.isAvailable(refreshToken)) {
             val authTokens = authService.refreshToken(refreshToken)
-            val cookie = Cookie("refreshToken", authTokens.refreshToken).apply {
-                isHttpOnly = true
-                secure = false
-                path = "/"
-                maxAge = refreshTokenValidity.toInt()
-                setAttribute("SameSite", "Lax")
-            }
+            val cookie =
+                Cookie("refreshToken", authTokens.refreshToken).apply {
+                    isHttpOnly = true
+                    secure = false
+                    path = "/"
+                    maxAge = refreshTokenValidity.toInt()
+                    setAttribute("SameSite", "Lax")
+                }
             response.addCookie(cookie)
             return ResponseEntity.ok(AuthResponse(authTokens.accessToken))
         } else {
-            val cookie = Cookie("refreshToken", "").apply {
-                isHttpOnly = true
-                secure = false
-                path = "/"
-                maxAge = 0
-                setAttribute("SameSite", "Lax")
-            }
+            val cookie =
+                Cookie("refreshToken", "").apply {
+                    isHttpOnly = true
+                    secure = false
+                    path = "/"
+                    maxAge = 0
+                    setAttribute("SameSite", "Lax")
+                }
             response.addCookie(cookie)
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build()
         }
     }
 
     @PostMapping("/logout")
-    fun logout(request: HttpServletRequest, response: HttpServletResponse): ResponseEntity<String> {
-        val refreshToken = request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
-            HttpStatus.UNAUTHORIZED,
-            "Refresh token not found"
-        )
+    fun logout(
+        request: HttpServletRequest,
+        response: HttpServletResponse,
+    ): ResponseEntity<String> {
+        val refreshToken =
+            request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Refresh token not found",
+            )
         refreshTokenService.delete(refreshToken)
-        val cookie = Cookie("refreshToken", "").apply {
-            isHttpOnly = true
-            secure = false
-            path = "/"
-            maxAge = 0
-            setAttribute("SameSite", "Lax")
-        }
+        val cookie =
+            Cookie("refreshToken", "").apply {
+                isHttpOnly = true
+                secure = false
+                path = "/"
+                maxAge = 0
+                setAttribute("SameSite", "Lax")
+            }
         response.addCookie(cookie)
         return ResponseEntity.ok("")
     }

@@ -13,11 +13,11 @@ import org.springframework.web.multipart.MultipartFile
 @RestController
 @RequestMapping("/authorizedApi/v1")
 class RentalListingController(
-    private val rentalListingService: RentalListingService
+    private val rentalListingService: RentalListingService,
 ) {
     @GetMapping("/rentalListings/{rentalListingId}")
     fun getRentalListingById(
-        @PathVariable rentalListingId: String
+        @PathVariable rentalListingId: String,
     ): ResponseEntity<GetExtendedRentalListingResponse> {
         val rentalListing = rentalListingService.findRentalListingById(rentalListingId)
         return ResponseEntity.ok(
@@ -30,35 +30,36 @@ class RentalListingController(
                 rentalListing.autoRenew,
                 rentalListing.mainImageData,
                 rentalListing.additionalImagesData,
-                rentalListing.userId
-            )
+                rentalListing.userId,
+            ),
         )
     }
 
     @GetMapping("/users/{userId}/rentalListings")
     fun getRentalListingsByUserId(
-        @PathVariable userId: String
-    ): ResponseEntity<List<GetExtendedRentalListingResponse>> {
-        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId).map {
-            GetExtendedRentalListingResponse(
-                it.id,
-                it.title,
-                it.description,
-                it.address,
-                it.tariffDescription,
-                it.autoRenew,
-                it.mainImageData,
-                it.additionalImagesData,
-                it.userId
-            )
-        })
-    }
+        @PathVariable userId: String,
+    ): ResponseEntity<List<GetExtendedRentalListingResponse>> =
+        ResponseEntity.ok(
+            rentalListingService.findRentalListingsByUserEntityId(userId).map {
+                GetExtendedRentalListingResponse(
+                    it.id,
+                    it.title,
+                    it.description,
+                    it.address,
+                    it.tariffDescription,
+                    it.autoRenew,
+                    it.mainImageData,
+                    it.additionalImagesData,
+                    it.userId,
+                )
+            },
+        )
 
     @PostMapping("/rentalListings/create")
     fun create(
         @Valid @RequestPart("data") addRentalListingRequest: AddRentalListingRequest,
         @RequestPart("mainImage") mainImage: MultipartFile,
-        @RequestPart("additionalImages") additionalImages: List<MultipartFile>?
+        @RequestPart("additionalImages") additionalImages: List<MultipartFile>?,
     ) {
         rentalListingService.addRentalListing(addRentalListingRequest, mainImage, additionalImages)
     }
@@ -69,20 +70,20 @@ class RentalListingController(
         @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
         @RequestPart(value = "mainImageFile", required = false) mainImageFile: MultipartFile?,
         @RequestPart(value = "deleteImageKeys", required = false) deleteImageKeys: List<String>?,
-        @RequestPart(value = "newImageFiles", required = false) newImageFiles: List<MultipartFile>?
+        @RequestPart(value = "newImageFiles", required = false) newImageFiles: List<MultipartFile>?,
     ) {
         rentalListingService.updateRentalListingById(
             rentalListingId,
             updateRentalListingRequest,
             mainImageFile,
             deleteImageKeys,
-            newImageFiles
+            newImageFiles,
         )
     }
 
     @DeleteMapping("/rentalListings/{rentalListingId}")
     fun deleteRentalListingById(
-        @PathVariable rentalListingId: String
+        @PathVariable rentalListingId: String,
     ) {
         rentalListingService.deleteById(rentalListingId)
     }
@@ -91,27 +92,28 @@ class RentalListingController(
 @RestController
 @RequestMapping("/unauthorizedApi/v1")
 class RentalListingUnauthorizedController(
-    private val rentalListingService: RentalListingService
+    private val rentalListingService: RentalListingService,
 ) {
     @GetMapping("/rentalListings")
-    fun getNewestRentalListings(): ResponseEntity<List<GetPartialRentalListingResponse>> {
-        return ResponseEntity.ok(rentalListingService.findNewestRentalListings().map {
-            GetPartialRentalListingResponse(
-                it.id,
-                it.title,
-                it.description,
-                it.address,
-                it.tariffDescription,
-                it.mainImageData,
-                it.additionalImagesData,
-                it.userId
-            )
-        })
-    }
+    fun getNewestRentalListings(): ResponseEntity<List<GetPartialRentalListingResponse>> =
+        ResponseEntity.ok(
+            rentalListingService.findNewestRentalListings().map {
+                GetPartialRentalListingResponse(
+                    it.id,
+                    it.title,
+                    it.description,
+                    it.address,
+                    it.tariffDescription,
+                    it.mainImageData,
+                    it.additionalImagesData,
+                    it.userId,
+                )
+            },
+        )
 
     @GetMapping("/rentalListings/{rentalListingId}")
     fun getRentalListingById(
-        @PathVariable rentalListingId: String
+        @PathVariable rentalListingId: String,
     ): ResponseEntity<GetPartialRentalListingResponse> {
         val rentalListing = rentalListingService.findRentalListingById(rentalListingId)
         return ResponseEntity.ok(
@@ -123,26 +125,27 @@ class RentalListingUnauthorizedController(
                 rentalListing.tariffDescription,
                 rentalListing.mainImageData,
                 rentalListing.additionalImagesData,
-                rentalListing.userId
-            )
+                rentalListing.userId,
+            ),
         )
     }
 
     @GetMapping("/users/{userId}/rentalListings")
     fun getRentalListingsByUserId(
-        @PathVariable userId: String
-    ): ResponseEntity<List<GetPartialRentalListingResponse>> {
-        return ResponseEntity.ok(rentalListingService.findRentalListingsByUserEntityId(userId).map {
-            GetPartialRentalListingResponse(
-                it.id,
-                it.title,
-                it.description,
-                it.address,
-                it.tariffDescription,
-                it.mainImageData,
-                it.additionalImagesData,
-                it.userId
-            )
-        })
-    }
+        @PathVariable userId: String,
+    ): ResponseEntity<List<GetPartialRentalListingResponse>> =
+        ResponseEntity.ok(
+            rentalListingService.findRentalListingsByUserEntityId(userId).map {
+                GetPartialRentalListingResponse(
+                    it.id,
+                    it.title,
+                    it.description,
+                    it.address,
+                    it.tariffDescription,
+                    it.mainImageData,
+                    it.additionalImagesData,
+                    it.userId,
+                )
+            },
+        )
 }

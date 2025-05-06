@@ -5,7 +5,7 @@ import java.time.Instant
 data class AddBookingRequest(
     val rentalListingId: String,
     val startDateTime: Instant,
-    val endDateTime: Instant
+    val endDateTime: Instant,
 )
 
 data class GetBookingResponse(
@@ -13,10 +13,10 @@ data class GetBookingResponse(
     val startDateTime: Instant,
     val endDateTime: Instant,
     val rentalListingId: String,
-    val userId: String
+    val userId: String,
 )
 
 data class UpdateBookingRequest(
     val startDateTime: Instant,
-    val endDateTime: Instant
+    val endDateTime: Instant,
 )

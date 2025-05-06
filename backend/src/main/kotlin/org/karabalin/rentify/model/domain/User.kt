@@ -8,5 +8,5 @@ data class User(
     val lastName: String,
     val phone: String,
     val roleName: String,
-    val imageData: ImageData
+    val imageData: ImageData,
 )

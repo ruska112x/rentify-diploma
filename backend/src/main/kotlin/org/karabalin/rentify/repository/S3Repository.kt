@@ -21,44 +21,53 @@ class S3Repository(
         val key = "${UUID.randomUUID()}_${file.originalFilename}"
 
         s3Client.putObject(
-            PutObjectRequest.builder()
+            PutObjectRequest
+                .builder()
                 .bucket(bucketName)
                 .key(key)
                 .acl(ObjectCannedACL.PUBLIC_READ)
                 .contentType(file.contentType)
                 .build(),
-            RequestBody.fromInputStream(file.inputStream, file.size)
+            RequestBody.fromInputStream(file.inputStream, file.size),
         )
 
         return key
     }
 
     fun deleteFile(keyName: String) {
-        val objectIdentifier = ObjectIdentifier.builder()
-            .key(keyName)
-            .build()
+        val objectIdentifier =
+            ObjectIdentifier
+                .builder()
+                .key(keyName)
+                .build()
 
-        val deleteRequest = DeleteObjectsRequest.builder()
-            .bucket(bucketName)
-            .delete(
-                Delete.builder()
-                    .objects(objectIdentifier)
-                    .build()
-            )
-            .build()
+        val deleteRequest =
+            DeleteObjectsRequest
+                .builder()
+                .bucket(bucketName)
+                .delete(
+                    Delete
+                        .builder()
+                        .objects(objectIdentifier)
+                        .build(),
+                ).build()
 
         s3Client.deleteObjects(deleteRequest)
     }
 
     fun generatePresignedLink(keyName: String): String {
-        val objectRequest: GetObjectRequest? = GetObjectRequest.builder()
-            .bucket(bucketName)
-            .key(keyName)
-            .build()
-        val presignRequest: GetObjectPresignRequest? = GetObjectPresignRequest.builder()
-            .signatureDuration(Duration.ofMinutes(10))
-            .getObjectRequest(objectRequest)
-            .build()
+        val objectRequest: GetObjectRequest? =
+            GetObjectRequest
+                .builder()
+                .bucket(bucketName)
+                .key(keyName)
+                .build()
+        val presignRequest: GetObjectPresignRequest? =
+            GetObjectPresignRequest
+                .builder()
+                .signatureDuration(Duration.ofMinutes(10))
+                .getObjectRequest(objectRequest)
+                .build()
 
         val presignedRequest = s3Presigner.presignGetObject(presignRequest)
 

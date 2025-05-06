@@ -16,7 +16,7 @@ import java.util.*
 class UserService(
     private val userRepository: UserRepository,
     private val userStatusRepository: UserStatusRepository,
-    private val s3Repository: S3Repository
+    private val s3Repository: S3Repository,
 ) {
     fun findUserByEmail(userEmail: String): Optional<User> {
         val userEntity = userRepository.findByEmail(userEmail)
@@ -27,19 +27,20 @@ class UserService(
                 photoLink = s3Repository.generatePresignedLink(it.photoKey!!)
             }
 
-            user = Optional.of(
-                User(
-                    it.email,
-                    it.firstName,
-                    it.lastName,
-                    it.phone,
-                    it.roleEntity.name,
-                    ImageData(
-                        it.photoKey,
-                        photoLink
-                    )
+            user =
+                Optional.of(
+                    User(
+                        it.email,
+                        it.firstName,
+                        it.lastName,
+                        it.phone,
+                        it.roleEntity.name,
+                        ImageData(
+                            it.photoKey,
+                            photoLink,
+                        ),
+                    ),
                 )
-            )
         }
         return user
     }
@@ -52,28 +53,35 @@ class UserService(
             if (it.photoKey != null && it.photoKey != "") {
                 photoLink = s3Repository.generatePresignedLink(it.photoKey!!)
             }
-            user = Optional.of(
-                User(
-                    it.email,
-                    it.firstName,
-                    it.lastName,
-                    it.phone,
-                    it.roleEntity.name,
-                    ImageData(
-                        it.photoKey,
-                        photoLink
-                    )
+            user =
+                Optional.of(
+                    User(
+                        it.email,
+                        it.firstName,
+                        it.lastName,
+                        it.phone,
+                        it.roleEntity.name,
+                        ImageData(
+                            it.photoKey,
+                            photoLink,
+                        ),
+                    ),
                 )
-            )
         }
         return user
     }
 
-    fun update(userId: String, updateUserRequest: UpdateUserRequest, mainImageAction: String?, mainImageFile: MultipartFile?) {
+    fun update(
+        userId: String,
+        updateUserRequest: UpdateUserRequest,
+        mainImageAction: String?,
+        mainImageFile: MultipartFile?,
+    ) {
         val userOptional = userRepository.findById(UUID.fromString(userId))
-        val user = userOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
-        }
+        val user =
+            userOptional.orElseThrow {
+                ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+            }
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
         user.phone = updateUserRequest.phone
@@ -102,8 +110,9 @@ class UserService(
     fun deleteById(userId: String) {
         val userOptional = userRepository.findById(UUID.fromString(userId))
         userOptional.ifPresent {
-            val userStatus = userStatusRepository.findByName("DELETED")
-                ?: throw IllegalStateException("User Status DELETED not found")
+            val userStatus =
+                userStatusRepository.findByName("DELETED")
+                    ?: throw IllegalStateException("User Status DELETED not found")
             it.userStatusEntity = userStatus
             userRepository.save(it)
         }

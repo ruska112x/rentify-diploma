@@ -6,7 +6,7 @@ data class AddRentalListingRequest(
     val description: String,
     val address: String,
     val tariffDescription: String,
-    val autoRenew: Boolean
+    val autoRenew: Boolean,
 )
 
 data class GetExtendedRentalListingResponse(
@@ -18,7 +18,7 @@ data class GetExtendedRentalListingResponse(
     val autoRenew: Boolean,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
-    val userId: String
+    val userId: String,
 )
 
 data class GetPartialRentalListingResponse(
@@ -29,7 +29,7 @@ data class GetPartialRentalListingResponse(
     val tariffDescription: String,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
-    val userId: String
+    val userId: String,
 )
 
 data class UpdateRentalListingRequest(
@@ -37,5 +37,5 @@ data class UpdateRentalListingRequest(
     val description: String,
     val address: String,
     val tariffDescription: String,
-    val autoRenew: Boolean
+    val autoRenew: Boolean,
 )

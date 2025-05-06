@@ -31,7 +31,7 @@ class AuthService(
     private val s3Repository: S3Repository,
     private val jwtUtil: JwtUtil,
     private val authenticationManager: AuthenticationManager,
-    private val passwordEncoder: PasswordEncoder
+    private val passwordEncoder: PasswordEncoder,
 ) {
     @PostConstruct
     fun postConstruct() {
@@ -47,7 +47,10 @@ class AuthService(
         }
     }
 
-    fun register(request: RegisterRequest, profilePicture: MultipartFile?): AuthTokens {
+    fun register(
+        request: RegisterRequest,
+        profilePicture: MultipartFile?,
+    ): AuthTokens {
         val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
         val userStatus =
             userStatusRepository.findByName("ACTIVE") ?: throw IllegalStateException("User Status ACTIVE not found")
@@ -57,17 +60,18 @@ class AuthService(
             photoKey = s3Repository.uploadFile(profilePicture)
         }
 
-        val userEntity = UserEntity(
-            email = request.email,
-            password = passwordEncoder.encode(request.password),
-            firstName = request.firstName,
-            lastName = request.lastName,
-            phone = request.phone,
-            photoKey = photoKey,
-            lastLoginTime = Instant.now(),
-            roleEntity = userRole,
-            userStatusEntity = userStatus
-        )
+        val userEntity =
+            UserEntity(
+                email = request.email,
+                password = passwordEncoder.encode(request.password),
+                firstName = request.firstName,
+                lastName = request.lastName,
+                phone = request.phone,
+                photoKey = photoKey,
+                lastLoginTime = Instant.now(),
+                roleEntity = userRole,
+                userStatusEntity = userStatus,
+            )
         val savedUser = userRepository.save(userEntity)
 
         val accessToken = jwtUtil.generateAccessToken(savedUser.id.toString())
@@ -79,9 +83,10 @@ class AuthService(
     fun login(request: LoginRequest): AuthTokens {
         val userOptional = userRepository.findByEmail(request.email)
 
-        val user = userOptional.orElseThrow {
-            throw UsernameNotFoundException("User with this email and password not found")
-        }
+        val user =
+            userOptional.orElseThrow {
+                throw UsernameNotFoundException("User with this email and password not found")
+            }
 
         if (user.userStatusEntity.name != "ACTIVE") {
             throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email deleted")
@@ -90,7 +95,7 @@ class AuthService(
         user.lastLoginTime = Instant.now()
 
         authenticationManager.authenticate(
-            UsernamePasswordAuthenticationToken(user.id, request.password)
+            UsernamePasswordAuthenticationToken(user.id, request.password),
         )
 
         val accessToken = jwtUtil.generateAccessToken(user.id.toString())
@@ -106,9 +111,10 @@ class AuthService(
 
         val userId = jwtUtil.getUserIdFromToken(refreshToken)
         val userOptional = userRepository.findById(UUID.fromString(userId))
-        val user = userOptional.orElseThrow {
-            throw UsernameNotFoundException("User with this email and password not found")
-        }
+        val user =
+            userOptional.orElseThrow {
+                throw UsernameNotFoundException("User with this email and password not found")
+            }
         val accessToken = jwtUtil.generateAccessToken(userId!!)
         return AuthTokens(accessToken, refreshToken)
     }

@@ -4,6 +4,7 @@ plugins {
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
+    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 group = "org.karabalin"
@@ -19,6 +20,17 @@ repositories {
     mavenCentral()
 }
 
+configurations.all {
+    resolutionStrategy.eachDependency {
+        if (requested.group == "org.jetbrains.kotlin") {
+            useVersion(
+                io.gitlab.arturbosch.detekt
+                    .getSupportedKotlinVersion(),
+            )
+        }
+    }
+}
+
 val jjwtVersion = "0.12.6"
 val springDocVersion = "2.8.5"
 val awsSdkVersion = "2.31.30"
@@ -27,8 +39,8 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
-    implementation("software.amazon.awssdk:s3:${awsSdkVersion}")
-    implementation("software.amazon.awssdk:apache-client:${awsSdkVersion}")
+    implementation("software.amazon.awssdk:s3:$awsSdkVersion")
+    implementation("software.amazon.awssdk:apache-client:$awsSdkVersion")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
@@ -58,4 +70,9 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+detekt {
+    buildUponDefaultConfig = true
+    allRules = false
 }

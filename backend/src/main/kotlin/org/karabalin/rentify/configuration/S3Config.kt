@@ -16,28 +16,36 @@ class S3Config(
     @Value("\${s3.accessKey}") private val accessKey: String,
     @Value("\${s3.secretKey}") private val secretKey: String,
     @Value("\${s3.region}") private val region: String,
-    @Value("\${s3.endpoint}") private val endpoint: String
+    @Value("\${s3.endpoint}") private val endpoint: String,
 ) {
-
     @Bean
-    fun s3Client(): S3Client {
-        return S3Client.builder().region(Region.of(region)).credentialsProvider(
+    fun s3Client(): S3Client =
+        S3Client
+            .builder()
+            .region(Region.of(region))
+            .credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(
-                        accessKey, secretKey
-                    )
-                )
-            ).endpointOverride(URI.create(endpoint)).httpClientBuilder(ApacheHttpClient.builder()).build()
-    }
+                        accessKey,
+                        secretKey,
+                    ),
+                ),
+            ).endpointOverride(URI.create(endpoint))
+            .httpClientBuilder(ApacheHttpClient.builder())
+            .build()
 
     @Bean
-    fun s3Presigner(): S3Presigner {
-        return S3Presigner.builder().region(Region.of(region)).credentialsProvider(
+    fun s3Presigner(): S3Presigner =
+        S3Presigner
+            .builder()
+            .region(Region.of(region))
+            .credentialsProvider(
                 StaticCredentialsProvider.create(
                     AwsBasicCredentials.create(
-                        accessKey, secretKey
-                    )
-                )
-            ).endpointOverride(URI.create(endpoint)).build()
-    }
+                        accessKey,
+                        secretKey,
+                    ),
+                ),
+            ).endpointOverride(URI.create(endpoint))
+            .build()
 }

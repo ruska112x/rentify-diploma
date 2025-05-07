@@ -19,7 +19,8 @@ class RentalListingController(
     fun getRentalListingById(
         @PathVariable rentalListingId: String,
     ): ResponseEntity<GetExtendedRentalListingResponse> {
-        val rentalListing = rentalListingService.findRentalListingById(rentalListingId)
+        val rentalListing =
+            rentalListingService.findRentalListingById(rentalListingId)
         return ResponseEntity.ok(
             GetExtendedRentalListingResponse(
                 rentalListing.id,
@@ -57,20 +58,38 @@ class RentalListingController(
 
     @PostMapping("/rentalListings/create")
     fun create(
-        @Valid @RequestPart("data") addRentalListingRequest: AddRentalListingRequest,
+        @Valid @RequestPart("data") addRentalListingRequest:
+            AddRentalListingRequest,
         @RequestPart("mainImage") mainImage: MultipartFile,
         @RequestPart("additionalImages") additionalImages: List<MultipartFile>?,
     ) {
-        rentalListingService.addRentalListing(addRentalListingRequest, mainImage, additionalImages)
+        rentalListingService.addRentalListing(
+            addRentalListingRequest,
+            mainImage,
+            additionalImages,
+        )
     }
 
-    @PatchMapping("/rentalListings/{rentalListingId}", consumes = ["multipart/form-data"])
+    @PatchMapping(
+        "/rentalListings/{rentalListingId}",
+        consumes = ["multipart/form-data"],
+    )
     fun updateRentalListingById(
         @PathVariable rentalListingId: String,
-        @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
-        @RequestPart(value = "mainImageFile", required = false) mainImageFile: MultipartFile?,
-        @RequestPart(value = "deleteImageKeys", required = false) deleteImageKeys: List<String>?,
-        @RequestPart(value = "newImageFiles", required = false) newImageFiles: List<MultipartFile>?,
+        @RequestPart("data") updateRentalListingRequest:
+            UpdateRentalListingRequest,
+        @RequestPart(
+            value = "mainImageFile",
+            required = false,
+        ) mainImageFile: MultipartFile?,
+        @RequestPart(
+            value = "deleteImageKeys",
+            required = false,
+        ) deleteImageKeys: List<String>?,
+        @RequestPart(
+            value = "newImageFiles",
+            required = false,
+        ) newImageFiles: List<MultipartFile>?,
     ) {
         rentalListingService.updateRentalListingById(
             rentalListingId,
@@ -115,7 +134,8 @@ class RentalListingUnauthorizedController(
     fun getRentalListingById(
         @PathVariable rentalListingId: String,
     ): ResponseEntity<GetPartialRentalListingResponse> {
-        val rentalListing = rentalListingService.findRentalListingById(rentalListingId)
+        val rentalListing =
+            rentalListingService.findRentalListingById(rentalListingId)
         return ResponseEntity.ok(
             GetPartialRentalListingResponse(
                 rentalListing.id,

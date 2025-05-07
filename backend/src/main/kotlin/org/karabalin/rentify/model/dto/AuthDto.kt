@@ -9,13 +9,25 @@ data class RegisterRequest(
     @field:Email(message = "Email must be in format 'example@mail.org'")
     val email: String,
     @field:NotBlank
-    @field:Length(min = 8, max = 255, message = "Password must be at least 8 characters long")
+    @field:Length(
+        min = 8,
+        max = 255,
+        message = "Password must be at least 8 characters long",
+    )
     val password: String,
     @field:NotBlank
-    @field:Length(min = 1, max = 255, message = "FirstName must be at least 1 characters long")
+    @field:Length(
+        min = 1,
+        max = 255,
+        message = "FirstName must be at least 1 characters long",
+    )
     val firstName: String,
     @field:NotBlank
-    @field:Length(min = 1, max = 255, message = "LastName must be at least 1 characters long")
+    @field:Length(
+        min = 1,
+        max = 255,
+        message = "LastName must be at least 1 characters long",
+    )
     val lastName: String,
     @field:NotBlank
     @field:Pattern(
@@ -29,7 +41,11 @@ data class LoginRequest(
     @field:Email(message = "Email must be in format 'example@mail.org'")
     val email: String,
     @field:NotBlank
-    @field:Length(min = 8, max = 255, message = "Password must be at least 8 characters long")
+    @field:Length(
+        min = 8,
+        max = 255,
+        message = "Password must be at least 8 characters long",
+    )
     val password: String,
 )
 

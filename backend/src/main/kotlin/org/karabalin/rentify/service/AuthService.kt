@@ -35,14 +35,20 @@ class AuthService(
 ) {
     @PostConstruct
     fun postConstruct() {
-        listOf("ROLE_USER", "ROLE_ADMIN", "ROLE_MODERATOR").forEach { roleName ->
+        listOf(
+            "ROLE_USER",
+            "ROLE_ADMIN",
+            "ROLE_MODERATOR",
+        ).forEach { roleName ->
             if (roleRepository.findByName(roleName) == null) {
                 roleRepository.save(RoleEntity(name = roleName))
             }
         }
         listOf("ACTIVE", "DELETED").forEach { userStatusName ->
             if (userStatusRepository.findByName(userStatusName) == null) {
-                userStatusRepository.save(UserStatusEntity(name = userStatusName))
+                userStatusRepository.save(
+                    UserStatusEntity(name = userStatusName),
+                )
             }
         }
     }
@@ -51,9 +57,12 @@ class AuthService(
         request: RegisterRequest,
         profilePicture: MultipartFile?,
     ): AuthTokens {
-        val userRole = roleRepository.findByName("ROLE_USER") ?: throw IllegalStateException("ROLE_USER not found")
+        val userRole =
+            roleRepository.findByName("ROLE_USER")
+                ?: throw IllegalStateException("ROLE_USER not found")
         val userStatus =
-            userStatusRepository.findByName("ACTIVE") ?: throw IllegalStateException("User Status ACTIVE not found")
+            userStatusRepository.findByName("ACTIVE")
+                ?: throw IllegalStateException("User Status ACTIVE not found")
 
         var photoKey: String? = null
         if (profilePicture != null) {
@@ -85,11 +94,16 @@ class AuthService(
 
         val user =
             userOptional.orElseThrow {
-                throw UsernameNotFoundException("User with this email and password not found")
+                throw UsernameNotFoundException(
+                    "User with this email and password not found",
+                )
             }
 
         if (user.userStatusEntity.name != "ACTIVE") {
-            throw ResponseStatusException(HttpStatus.NOT_FOUND, "User with this email deleted")
+            throw ResponseStatusException(
+                HttpStatus.NOT_FOUND,
+                "User with this email deleted",
+            )
         }
 
         user.lastLoginTime = Instant.now()
@@ -113,7 +127,9 @@ class AuthService(
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user =
             userOptional.orElseThrow {
-                throw UsernameNotFoundException("User with this email and password not found")
+                throw UsernameNotFoundException(
+                    "User with this email and password not found",
+                )
             }
         val accessToken = jwtUtil.generateAccessToken(userId!!)
         return AuthTokens(accessToken, refreshToken)

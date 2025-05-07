@@ -29,10 +29,16 @@ class BookingController(
             if (userId != null) {
                 bookingService.create(addBookingRequest, userId)
             } else {
-                throw ResponseStatusException(HttpStatus.NOT_FOUND, "Access token doesn't contains userId")
+                throw ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Access token doesn't contains userId",
+                )
             }
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token not found")
+            throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Access token not found",
+            )
         }
     }
 
@@ -56,7 +62,8 @@ class BookingController(
     fun getBookingsByRentalListingId(
         @PathVariable rentalListingId: String,
     ): ResponseEntity<List<GetBookingResponse>> {
-        val getBookingResponseList = bookingService.getBookingsByRentalListingId(rentalListingId)
+        val getBookingResponseList =
+            bookingService.getBookingsByRentalListingId(rentalListingId)
         return ResponseEntity.ok(getBookingResponseList)
     }
 

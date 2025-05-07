@@ -21,7 +21,8 @@ class CustomUserDetailsService(
                 throw UsernameNotFoundException("User not found")
             }
 
-        val authorities = listOf(SimpleGrantedAuthority(user.roleEntity.getAuthority()))
+        val authorities =
+            listOf(SimpleGrantedAuthority(user.roleEntity.getAuthority()))
 
         return User(user.email, user.password, authorities)
     }

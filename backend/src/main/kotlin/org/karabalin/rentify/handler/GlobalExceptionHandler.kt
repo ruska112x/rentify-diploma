@@ -12,11 +12,15 @@ import org.springframework.web.server.ResponseStatusException
 @ControllerAdvice
 class GlobalExceptionHandler {
     @ExceptionHandler(ResponseStatusException::class)
-    fun handleResponseStatusException(e: ResponseStatusException): ResponseEntity<Map<String, String?>> =
+    fun handleResponseStatusException(
+        e: ResponseStatusException,
+    ): ResponseEntity<Map<String, String?>> =
         ResponseEntity.status(e.statusCode).body(mapOf(Pair("error", e.reason)))
 
     @ExceptionHandler(MethodArgumentNotValidException::class)
-    fun handleMethodArgumentNotValidException(e: MethodArgumentNotValidException): ResponseEntity<Map<String, String?>> {
+    fun handleMethodArgumentNotValidException(
+        e: MethodArgumentNotValidException,
+    ): ResponseEntity<Map<String, String?>> {
         val errors: MutableMap<String, String?> = HashMap()
         e.bindingResult.allErrors.forEach { error ->
             val fieldName = (error as FieldError).field
@@ -27,7 +31,9 @@ class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(UsernameNotFoundException::class)
-    fun handleUsernameNotFoundException(e: UsernameNotFoundException): ResponseEntity<Map<String, String?>> {
+    fun handleUsernameNotFoundException(
+        e: UsernameNotFoundException,
+    ): ResponseEntity<Map<String, String?>> {
         val errors: MutableMap<String, String?> = HashMap()
         errors["error"] = e.message
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(errors)

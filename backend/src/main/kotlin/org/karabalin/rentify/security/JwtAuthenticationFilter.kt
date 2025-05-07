@@ -33,15 +33,20 @@ class JwtAuthenticationFilter(
                 val userId = jwtUtil.getUserIdFromToken(token)
                 if (userId != null) {
                     try {
-                        val userDetails = userDetailsService.loadUserByUsername(userId)
+                        val userDetails =
+                            userDetailsService.loadUserByUsername(userId)
                         val authentication =
                             UsernamePasswordAuthenticationToken(
                                 userDetails,
                                 null,
                                 userDetails.authorities,
                             )
-                        authentication.details = WebAuthenticationDetailsSource().buildDetails(request)
-                        SecurityContextHolder.getContext().authentication = authentication
+                        authentication.details =
+                            WebAuthenticationDetailsSource().buildDetails(
+                                request,
+                            )
+                        SecurityContextHolder.getContext().authentication =
+                            authentication
                     } catch (e: UsernameNotFoundException) {
                         response.status = HttpStatus.NOT_FOUND.value()
                         response.writer.write("""{"error": "${e.message}"}""")

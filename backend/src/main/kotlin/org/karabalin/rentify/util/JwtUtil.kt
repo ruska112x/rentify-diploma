@@ -11,17 +11,22 @@ import javax.crypto.SecretKey
 class JwtUtil(
     @Value("\${jwt.secret}") private val secret: String,
     @Value("\${jwt.accessTokenValidity}") private val accessTokenValidity: Long,
-    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long,
+    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity:
+        Long,
 ) {
-    private val secretKey: SecretKey = Keys.hmacShaKeyFor(secret.toByteArray(Charsets.UTF_8))
+    private val secretKey: SecretKey =
+        Keys.hmacShaKeyFor(secret.toByteArray(Charsets.UTF_8))
 
     fun generateAccessToken(userId: String): String =
         Jwts
             .builder()
             .subject(userId)
             .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + (accessTokenValidity * 1000)))
-            .signWith(secretKey)
+            .expiration(
+                Date(
+                    System.currentTimeMillis() + (accessTokenValidity * 1000),
+                ),
+            ).signWith(secretKey)
             .compact()
 
     fun generateRefreshToken(userId: String): String =
@@ -29,8 +34,11 @@ class JwtUtil(
             .builder()
             .subject(userId)
             .issuedAt(Date())
-            .expiration(Date(System.currentTimeMillis() + (refreshTokenValidity * 1000)))
-            .signWith(secretKey)
+            .expiration(
+                Date(
+                    System.currentTimeMillis() + (refreshTokenValidity * 1000),
+                ),
+            ).signWith(secretKey)
             .compact()
 
     fun validateToken(token: String): Boolean {

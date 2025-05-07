@@ -30,7 +30,10 @@ class UserController(
         val userOptional: Optional<User> = userService.findById(userId)
         val user =
             userOptional.orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User with id `$userId` not found")
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User with id `$userId` not found",
+                )
             }
         return ResponseEntity.ok(
             GetExtendedUserResponse(
@@ -48,10 +51,21 @@ class UserController(
     fun updateUser(
         @PathVariable userId: String,
         @Valid @RequestPart("data") updateUserRequest: UpdateUserRequest,
-        @RequestPart(value = "mainImageAction", required = false) mainImageAction: String?,
-        @RequestPart(value = "mainImageFile", required = false) mainImageFile: MultipartFile?,
+        @RequestPart(
+            value = "mainImageAction",
+            required = false,
+        ) mainImageAction: String?,
+        @RequestPart(
+            value = "mainImageFile",
+            required = false,
+        ) mainImageFile: MultipartFile?,
     ): ResponseEntity<String> {
-        userService.update(userId, updateUserRequest, mainImageAction, mainImageFile)
+        userService.update(
+            userId,
+            updateUserRequest,
+            mainImageAction,
+            mainImageFile,
+        )
         return ResponseEntity.ok("")
     }
 
@@ -66,7 +80,10 @@ class UserController(
                 refreshTokenService.delete(accessToken)
             }
         } else {
-            throw ResponseStatusException(HttpStatus.UNAUTHORIZED, "Access token not found")
+            throw ResponseStatusException(
+                HttpStatus.UNAUTHORIZED,
+                "Access token not found",
+            )
         }
     }
 }
@@ -83,8 +100,17 @@ class UserUnauthorizedController(
         val userOptional: Optional<User> = userService.findById(userId)
         val user =
             userOptional.orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User with email `$userId` not found",
+                )
             }
-        return ResponseEntity.ok(GetPartialUserResponse(user.firstName, user.lastName, user.imageData))
+        return ResponseEntity.ok(
+            GetPartialUserResponse(
+                user.firstName,
+                user.lastName,
+                user.imageData,
+            ),
+        )
     }
 }

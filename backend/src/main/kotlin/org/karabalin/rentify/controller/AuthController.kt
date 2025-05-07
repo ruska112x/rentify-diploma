@@ -24,17 +24,24 @@ class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
     private val refreshTokenService: RefreshTokenService,
-    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long,
+    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity:
+        Long,
 ) {
     @PostMapping("/register")
     fun register(
         @Valid @RequestPart("data") request: RegisterRequest,
         response: HttpServletResponse,
-        @RequestPart(value = "profilePicture", required = false) profilePicture: MultipartFile?,
+        @RequestPart(
+            value = "profilePicture",
+            required = false,
+        ) profilePicture: MultipartFile?,
     ): ResponseEntity<AuthResponse> {
         val user = userService.findUserByEmail(request.email)
         if (user.isPresent) {
-            throw ResponseStatusException(HttpStatus.CONFLICT, "User with this email already exists!")
+            throw ResponseStatusException(
+                HttpStatus.CONFLICT,
+                "User with this email already exists!",
+            )
         } else {
             val authTokens = authService.register(request, profilePicture)
             refreshTokenService.create(authTokens.refreshToken)
@@ -80,10 +87,11 @@ class AuthController(
         response: HttpServletResponse,
     ): ResponseEntity<AuthResponse> {
         val refreshToken =
-            request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Refresh token not found",
-            )
+            request.cookies?.find { it.name == "refreshToken" }?.value
+                ?: throw ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Refresh token not found",
+                )
         if (refreshTokenService.isAvailable(refreshToken)) {
             val authTokens = authService.refreshToken(refreshToken)
             val cookie =
@@ -116,10 +124,11 @@ class AuthController(
         response: HttpServletResponse,
     ): ResponseEntity<String> {
         val refreshToken =
-            request.cookies?.find { it.name == "refreshToken" }?.value ?: throw ResponseStatusException(
-                HttpStatus.UNAUTHORIZED,
-                "Refresh token not found",
-            )
+            request.cookies?.find { it.name == "refreshToken" }?.value
+                ?: throw ResponseStatusException(
+                    HttpStatus.UNAUTHORIZED,
+                    "Refresh token not found",
+                )
         refreshTokenService.delete(refreshToken)
         val cookie =
             Cookie("refreshToken", "").apply {

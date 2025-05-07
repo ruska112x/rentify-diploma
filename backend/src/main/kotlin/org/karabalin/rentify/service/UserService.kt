@@ -80,7 +80,10 @@ class UserService(
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user =
             userOptional.orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User with email `$userId` not found")
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User with email `$userId` not found",
+                )
             }
         user.firstName = updateUserRequest.firstName
         user.lastName = updateUserRequest.lastName
@@ -112,7 +115,9 @@ class UserService(
         userOptional.ifPresent {
             val userStatus =
                 userStatusRepository.findByName("DELETED")
-                    ?: throw IllegalStateException("User Status DELETED not found")
+                    ?: throw IllegalStateException(
+                        "User Status DELETED not found",
+                    )
             it.userStatusEntity = userStatus
             userRepository.save(it)
         }

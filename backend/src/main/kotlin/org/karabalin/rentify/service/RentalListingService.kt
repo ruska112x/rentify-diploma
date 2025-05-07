@@ -33,7 +33,10 @@ class RentalListingService(
         mainImage: MultipartFile,
         additionalImages: List<MultipartFile>?,
     ) {
-        val userOptional = userRepository.findById(UUID.fromString(addRentalListingRequest.userId))
+        val userOptional =
+            userRepository.findById(
+                UUID.fromString(addRentalListingRequest.userId),
+            )
         val user =
             userOptional.orElseThrow {
                 ResponseStatusException(
@@ -88,18 +91,24 @@ class RentalListingService(
                         it.mainPhotoKey,
                         s3Repository.generatePresignedLink(it.mainPhotoKey),
                     ),
-                    rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
-                        ImageData(
-                            photo.fileKey,
-                            s3Repository.generatePresignedLink(photo.fileKey),
-                        )
-                    },
+                    rentalListingPhotoRepository
+                        .findAllByRentalListingEntityId(
+                            it.id!!,
+                        ).map { photo ->
+                            ImageData(
+                                photo.fileKey,
+                                s3Repository.generatePresignedLink(
+                                    photo.fileKey,
+                                ),
+                            )
+                        },
                     it.userEntity.id.toString(),
                 )
             }
 
     fun findRentalListingById(rentalListingId: String): RentalListing {
-        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListingOptional =
+            rentalListingRepository.findById(UUID.fromString(rentalListingId))
         val rentalListing =
             rentalListingOptional.orElseThrow {
                 ResponseStatusException(
@@ -118,12 +127,15 @@ class RentalListingService(
                 rentalListing.mainPhotoKey,
                 s3Repository.generatePresignedLink(rentalListing.mainPhotoKey),
             ),
-            rentalListingPhotoRepository.findAllByRentalListingEntityId(rentalListing.id!!).map { photo ->
-                ImageData(
-                    photo.fileKey,
-                    s3Repository.generatePresignedLink(photo.fileKey),
-                )
-            },
+            rentalListingPhotoRepository
+                .findAllByRentalListingEntityId(
+                    rentalListing.id!!,
+                ).map { photo ->
+                    ImageData(
+                        photo.fileKey,
+                        s3Repository.generatePresignedLink(photo.fileKey),
+                    )
+                },
             rentalListing.userEntity.id.toString(),
         )
     }
@@ -141,12 +153,15 @@ class RentalListingService(
                     it.mainPhotoKey,
                     s3Repository.generatePresignedLink(it.mainPhotoKey),
                 ),
-                rentalListingPhotoRepository.findAllByRentalListingEntityId(it.id!!).map { photo ->
-                    ImageData(
-                        photo.fileKey,
-                        s3Repository.generatePresignedLink(photo.fileKey),
-                    )
-                },
+                rentalListingPhotoRepository
+                    .findAllByRentalListingEntityId(
+                        it.id!!,
+                    ).map { photo ->
+                        ImageData(
+                            photo.fileKey,
+                            s3Repository.generatePresignedLink(photo.fileKey),
+                        )
+                    },
                 it.userEntity.id.toString(),
             )
         }
@@ -163,7 +178,10 @@ class RentalListingService(
             rentalListingRepository
                 .findById(UUID.fromString(rentalListingId))
                 .orElseThrow {
-                    ResponseStatusException(HttpStatus.NOT_FOUND, "RentalListing with id `$rentalListingId` not found")
+                    ResponseStatusException(
+                        HttpStatus.NOT_FOUND,
+                        "RentalListing with id `$rentalListingId` not found",
+                    )
                 }
 
         with(rentalListing) {
@@ -210,23 +228,36 @@ class RentalListingService(
 
     private fun validateImage(file: MultipartFile) {
         if (file.size > maxFileSize) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Image size exceeds 5MB")
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Image size exceeds 5MB",
+            )
         }
         if (file.contentType !in allowedFileTypes) {
-            throw ResponseStatusException(HttpStatus.BAD_REQUEST, "Image must be PNG or JPEG")
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Image must be PNG or JPEG",
+            )
         }
     }
 
     @Transactional
     fun deleteById(rentalListingId: String) {
-        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListingOptional =
+            rentalListingRepository.findById(UUID.fromString(rentalListingId))
         if (rentalListingOptional.isPresent) {
             val rentalListingPhotoEntityList =
-                rentalListingPhotoRepository.findAllByRentalListingEntityId(UUID.fromString(rentalListingId))
+                rentalListingPhotoRepository.findAllByRentalListingEntityId(
+                    UUID.fromString(
+                        rentalListingId,
+                    ),
+                )
             for (photo in rentalListingPhotoEntityList) {
                 s3Repository.deleteFile(photo.fileKey)
             }
-            rentalListingPhotoRepository.deleteAllById(rentalListingPhotoEntityList.map { it.id })
+            rentalListingPhotoRepository.deleteAllById(
+                rentalListingPhotoEntityList.map { it.id },
+            )
 
             rentalListingRepository.deleteById(UUID.fromString(rentalListingId))
 

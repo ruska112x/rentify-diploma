@@ -29,7 +29,9 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")
     implementation("software.amazon.awssdk:s3:$awsSdkVersion")
     implementation("software.amazon.awssdk:apache-client:$awsSdkVersion")
-    implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion")
+    implementation(
+        "org.springdoc:springdoc-openapi-starter-webmvc-ui:$springDocVersion",
+    )
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-security")

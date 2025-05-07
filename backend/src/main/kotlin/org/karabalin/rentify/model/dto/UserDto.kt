@@ -21,10 +21,18 @@ data class GetPartialUserResponse(
 
 data class UpdateUserRequest(
     @field:NotBlank
-    @field:Length(min = 1, max = 255, message = "FirstName must be at least 1 characters long")
+    @field:Length(
+        min = 1,
+        max = 255,
+        message = "FirstName must be at least 1 characters long",
+    )
     val firstName: String,
     @field:NotBlank
-    @field:Length(min = 1, max = 255, message = "LastName must be at least 1 characters long")
+    @field:Length(
+        min = 1,
+        max = 255,
+        message = "LastName must be at least 1 characters long",
+    )
     val lastName: String,
     @field:NotBlank
     @field:Pattern(

@@ -5,7 +5,9 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface BookingRepository : JpaRepository<BookingEntity, UUID> {
-    fun getBookingsByRentalListingEntityId(rentalListingId: UUID): List<BookingEntity>
+    fun getBookingsByRentalListingEntityId(
+        rentalListingId: UUID,
+    ): List<BookingEntity>
 
     fun getBookingsByUserEntityId(userId: UUID): List<BookingEntity>
 }

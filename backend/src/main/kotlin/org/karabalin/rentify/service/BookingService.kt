@@ -27,9 +27,15 @@ class BookingService(
         val userOptional = userRepository.findById(UUID.fromString(userId))
         val user =
             userOptional.orElseThrow {
-                ResponseStatusException(HttpStatus.NOT_FOUND, "User with id `$userId` not found")
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "User with id `$userId` not found",
+                )
             }
-        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(addBookingRequest.rentalListingId))
+        val rentalListingOptional =
+            rentalListingRepository.findById(
+                UUID.fromString(addBookingRequest.rentalListingId),
+            )
         val rentalListing =
             rentalListingOptional.orElseThrow {
                 ResponseStatusException(
@@ -48,7 +54,8 @@ class BookingService(
     }
 
     fun getBookingById(bookingId: String): GetBookingResponse {
-        val bookingOptional = bookingRepository.findById(UUID.fromString(bookingId))
+        val bookingOptional =
+            bookingRepository.findById(UUID.fromString(bookingId))
         val booking =
             bookingOptional.orElseThrow {
                 ResponseStatusException(
@@ -68,7 +75,8 @@ class BookingService(
     }
 
     fun getBookingsByUserId(userId: String): List<GetBookingResponse> {
-        val bookingList = bookingRepository.getBookingsByUserEntityId(UUID.fromString(userId))
+        val bookingList =
+            bookingRepository.getBookingsByUserEntityId(UUID.fromString(userId))
         val getBookingResponseList =
             bookingList.map {
                 GetBookingResponse(
@@ -82,8 +90,13 @@ class BookingService(
         return getBookingResponseList
     }
 
-    fun getBookingsByRentalListingId(rentalListingId: String): List<GetBookingResponse> {
-        val bookingList = bookingRepository.getBookingsByRentalListingEntityId(UUID.fromString(rentalListingId))
+    fun getBookingsByRentalListingId(
+        rentalListingId: String,
+    ): List<GetBookingResponse> {
+        val bookingList =
+            bookingRepository.getBookingsByRentalListingEntityId(
+                UUID.fromString(rentalListingId),
+            )
         val getBookingResponseList =
             bookingList.map {
                 GetBookingResponse(
@@ -101,7 +114,8 @@ class BookingService(
         bookingId: String,
         updateBookingRequest: UpdateBookingRequest,
     ) {
-        val bookingOptional = bookingRepository.findById(UUID.fromString(bookingId))
+        val bookingOptional =
+            bookingRepository.findById(UUID.fromString(bookingId))
         val booking =
             bookingOptional.orElseThrow {
                 ResponseStatusException(
@@ -115,7 +129,8 @@ class BookingService(
     }
 
     fun deleteBookingById(bookingId: String) {
-        val bookingOptional = bookingRepository.findById(UUID.fromString(bookingId))
+        val bookingOptional =
+            bookingRepository.findById(UUID.fromString(bookingId))
         bookingOptional.ifPresent {
             bookingRepository.delete(it)
         }

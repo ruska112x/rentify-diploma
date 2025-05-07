@@ -64,3 +64,4 @@ dist-ssr
 *.sw?
 
 /backend/config/application.yaml
+/backend/config/application-docker.yaml

@@ -4,6 +4,7 @@ import org.karabalin.rentify.repository.UserRepository
 import org.karabalin.rentify.security.CustomUserDetailsService
 import org.karabalin.rentify.security.JwtAuthenticationFilter
 import org.karabalin.rentify.util.JwtUtil
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.authentication.AuthenticationManager
@@ -26,6 +27,7 @@ class SecurityConfig(
     private val jwtUtil: JwtUtil,
     private val userDetailsService: CustomUserDetailsService,
     private val userRepository: UserRepository,
+    @Value("\${security.frontend.uri}") private val frontendUri: String,
 ) {
     @Bean
     fun passwordEncoder(): PasswordEncoder = BCryptPasswordEncoder()
@@ -36,7 +38,7 @@ class SecurityConfig(
     @Bean
     fun corsConfigurationSource(): CorsConfigurationSource {
         val configuration = CorsConfiguration()
-        configuration.allowedOrigins = listOf("http://localhost:5173")
+        configuration.allowedOrigins = listOf(frontendUri)
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")
         configuration.allowCredentials = true

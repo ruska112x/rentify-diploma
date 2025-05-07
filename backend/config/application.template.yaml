@@ -18,6 +18,10 @@ spring:
       max-file-size: 5MB
       max-request-size: 9MB
 
+security:
+  frontend:
+    uri: http://frontend:80
+
 jwt:
   secret: 12311231123112311231123112311231
   accessTokenValidity: 900

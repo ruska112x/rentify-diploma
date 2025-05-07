@@ -4,7 +4,6 @@ plugins {
     id("org.springframework.boot") version "3.4.3"
     id("io.spring.dependency-management") version "1.1.7"
     kotlin("plugin.jpa") version "1.9.25"
-    id("io.gitlab.arturbosch.detekt") version "1.23.6"
 }
 
 group = "org.karabalin"
@@ -18,17 +17,6 @@ java {
 
 repositories {
     mavenCentral()
-}
-
-configurations.all {
-    resolutionStrategy.eachDependency {
-        if (requested.group == "org.jetbrains.kotlin") {
-            useVersion(
-                io.gitlab.arturbosch.detekt
-                    .getSupportedKotlinVersion(),
-            )
-        }
-    }
 }
 
 val jjwtVersion = "0.12.6"
@@ -70,9 +58,4 @@ allOpen {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-
-detekt {
-    buildUponDefaultConfig = true
-    allRules = false
 }

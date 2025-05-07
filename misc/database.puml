@@ -1,0 +1,143 @@
+@startuml database
+allow_mixing
+
+scale max 1920 width
+scale max 1080 height
+
+left to right direction
+top to bottom direction
+
+
+package "Moderation" {
+  package "Chats" {
+    package "Minimal" {
+      entity "User" as user {
+        * id: UUID <<generated>> <<PK>>
+        ---
+        * email: String <<unique>>
+        * password: String
+        * firstName: String
+        * lastName: String
+        * phone: String
+        * lastLoginTime: Instant
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
+        * statusId: Long <<FK>>
+        * roleId: Long <<FK>>
+      }
+
+      ' USER, ADMIN, MODERATOR
+      entity "UserRole" as userRole {
+        * id: Long <<generated>> <<PK>>
+        ---
+        * name: String
+      }
+
+      ' ACTIVE, BLOCKED, DELETED
+      entity "UserStatus" as userStatus {
+        * id: Long <<generated>> <<PK>>
+        ---
+        * name: String
+      }
+
+      entity "RentalListing" as rentalListing {
+        * id: UUID <<generated>> <<PK>>
+        ---
+        * title: String
+        * description: String
+        * address: String
+        * tariffDescription: String
+        * autoRenew: boolean
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
+        * userId: UUID <<FK>>
+        * statusId: Long <<FK>>
+      }
+
+      ' ACTIVE, BLOCKED, ONDELETION, DELETED
+      entity "RentalListingStatus" as rentalListingStatus {
+        * id: Long <<generated>> <<PK>>
+        ---
+        * name: String
+      }
+
+      entity "Booking" as booking {
+        * id: UUID <<generated>> <<PK>>
+        ---
+        * startDateTime: Instant
+        * endDateTime: Instant
+        * createdAtTime: Instant
+        * updatedAtTime: Instant
+        * rentalListingId: UUID <<FK>>
+        * userId: UUID <<FK>>
+      }
+
+      entity "Review" as review {
+        * id: UUID <<generated>> <<PK>>
+        ---
+        * text: String
+        * createdAtTime: Instant
+        * rentalListingId: UUID <<FK>>
+        * authorId: UUID <<FK>>
+      }
+
+      user ||--|| userRole
+      user ||--|| userStatus
+
+      rentalListing }o--|| user
+      rentalListing ||--|| rentalListingStatus
+
+      booking }o--|| rentalListing
+      booking }o--|| user
+
+      review }o--|| user
+      review }o--|| rentalListing
+    }
+
+    entity "Chat" as chat {
+      * id: UUID <<generated>> <<PK>>
+      ---
+      * createdAtTime: Instant
+      * typeId: Long <<FK>>
+      * userIdF: UUID <<FK>>
+      * userIdS: UUID <<FK>>
+    }
+
+    entity "ChatType" as chatType {
+      * id: Long <<generated>> <<PK>>
+      ---
+      * name: String
+    }
+
+    entity "Message" as message {
+      * id: Long <<generated>> <<PK>>
+      ---
+      * content: String
+      * createdAtTime: Instant
+      attachmentUrl: String
+      * chatId: UUID <<FK>>
+      * authorId: UUID <<FK>>
+    }
+
+    ' chat }o--|| user
+    ' chat }o--|| user
+    chat ||--|| chatType
+
+    message }o--|| chat
+    ' message }o--|| user
+  }
+
+  entity "UserBlockPeriods" as userBlockPeriods {
+    * id: Long <<generated>> <<PK>>
+    ---
+    * startDateTime: Instant
+    * endDateTime: Instant
+    * reason: String
+    * userId: UUID <<FK>>
+  }
+
+  ' userBlockPeriods }o--|| user
+}
+
+
+@enduml

@@ -1,0 +1,35 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: backend
+  datasource:
+    driver: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/rentifydb
+    username: pguser
+    password: pgpassword
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: update
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 9MB
+
+security:
+  frontend:
+    uri: http://frontend:80
+
+jwt:
+  secret: 12311231123112311231123112311231
+  accessTokenValidity: 900
+  refreshTokenValidity: 604800
+
+s3:
+  accessKey: access
+  secretKey: secret
+  bucketName: name
+  region: ru-central1
+  endpoint: "https://storage.yandexcloud.net"

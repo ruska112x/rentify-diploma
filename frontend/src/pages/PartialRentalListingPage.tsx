@@ -70,7 +70,7 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
                     onClick={() => navigate("/")}
                     sx={{ mt: 2 }}
                 >
-                    Back to Listings
+                    Назад
                 </Button>
             </Container>
         );
@@ -91,27 +91,24 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
                     </Box>
                     <Box>
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Description:</strong> {listing.description || "No description provided"}
+                            <strong>Описание:</strong> {listing.description || "Нет описания"}
                         </Typography>
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Address:</strong> {listing.address}
+                            <strong>Адрес:</strong> {listing.address}
                         </Typography>
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Tariff:</strong> {listing.tariffDescription}
+                            <strong>Тариф:</strong> {listing.tariffDescription}
                         </Typography>
                     </Box>
                 </Box>
                 <Box marginTop={4} sx={{ backgroundColor: "#f5f5f5", padding: 2, borderRadius: 2, width: "300px" }}>
                     <Typography variant="h5" gutterBottom>
                         <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: "none" }}>
-                            Owner
+                            Владелец {user.firstName + " " + user.lastName}
                         </Link>
                     </Typography>
                     <Box sx={{ mt: 2, textAlign: "center" }}>
                         <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" />
-                        <Typography variant="h6" gutterBottom>
-                            {user.firstName + " " + user.lastName}
-                        </Typography>
                     </Box>
                 </Box>
             </Paper>

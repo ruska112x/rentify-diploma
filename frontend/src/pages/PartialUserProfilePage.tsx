@@ -64,7 +64,7 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                     onClick={() => navigate("/")}
                     sx={{ mt: 2 }}
                 >
-                    Back to Home
+                    Назад
                 </Button>
             </Container>
         );
@@ -84,11 +84,11 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                     </Box>
                     <Box>
                         <Typography variant="h5" gutterBottom>
-                            Rental Listings
+                            Объявления
                         </Typography>
                         {rentalListings.length === 0 ? (
                             <Typography variant="body1">
-                                No rental listings found.
+                                Объявлений нет
                             </Typography>
                         ) : (
                             <List>
@@ -114,10 +114,10 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                                                     {listing.description || "No description provided"}
                                                 </Typography>
                                                 <Typography component="span" variant="body2">
-                                                    Address: {listing.address}
+                                                    Адрес: {listing.address}
                                                 </Typography>
                                                 <Typography component="span" variant="body2">
-                                                    Tariff: {listing.tariffDescription}
+                                                    Тариф: {listing.tariffDescription}
                                                 </Typography>
                                             </Box>
                                         </ListItem>

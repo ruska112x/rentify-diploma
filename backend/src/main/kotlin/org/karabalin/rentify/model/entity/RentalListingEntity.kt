@@ -13,7 +13,7 @@ import java.time.Instant
 import java.util.UUID
 
 @Entity
-@Table(name = "rentalListings")
+@Table(name = "rental_listings")
 class RentalListingEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)

@@ -23,7 +23,12 @@ val jjwtVersion = "0.12.6"
 val springDocVersion = "2.8.5"
 val awsSdkVersion = "2.31.30"
 
+configurations.all {
+    exclude(group = "commons-logging", module = "commons-logging")
+}
+
 dependencies {
+    implementation("org.liquibase:liquibase-core")
     implementation("io.jsonwebtoken:jjwt-api:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-impl:$jjwtVersion")
     implementation("io.jsonwebtoken:jjwt-jackson:$jjwtVersion")

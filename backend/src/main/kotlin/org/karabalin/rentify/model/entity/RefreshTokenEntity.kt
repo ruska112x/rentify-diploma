@@ -6,7 +6,7 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "refreshToken")
+@Table(name = "refresh_tokens")
 class RefreshTokenEntity(
     @Id
     @Column(unique = true, nullable = false)

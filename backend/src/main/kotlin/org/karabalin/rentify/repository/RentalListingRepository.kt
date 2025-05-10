@@ -14,9 +14,10 @@ interface RentalListingRepository : JpaRepository<RentalListingEntity, UUID> {
 
     @Query(
         nativeQuery = true,
-        value = """SELECT * FROM rental_listings rl
-            | ORDER BY rl.created_at_time
-            | LIMIT 10
+        value = """
+            SELECT * FROM rental_listings rl
+            ORDER BY rl.created_at_time
+            LIMIT 10
         """,
     )
     fun findAllByOrderByCreatedAtTimeDesc(): List<RentalListingEntity>

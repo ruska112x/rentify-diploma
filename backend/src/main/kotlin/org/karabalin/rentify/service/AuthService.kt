@@ -21,7 +21,7 @@ import org.springframework.stereotype.Service
 import org.springframework.web.multipart.MultipartFile
 import org.springframework.web.server.ResponseStatusException
 import java.time.Instant
-import java.util.*
+import java.util.UUID
 
 @Service
 class AuthService(
@@ -102,7 +102,7 @@ class AuthService(
         if (user.userStatusEntity.name != "ACTIVE") {
             throw ResponseStatusException(
                 HttpStatus.NOT_FOUND,
-                "User with this email deleted",
+                "User with this email and password not found",
             )
         }
 

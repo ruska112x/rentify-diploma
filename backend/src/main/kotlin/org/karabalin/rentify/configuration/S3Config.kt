@@ -18,17 +18,22 @@ class S3Config(
     @Value("\${s3.region}") private val region: String,
     @Value("\${s3.endpoint}") private val endpoint: String,
 ) {
+    private val awsRegion = Region.of(region)
+
+    private val awsBasicCredentials =
+        AwsBasicCredentials.create(
+            accessKey,
+            secretKey,
+        )
+
     @Bean
     fun s3Client(): S3Client =
         S3Client
             .builder()
-            .region(Region.of(region))
+            .region(awsRegion)
             .credentialsProvider(
                 StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(
-                        accessKey,
-                        secretKey,
-                    ),
+                    awsBasicCredentials,
                 ),
             ).endpointOverride(URI.create(endpoint))
             .httpClientBuilder(ApacheHttpClient.builder())
@@ -38,13 +43,10 @@ class S3Config(
     fun s3Presigner(): S3Presigner =
         S3Presigner
             .builder()
-            .region(Region.of(region))
+            .region(awsRegion)
             .credentialsProvider(
                 StaticCredentialsProvider.create(
-                    AwsBasicCredentials.create(
-                        accessKey,
-                        secretKey,
-                    ),
+                    awsBasicCredentials,
                 ),
             ).endpointOverride(URI.create(endpoint))
             .build()

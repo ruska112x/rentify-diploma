@@ -7,7 +7,14 @@ import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.service.RentalListingService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PatchMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestPart
+import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
 
 @RestController
@@ -21,7 +28,7 @@ class RentalListingController(
     ): ResponseEntity<GetExtendedRentalListingResponse> {
         val rentalListing =
             rentalListingService.findRentalListingById(rentalListingId)
-        return ResponseEntity.ok(
+        val getExtendedRentalListingResponse =
             GetExtendedRentalListingResponse(
                 rentalListing.id,
                 rentalListing.title,
@@ -32,7 +39,9 @@ class RentalListingController(
                 rentalListing.mainImageData,
                 rentalListing.additionalImagesData,
                 rentalListing.userId,
-            ),
+            )
+        return ResponseEntity.ok(
+            getExtendedRentalListingResponse,
         )
     }
 
@@ -56,7 +65,10 @@ class RentalListingController(
             },
         )
 
-    @PostMapping("/rentalListings/create")
+    @PostMapping(
+        value = ["/rentalListings/create"],
+        consumes = ["multipart/form-data"],
+    )
     fun create(
         @Valid @RequestPart("data") addRentalListingRequest:
             AddRentalListingRequest,
@@ -71,7 +83,7 @@ class RentalListingController(
     }
 
     @PatchMapping(
-        "/rentalListings/{rentalListingId}",
+        value = ["/rentalListings/{rentalListingId}"],
         consumes = ["multipart/form-data"],
     )
     fun updateRentalListingById(
@@ -136,7 +148,7 @@ class RentalListingUnauthorizedController(
     ): ResponseEntity<GetPartialRentalListingResponse> {
         val rentalListing =
             rentalListingService.findRentalListingById(rentalListingId)
-        return ResponseEntity.ok(
+        val getPartialRentalListingResponse =
             GetPartialRentalListingResponse(
                 rentalListing.id,
                 rentalListing.title,
@@ -146,7 +158,9 @@ class RentalListingUnauthorizedController(
                 rentalListing.mainImageData,
                 rentalListing.additionalImagesData,
                 rentalListing.userId,
-            ),
+            )
+        return ResponseEntity.ok(
+            getPartialRentalListingResponse,
         )
     }
 

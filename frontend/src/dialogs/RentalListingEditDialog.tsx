@@ -115,7 +115,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const validateForm = useCallback(() => {
         const errors: FormErrors = {
             title: formData.title ? '' : 'Title is required',
-            description: formData.description ? '' : 'Description is required',
+            description: '',
             address: formData.address ? '' : 'Address is required',
             tariffDescription: formData.tariffDescription ? '' : 'Tariff description is required',
             mainImage: mainImage ? '' : 'Main image is required',

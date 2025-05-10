@@ -180,6 +180,10 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
             .set('minute', minutes)
             .set('second', 0);
 
+        if (selectedDateTime.isBefore(dayjs())) {
+            return true;
+        }
+
         const isDisabled = existingBookings.some((booking) => {
             const bookingStart = parseUnixTimestamp(booking.startDateTime);
             const bookingEnd = parseUnixTimestamp(booking.endDateTime);

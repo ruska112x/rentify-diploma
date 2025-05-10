@@ -110,9 +110,9 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
                             {listing.title}
                         </Typography>
                         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                            <ImageSquare imageUrl={listing.mainImageData.link} fallbackText="Rental Main Photo" showFullScreen={true} size={256} />
+                            <ImageSquare imageUrl={listing.mainImageData.link} showFullScreen={true} size={256} altText="Главное изображение объявления" />
                             {listing.additionalImagesData.map((imageData, idx) => (
-                                <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} fallbackText={`Additional Image ${idx}`} showFullScreen={true} size={196} />
+                                <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} showFullScreen={true} size={196} altText={`Дополнительное изображение ${idx}`} />
                             ))}
                         </Box>
                         <Box>
@@ -134,7 +134,7 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
                             </Link>
                         </Typography>
                         <Box sx={{ mt: 2, textAlign: 'center' }}>
-                            <ImageSquare imageUrl={user.imageData.link} fallbackText="User Photo" />
+                            <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" />
                         </Box>
                         <Typography variant="h6" gutterBottom>
                             {user.firstName + " " + user.lastName}

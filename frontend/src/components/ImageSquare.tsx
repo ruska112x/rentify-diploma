@@ -14,7 +14,8 @@ import FullscreenIcon from '@mui/icons-material/Fullscreen';
 
 interface ImageSquareProps {
     imageUrl?: string;
-    fallbackText: string;
+    altText: string;
+    fallbackText?: string;
     size?: number | string;
     border?: string;
     borderRadius?: number | string;
@@ -24,7 +25,8 @@ interface ImageSquareProps {
 
 const ImageSquare: React.FC<ImageSquareProps> = ({
     imageUrl,
-    fallbackText,
+    altText,
+    fallbackText = "Не удалось загрузить изображение",
     size = 150,
     border = 'none',
     borderRadius = 4,
@@ -62,7 +64,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     <>
                         <img
                             src={imageUrl}
-                            alt={fallbackText}
+                            alt={altText}
                             style={{
                                 width: '100%',
                                 height: '100%',
@@ -130,7 +132,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     >
                         <img
                             src={imageUrl}
-                            alt={fallbackText}
+                            alt={altText}
                             style={{
                                 maxWidth: '100%',
                                 maxHeight: '80vh',

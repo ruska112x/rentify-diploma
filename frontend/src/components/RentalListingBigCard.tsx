@@ -21,7 +21,7 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
       }}
     >
       <Box sx={{ flexShrink: 0, mr: 4 }}>
-        <ImageSquare imageUrl={rental.mainImageData.link} fallbackText="Rental Main Photo" size={256} />
+        <ImageSquare imageUrl={rental.mainImageData.link} size={256} altText="Главное изображение объявления" />
       </Box>
       <Box sx={{ flexGrow: 1 }}>
         <Typography variant="h6" component="h3">

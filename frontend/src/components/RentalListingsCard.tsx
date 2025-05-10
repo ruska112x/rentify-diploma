@@ -104,9 +104,9 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                                 <ListItem sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
                                     <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
                                         <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
-                                            <ImageSquare imageUrl={rental.mainImageData.link} fallbackText="Rental Main Photo" />
+                                            <ImageSquare imageUrl={rental.mainImageData.link} altText="Главное изображение объявления" />
                                             {rental.additionalImagesData.map((imageData, idx) => (
-                                                <ImageSquare key={`${rental.id}-additional-${idx}`} imageUrl={imageData.link} fallbackText={`Additional Image ${idx}`} />
+                                                <ImageSquare key={`${rental.id}-additional-${idx}`} imageUrl={imageData.link} altText={`Дополнительное изображение ${idx}`} />
                                             ))}
                                         </Box>
                                         <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>

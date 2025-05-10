@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import {
     Container,
     Paper,
@@ -10,14 +10,14 @@ import {
     ListItemText,
     Tabs,
     Tab,
-} from '@mui/material';
-import ProfileCard from '../components/ProfileCard';
-import { RootState } from '../state/store';
-import RentalListingsCard from '../components/RentalListingsCard';
-import { Navigate } from 'react-router';
-import LoadingSpinner from '../components/LoadingSpinner';
-import { parseJwtPayload } from '../shared/jwtDecode';
-import BookingsCard from '../components/UserBookingsCard';
+} from "@mui/material";
+import ProfileCard from "../components/ProfileCard";
+import { RootState } from "../state/store";
+import RentalListingsCard from "../components/RentalListingsCard";
+import { Navigate } from "react-router";
+import LoadingSpinner from "../components/LoadingSpinner";
+import { parseJwtPayload } from "../shared/jwtDecode";
+import BookingsCard from "../components/UserBookingsCard";
 
 const MyProfile: React.FC = () => {
     const { accessToken, isRefreshing } = useSelector((state: RootState) => state.auth);
@@ -53,19 +53,19 @@ const MyProfile: React.FC = () => {
     }
 
     return (
-        <Container sx={{ maxWidth: '40vw', mt: 4, mb: 4 }}>
+        <Container sx={{ maxWidth: "40vw", mt: 4, mb: 4 }}>
             <Paper elevation={3} sx={{ p: 3 }}>
                 <Typography variant="h4" gutterBottom>
-                    Account Details
+                    Личный кабинет
                 </Typography>
             </Paper>
 
             <Paper elevation={3} sx={{ mt: 1, p: 3 }}>
                 <Tabs value={tabValue} onChange={handleTabChange} centered>
-                    <Tab label="Profile" />
-                    <Tab label="Rentail Listngs" />
-                    <Tab label="Bookings" />
-                    <Tab label="Reviews" />
+                    <Tab label="Данные профиля" />
+                    <Tab label="Ваши объявления" />
+                    <Tab label="Ваши аренды" />
+                    <Tab label="Отзывы" />
                 </Tabs>
 
                 {tabValue === 0 && (
@@ -82,7 +82,7 @@ const MyProfile: React.FC = () => {
 
                 {tabValue === 3 && (
                     <Box sx={{ mt: 1 }}>
-                        <Typography variant="h5">Reviews</Typography>
+                        <Typography variant="h5">Отзывы</Typography>
                         <List>
                             <ListItem>
                                 <ListItemText primary="3.1" secondary="3.2" />

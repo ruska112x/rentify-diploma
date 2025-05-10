@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 import {
     Box,
     Typography,
@@ -9,8 +9,8 @@ import {
     DialogContent,
     DialogActions,
     Button,
-} from '@mui/material';
-import FullscreenIcon from '@mui/icons-material/Fullscreen';
+} from "@mui/material";
+import FullscreenIcon from "@mui/icons-material/Fullscreen";
 
 interface ImageSquareProps {
     imageUrl?: string;
@@ -28,7 +28,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
     altText,
     fallbackText = "Не удалось загрузить изображение",
     size = 150,
-    border = 'none',
+    border = "none",
     borderRadius = 4,
     sx = {},
     showFullScreen = false,
@@ -49,14 +49,14 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                 sx={{
                     width: size,
                     height: size,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     border,
                     borderRadius,
-                    overflow: 'hidden',
-                    bgcolor: 'grey.100',
-                    position: 'relative',
+                    overflow: "hidden",
+                    bgcolor: "grey.100",
+                    position: "relative",
                     ...sx,
                 }}
             >
@@ -66,9 +66,9 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                             src={imageUrl}
                             alt={altText}
                             style={{
-                                width: '100%',
-                                height: '100%',
-                                objectFit: 'cover',
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
                             }}
                             loading="lazy"
                         />
@@ -76,12 +76,12 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                             <IconButton
                                 onClick={handleOpenFullScreen}
                                 sx={{
-                                    position: 'absolute',
+                                    position: "absolute",
                                     top: 8,
                                     right: 8,
-                                    bgcolor: 'rgba(0, 0, 0, 0.5)',
-                                    color: 'white',
-                                    '&:hover': { bgcolor: 'rgba(0, 0, 0, 0.7)' },
+                                    bgcolor: "rgba(0, 0, 0, 0.5)",
+                                    color: "white",
+                                    "&:hover": { bgcolor: "rgba(0, 0, 0, 0.7)" },
                                 }}
                                 size="small"
                             >
@@ -93,7 +93,7 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     <Typography
                         variant="body2"
                         color="text.secondary"
-                        sx={{ textAlign: 'center', px: 2 }}
+                        sx={{ textAlign: "center", px: 2 }}
                     >
                         {fallbackText}
                     </Typography>
@@ -108,40 +108,40 @@ const ImageSquare: React.FC<ImageSquareProps> = ({
                     slotProps={{
                         backdrop: {
                             sx: {
-                                backdropFilter: 'blur(8px)',
-                                backgroundColor: 'rgba(0, 0, 0, 0.2)',
+                                backdropFilter: "blur(8px)",
+                                backgroundColor: "rgba(0, 0, 0, 0.2)",
                             },
                         },
                     }}
                     sx={{
-                        '& .MuiDialog-paper': {
-                            bgcolor: 'rgba(255, 255, 255, 0.7)',
-                            boxShadow: 'none',
+                        "& .MuiDialog-paper": {
+                            bgcolor: "rgba(255, 255, 255, 0.7)",
+                            boxShadow: "none",
                             borderRadius: 2,
                         },
                     }}
                 >
                     <DialogContent
                         sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
                             p: 2,
-                            bgcolor: 'transparent',
+                            bgcolor: "transparent",
                         }}
                     >
                         <img
                             src={imageUrl}
                             alt={altText}
                             style={{
-                                maxWidth: '100%',
-                                maxHeight: '80vh',
-                                objectFit: 'contain',
+                                maxWidth: "100%",
+                                maxHeight: "80vh",
+                                objectFit: "contain",
                                 borderRadius: 4,
                             }}
                         />
                     </DialogContent>
-                    <DialogActions sx={{ bgcolor: 'transparent', justifyContent: 'center' }}>
+                    <DialogActions sx={{ bgcolor: "transparent", justifyContent: "center" }}>
                         <Button
                             onClick={handleCloseFullScreen}
                             variant="contained"

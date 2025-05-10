@@ -1,6 +1,6 @@
-import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
-import { refresh, logout } from '../state/authSlice';
-import { AppDispatch } from '../state/store';
+import axios, { AxiosRequestConfig, AxiosResponse, AxiosError, InternalAxiosRequestConfig } from "axios";
+import { refresh, logout } from "../state/authSlice";
+import { AppDispatch } from "../state/store";
 
 const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -54,7 +54,7 @@ export const configureAuthInterceptors = (
                     }
 
                     const { accessToken } = getState().auth;
-                    if (!accessToken) throw new Error('Refresh failed');
+                    if (!accessToken) throw new Error("Refresh failed");
 
                     originalRequest.headers = originalRequest.headers || {};
                     originalRequest.headers.Authorization = `Bearer ${accessToken}`;

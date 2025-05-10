@@ -1,7 +1,7 @@
-import { Provider } from 'react-redux'
-import MainRouter from './MainRouter'
-import { store } from '../state/store'
-import { BrowserRouter } from 'react-router'
+import { Provider } from "react-redux"
+import MainRouter from "./MainRouter"
+import { store } from "../state/store"
+import { BrowserRouter } from "react-router"
 
 const App: React.FC = () => {
   return (

@@ -14,7 +14,7 @@ const HomePage = () => {
             .then((response) => {
                 setRentalListings(response.data);
             }).catch((error) => {
-                console.error('Error fetching rental listings:', error);
+                console.error("Error fetching rental listings:", error);
             });
     };
     useEffect(() => {
@@ -29,26 +29,26 @@ const HomePage = () => {
         );
     }
     return (
-        <Container sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', mt: 4 }}>
-            <Paper sx={{ minHeight: '10vh', minWidth: '50vw', maxWidth: '50vw', justifyContent: 'center', display: 'flex', alignItems: 'center' }}>
-                <Typography variant="h4">Welcome to Rentify</Typography>
+        <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", mt: 4 }}>
+            <Paper sx={{ minHeight: "10vh", minWidth: "50vw", maxWidth: "50vw", justifyContent: "center", display: "flex", alignItems: "center" }}>
+                <Typography variant="h4">Топ 10 новых объявлений</Typography>
             </Paper>
             {
                 rentalListings.length === 0 ?
                     (<Typography variant="body1" sx={{ mt: 2 }}>
-                        No rental listings found.
+                        Объявлений не найдено
                     </Typography>
                     ) : (
                         <Container sx={{
-                            display: 'grid',
-                            gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' },
+                            display: "grid",
+                            gridTemplateColumns: { xs: "1fr", md: "repeat(2, 1fr)" },
                             gap: 2,
                             mt: 2,
-                            width: '100%',
-                            maxWidth: '50vw',
+                            width: "100%",
+                            maxWidth: "50vw",
                         }}>
                             {rentalListings.map((rental) => (
-                                <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>
+                                <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: "none" }}>
                                     <RentalListingBigCard rental={rental} />
                                 </Link>
                             ))}

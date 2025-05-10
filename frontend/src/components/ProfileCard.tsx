@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
     Container,
     Box,
@@ -8,15 +8,15 @@ import {
     ListItemText,
     Alert,
     Button
-} from '@mui/material';
-import { AppDispatch, RootState } from '../state/store';
-import { clearUserInfo, fetchUser } from '../state/userSlice';
-import authoredApi from '../api/authoredApi';
-import { logoutUser } from '../state/authSlice';
-import { useNavigate } from 'react-router';
-import ProfileEditDialog from '../dialogs/ProfileEditDialog';
-import LoadingSpinner from './LoadingSpinner';
-import ImageSquare from './ImageSquare';
+} from "@mui/material";
+import { AppDispatch, RootState } from "../state/store";
+import { clearUserInfo, fetchUser } from "../state/userSlice";
+import authoredApi from "../api/authoredApi";
+import { logoutUser } from "../state/authSlice";
+import { useNavigate } from "react-router";
+import ProfileEditDialog from "../dialogs/ProfileEditDialog";
+import LoadingSpinner from "./LoadingSpinner";
+import ImageSquare from "./ImageSquare";
 
 const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -46,10 +46,10 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
             await authoredApi.delete(`/users`);
             await dispatch(logoutUser()).unwrap();
             await dispatch(clearUserInfo());
-            navigate('/login');
+            navigate("/login");
         } catch (err) {
-            console.error('Delete error:', err);
-            alert('Failed to delete account. Please try again.');
+            console.error("Delete error:", err);
+            alert("Не удалось удалить аккаунт. Пожалуйста, попробуйте позже.");
         }
     }
 
@@ -61,7 +61,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
 
     if (error) {
         return (
-            <Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+            <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
                 <Alert severity="error">{error}</Alert>
             </Container>
         );
@@ -77,23 +77,23 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
                 <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" />
                 <List>
                     <ListItem>
-                        <ListItemText primary="Email" secondary={user.email} />
+                        <ListItemText primary="Электронная почта" secondary={user.email} />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="First Name" secondary={user.firstName} />
+                        <ListItemText primary="Имя" secondary={user.firstName} />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Last Name" secondary={user.lastName} />
+                        <ListItemText primary="Фамилия" secondary={user.lastName} />
                     </ListItem>
                     <ListItem>
-                        <ListItemText primary="Phone" secondary={user.phone} />
+                        <ListItemText primary="Номер телефона" secondary={user.phone} />
                     </ListItem>
                 </List>
                 <Button variant="contained" onClick={handleOpen} sx={{ mt: 2, mr: 2 }}>
-                    Edit Profile
+                    Редактировать
                 </Button>
                 <Button variant="contained" color="error" onClick={handleDelete} sx={{ mt: 2, mr: 2 }}>
-                    Delete Account
+                    Удалить
                 </Button>
             </Box>
 

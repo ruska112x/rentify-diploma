@@ -1,9 +1,9 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import { ExtendedUser } from '../shared/types';
-import authoredApi from '../api/authoredApi';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import { ExtendedUser } from "../shared/types";
+import authoredApi from "../api/authoredApi";
 
 export const fetchUser = createAsyncThunk(
-    'user/fetchUser',
+    "user/fetchUser",
     async (id: string, { rejectWithValue }) => {
         try {
             const response = await authoredApi.get(`/users/${id}`);
@@ -27,7 +27,7 @@ const initialState: UserState = {
 };
 
 const userSlice = createSlice({
-    name: 'user',
+    name: "user",
     initialState,
     reducers: {
         clearUserInfo: (state) => {

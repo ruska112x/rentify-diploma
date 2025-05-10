@@ -1,6 +1,6 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { AccessToken } from '../shared/types';
-import api from '../api/api';
+import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { AccessToken } from "../shared/types";
+import api from "../api/api";
 
 interface AuthState {
   accessToken: string | null;
@@ -17,10 +17,10 @@ const initialState: AuthState = {
 };
 
 export const logoutUser = createAsyncThunk(
-  'auth/logoutUser',
+  "auth/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await api.post('/auth/logout', {}, { withCredentials: true });
+      await api.post("/auth/logout", {}, { withCredentials: true });
     } catch (err) {
       return rejectWithValue(err);
     }
@@ -28,10 +28,10 @@ export const logoutUser = createAsyncThunk(
 );
 
 export const refresh = createAsyncThunk(
-  'auth/refresh',
+  "auth/refresh",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await api.post('/auth/refresh', {}, { withCredentials: true });
+      const response = await api.post("/auth/refresh", {}, { withCredentials: true });
       const responseData = response.data as AccessToken;
       return responseData;
     } catch (err) {
@@ -41,7 +41,7 @@ export const refresh = createAsyncThunk(
 );
 
 const authSlice = createSlice({
-  name: 'auth',
+  name: "auth",
   initialState,
   reducers: {
     setAccessToken: (state, action: PayloadAction<{ accessToken: string; }>) => {

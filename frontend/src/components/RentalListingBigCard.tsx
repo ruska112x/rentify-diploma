@@ -12,12 +12,12 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
       elevation={2}
       sx={{
         p: 2,
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        height: '300px',
-        width: '100%',
-        boxSizing: 'border-box',
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        height: "300px",
+        width: "100%",
+        boxSizing: "border-box",
       }}
     >
       <Box sx={{ flexShrink: 0, mr: 4 }}>
@@ -28,10 +28,10 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
           {rental.title}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Address: {rental.address}
+          Адрес: {rental.address}
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Tariff: {rental.tariffDescription}
+          Тариф: {rental.tariffDescription}
         </Typography>
       </Box>
     </Paper>

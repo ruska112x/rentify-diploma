@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import authoredApi from '../api/authoredApi';
+import { useEffect, useState } from "react";
+import authoredApi from "../api/authoredApi";
 import {
     Paper,
     Typography,
@@ -7,12 +7,12 @@ import {
     List,
     ListItem,
     Button,
-} from '@mui/material';
-import LoadingSpinner from './LoadingSpinner';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import { Link } from 'react-router';
-import BookingEditDialog from '../dialogs/BookingEditDialog';
+} from "@mui/material";
+import LoadingSpinner from "./LoadingSpinner";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import { Link } from "react-router";
+import BookingEditDialog from "../dialogs/BookingEditDialog";
 
 dayjs.extend(utc);
 
@@ -97,7 +97,7 @@ const UserBookingsCard: React.FC<BookingsCardProps> = ({ userId }) => {
 
             setBookings(enrichedBookings);
         } catch (error) {
-            console.error('Error fetching bookings:', error);
+            console.error("Error fetching bookings:", error);
         } finally {
             setLoading(false);
         }
@@ -120,7 +120,7 @@ const UserBookingsCard: React.FC<BookingsCardProps> = ({ userId }) => {
             await authoredApi.delete(`/bookings/${bookingId}`);
             setBookings((prevBookings) => prevBookings.filter((booking) => booking.id !== bookingId));
         } catch (error) {
-            console.error('Error deleting booking:', error);
+            console.error("Error deleting booking:", error);
         }
     };
 
@@ -132,36 +132,35 @@ const UserBookingsCard: React.FC<BookingsCardProps> = ({ userId }) => {
 
     return (
         <Box sx={{ mt: 1 }}>
-            <Typography variant="h5">Bookings</Typography>
             {bookings.length === 0 ? (
                 <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
-                    No bookings found.
+                    Аренд не найдено
                 </Typography>
             ) : (
                 <List>
                     {bookings.map((booking) => (
                         <Paper key={booking.id} elevation={2} sx={{ mb: 2, p: 2 }}>
-                            <ListItem sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                <Link to={`/rentalListings/${booking.rentalListingId}`} style={{ textDecoration: 'none' }}>
+                            <ListItem sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                <Link to={`/rentalListings/${booking.rentalListingId}`} style={{ textDecoration: "none" }}>
                                     <Typography variant="h6">{booking.rentalTitle}</Typography>
                                 </Link>
                                 <Box display="flex" flexDirection="column">
                                     <Typography component="span" variant="body2">
-                                        Start: {dayjs.unix(parseInt(booking.startDateTime)).format('DD MMMM, YYYY, HH:mm')}
+                                        С: {dayjs.unix(parseInt(booking.startDateTime)).format("DD MMMM, YYYY, HH:mm")}
                                     </Typography>
                                     <Typography component="span" variant="body2">
-                                        End: {dayjs.unix(parseInt(booking.endDateTime)).format('DD MMMM, YYYY, HH:mm')}
+                                        По: {dayjs.unix(parseInt(booking.endDateTime)).format("DD MMMM, YYYY, HH:mm")}
                                     </Typography>
                                 </Box>
                             </ListItem>
-                            <Box sx={{ mt: 1, display: 'flex', gap: 1 }}>
+                            <Box sx={{ mt: 1, display: "flex", gap: 1 }}>
                                 <Button
                                     variant="contained"
                                     color="primary"
                                     size="small"
                                     onClick={() => handleOpenEditDialog(booking.id)}
                                 >
-                                    Edit
+                                    Редактировать
                                 </Button>
                                 <Button
                                     variant="contained"
@@ -169,7 +168,7 @@ const UserBookingsCard: React.FC<BookingsCardProps> = ({ userId }) => {
                                     size="small"
                                     onClick={() => handleDelete(booking.id)}
                                 >
-                                    Delete
+                                    Удалить
                                 </Button>
                             </Box>
                         </Paper>

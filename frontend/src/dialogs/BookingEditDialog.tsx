@@ -7,18 +7,18 @@ import {
     Button,
     Alert,
     CircularProgress,
-} from '@mui/material';
-import { useState, useCallback } from 'react';
-import { DatePicker, TimePicker } from '@mui/x-date-pickers';
-import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
-import dayjs, { Dayjs } from 'dayjs';
-import utc from 'dayjs/plugin/utc';
-import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
-import authoredApi from '../api/authoredApi';
-import { AxiosError } from 'axios';
-import { EnrichedBooking } from '../components/RentalListingBookingsCard';
+} from "@mui/material";
+import { useState, useCallback } from "react";
+import { DatePicker, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+import utc from "dayjs/plugin/utc";
+import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
+import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import authoredApi from "../api/authoredApi";
+import { AxiosError } from "axios";
+import { EnrichedBooking } from "../components/RentalListingBookingsCard";
 
 dayjs.extend(utc);
 dayjs.extend(isSameOrBefore);
@@ -63,13 +63,13 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
         endTime: dayjs.unix(parseInt(booking.endDateTime)),
     });
     const [formErrors, setFormErrors] = useState<FormErrors>({
-        startDate: '',
-        startTime: '',
-        endDate: '',
-        endTime: '',
-        dateRange: '',
-        slotUnavailable: '',
-        server: '',
+        startDate: "",
+        startTime: "",
+        endDate: "",
+        endTime: "",
+        dateRange: "",
+        slotUnavailable: "",
+        server: "",
     });
     const [isLoading, setIsLoading] = useState(false);
     const [existingBookings] = useState<EnrichedBooking[]>(bookings.filter((b) => b.id !== booking.id));
@@ -85,8 +85,8 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
     };
 
     const shouldDisableDate = (date: Dayjs) => {
-        const dateStart = date.startOf('day');
-        const dateEnd = date.endOf('day');
+        const dateStart = date.startOf("day");
+        const dateEnd = date.endOf("day");
 
         const bookingsOnDate = existingBookings.filter((b) => {
             const bookingStart = dayjs.unix(parseInt(b.startDateTime));
@@ -131,15 +131,15 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
         const minutes = time.minute();
 
         const selectedDateTime = selectedDate
-            .set('hour', time.hour())
-            .set('minute', minutes)
-            .set('second', 0);
+            .set("hour", time.hour())
+            .set("minute", minutes)
+            .set("second", 0);
 
         const isDisabled = existingBookings.some((booking) => {
             const bookingStart = parseUnixTimestamp(booking.startDateTime);
             const bookingEnd = parseUnixTimestamp(booking.endDateTime);
 
-            if (!selectedDate.isSame(bookingStart, 'day') && !selectedDate.isSame(bookingEnd, 'day')) {
+            if (!selectedDate.isSame(bookingStart, "day") && !selectedDate.isSame(bookingEnd, "day")) {
                 return false;
             }
 
@@ -152,27 +152,27 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
 
     const validateForm = useCallback(() => {
         const errors: FormErrors = {
-            startDate: formData.startDate ? '' : 'Start date is required',
-            startTime: formData.startTime ? '' : 'Start time is required',
-            endDate: formData.endDate ? '' : 'End date is required',
-            endTime: formData.endTime ? '' : 'End time is required',
-            dateRange: '',
-            slotUnavailable: '',
-            server: '',
+            startDate: formData.startDate ? "" : "Start date is required",
+            startTime: formData.startTime ? "" : "Start time is required",
+            endDate: formData.endDate ? "" : "End date is required",
+            endTime: formData.endTime ? "" : "End time is required",
+            dateRange: "",
+            slotUnavailable: "",
+            server: "",
         };
 
         if (formData.startDate && formData.startTime && formData.endDate && formData.endTime) {
             const startDateTime = formData.startDate
-                .set('hour', formData.startTime.hour())
-                .set('minute', formData.startTime.minute())
-                .set('second', 0);
+                .set("hour", formData.startTime.hour())
+                .set("minute", formData.startTime.minute())
+                .set("second", 0);
             const endDateTime = formData.endDate
-                .set('hour', formData.endTime.hour())
-                .set('minute', formData.endTime.minute())
-                .set('second', 0);
+                .set("hour", formData.endTime.hour())
+                .set("minute", formData.endTime.minute())
+                .set("second", 0);
 
             if (!startDateTime.isBefore(endDateTime)) {
-                errors.dateRange = 'Start date and time must be before end date and time';
+                errors.dateRange = "Start date and time must be before end date and time";
             }
 
             const hasOverlap = existingBookings.some((booking) => {
@@ -183,7 +183,7 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
             });
 
             if (hasOverlap) {
-                errors.slotUnavailable = 'Selected time slot conflicts with another booking. Please choose another time.';
+                errors.slotUnavailable = "Selected time slot conflicts with another booking. Please choose another time.";
             }
         }
 
@@ -193,26 +193,26 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
 
     const handleDateChange = (field: keyof FormData) => (value: Dayjs | null) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-        setFormErrors((prev) => ({ ...prev, [field]: value ? '' : `${field} is required` }));
+        setFormErrors((prev) => ({ ...prev, [field]: value ? "" : `${field} is required` }));
     };
 
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
         setIsLoading(true);
-        setFormErrors((prev) => ({ ...prev, server: '' }));
+        setFormErrors((prev) => ({ ...prev, server: "" }));
 
         try {
             const startDateTime = formData.startDate!
-                .set('hour', formData.startTime!.hour())
-                .set('minute', formData.startTime!.minute())
-                .set('second', 0)
+                .set("hour", formData.startTime!.hour())
+                .set("minute", formData.startTime!.minute())
+                .set("second", 0)
                 .utc()
                 .format();
             const endDateTime = formData.endDate!
-                .set('hour', formData.endTime!.hour())
-                .set('minute', formData.endTime!.minute())
-                .set('second', 0)
+                .set("hour", formData.endTime!.hour())
+                .set("minute", formData.endTime!.minute())
+                .set("second", 0)
                 .utc()
                 .format();
 
@@ -233,17 +233,17 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
             });
         } catch (error) {
             const axiosError = error as AxiosError;
-            let errorMessage = 'Failed to update booking';
+            let errorMessage = "Failed to update booking";
             if (axiosError.response) {
                 if (axiosError.response.status === 401) {
-                    errorMessage = 'Unauthorized: Please log in again.';
+                    errorMessage = "Unauthorized: Please log in again.";
                 } else if (axiosError.response.status === 404) {
-                    errorMessage = 'Booking or rental listing not found.';
+                    errorMessage = "Booking or rental listing not found.";
                 } else if (axiosError.response.status === 400) {
-                    errorMessage = 'Invalid booking details. Please check your inputs.';
+                    errorMessage = "Invalid booking details. Please check your inputs.";
                 }
             }
-            console.error('Error updating booking:', axiosError.message, axiosError.response?.data);
+            console.error("Error updating booking:", axiosError.message, axiosError.response?.data);
             setFormErrors((prev) => ({ ...prev, server: errorMessage }));
         } finally {
             setIsLoading(false);
@@ -253,9 +253,9 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
     return (
         <LocalizationProvider dateAdapter={AdapterDayjs}>
             <Dialog open={isOpen} onClose={handleClose} maxWidth="sm" fullWidth>
-                <DialogTitle>Edit Booking</DialogTitle>
+                <DialogTitle>Редактировать аренду</DialogTitle>
                 <DialogContent>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
                         {formErrors.server && (
                             <Alert severity="error" sx={{ mb: 2 }}>
                                 {formErrors.server}
@@ -271,11 +271,11 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                                 {formErrors.slotUnavailable}
                             </Alert>
                         )}
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: 2 }}>
                             <DatePicker
-                                label="Start Date"
+                                label="Дата начала"
                                 value={formData.startDate}
-                                onChange={handleDateChange('startDate')}
+                                onChange={handleDateChange("startDate")}
                                 minDate={dayjs()}
                                 shouldDisableDate={shouldDisableDate}
                                 slotProps={{
@@ -288,9 +288,9 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                                 }}
                             />
                             <TimePicker
-                                label="Start Time"
+                                label="Время начала"
                                 value={formData.startTime}
-                                onChange={handleDateChange('startTime')}
+                                onChange={handleDateChange("startTime")}
                                 ampm={false}
                                 minutesStep={10}
                                 timeSteps={{ minutes: 10 }}
@@ -305,11 +305,11 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                                 }}
                             />
                         </Box>
-                        <Box sx={{ display: 'flex', gap: 2 }}>
+                        <Box sx={{ display: "flex", gap: 2 }}>
                             <DatePicker
-                                label="End Date"
+                                label="Дата окончания"
                                 value={formData.endDate}
-                                onChange={handleDateChange('endDate')}
+                                onChange={handleDateChange("endDate")}
                                 minDate={formData.startDate || dayjs()}
                                 shouldDisableDate={shouldDisableDate}
                                 slotProps={{
@@ -322,9 +322,9 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                                 }}
                             />
                             <TimePicker
-                                label="End Time"
+                                label="Время окончания"
                                 value={formData.endTime}
-                                onChange={handleDateChange('endTime')}
+                                onChange={handleDateChange("endTime")}
                                 ampm={false}
                                 minutesStep={10}
                                 timeSteps={{ minutes: 10 }}
@@ -343,7 +343,7 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose} disabled={isLoading}>
-                        Cancel
+                        Отменить
                     </Button>
                     <Button
                         onClick={handleSubmit}
@@ -351,7 +351,7 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                         color="primary"
                         disabled={isLoading}
                     >
-                        {isLoading ? <CircularProgress size={24} /> : 'Update'}
+                        {isLoading ? <CircularProgress size={24} /> : "Update"}
                     </Button>
                 </DialogActions>
             </Dialog>

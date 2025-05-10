@@ -8,7 +8,7 @@ import {
     List,
     ListItem,
     Button,
-} from '@mui/material';
+} from "@mui/material";
 import RentalListingAddDialog from "../dialogs/RentalListingAddDialog";
 import RentalListingEditDialog from "../dialogs/RentalListingEditDialog";
 import { Link } from "react-router";
@@ -32,7 +32,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
             const listings: ExtendedRentalListing[] = response.data;
             setRentalListings(listings);
         } catch (error) {
-            console.error('Error fetching rental listings:', error);
+            console.error("Error fetching rental listings:", error);
         } finally {
             setLoading(false);
         }
@@ -45,18 +45,18 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
     const [open, setOpen] = useState(false);
     const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
     const [rentalToPass, setRentalToPass] = useState<ExtendedRentalListing>({
-        id: '',
-        title: '',
-        description: '',
-        address: '',
-        tariffDescription: '',
+        id: "",
+        title: "",
+        description: "",
+        address: "",
+        tariffDescription: "",
         autoRenew: false,
         mainImageData: {
             key: null,
-            link: '',
+            link: "",
         },
         additionalImagesData: [],
-        userId: '',
+        userId: "",
     });
 
     const handleClose = () => {
@@ -78,8 +78,8 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
             setRentalListings(rentalListings.filter((rental) => rental.id !== id));
             initializeRentalListings();
         } catch (err) {
-            console.error('Delete error:', err);
-            alert('Failed to delete rental listing. Please try again.');
+            console.error("Delete error:", err);
+            alert("Не удалось удалить объявление. Пожалуйста, попробуйте позже.");
         }
     };
 
@@ -92,24 +92,23 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
     return (
         <>
             <Box sx={{ mt: 1 }}>
-                <Typography variant="h5">Rental Listings</Typography>
                 {rentalListings.length === 0 ? (
                     <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
-                        No rental listings found.
+                        Объявлений не найдено
                     </Typography>
                 ) : (
                     <List>
                         {rentalListings.map((rental) => (
                             <Paper key={rental.id} elevation={2} sx={{ mb: 2, p: 2 }}>
-                                <ListItem sx={{ display: 'flex', flexDirection: 'row', alignItems: 'flex-start', gap: 4 }}>
-                                    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                                        <Box sx={{ display: 'flex', flexDirection: 'row', gap: 1, flexWrap: 'wrap', mb: 2 }}>
+                                <ListItem sx={{ display: "flex", flexDirection: "row", alignItems: "flex-start", gap: 4 }}>
+                                    <Box sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
                                             <ImageSquare imageUrl={rental.mainImageData.link} altText="Главное изображение объявления" />
                                             {rental.additionalImagesData.map((imageData, idx) => (
                                                 <ImageSquare key={`${rental.id}-additional-${idx}`} imageUrl={imageData.link} altText={`Дополнительное изображение ${idx}`} />
                                             ))}
                                         </Box>
-                                        <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: 'none' }}>
+                                        <Link key={rental.id} to={`/rentalListings/${rental.id}`} style={{ textDecoration: "none" }}>
                                             <Typography variant="h6">{rental.title}</Typography>
                                         </Link>
                                         <Box display="flex" flexDirection="column">
@@ -117,22 +116,22 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                                                 {rental.description}
                                             </Typography>
                                             <Typography component="span" variant="body2">
-                                                Address: {rental.address}
+                                                Адрес: {rental.address}
                                             </Typography>
                                             <Typography component="span" variant="body2">
-                                                Tariff: {rental.tariffDescription}
+                                                Тариф: {rental.tariffDescription}
                                             </Typography>
                                             <Typography component="span" variant="body2">
-                                                Auto Renew: {rental.autoRenew ? 'Yes' : 'No'}
+                                                Автопродление: {rental.autoRenew ? "Yes" : "No"}
                                             </Typography>
-                                            <Box sx={{ mt: 2, display: 'flex', gap: 1 }}>
+                                            <Box sx={{ mt: 2, display: "flex", gap: 1 }}>
                                                 <Button
                                                     variant="contained"
                                                     color="primary"
                                                     size="small"
                                                     onClick={() => handleOpenEditDialog(rental)}
                                                 >
-                                                    Edit
+                                                    Редактировать
                                                 </Button>
                                                 <Button
                                                     variant="contained"
@@ -140,7 +139,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                                                     size="small"
                                                     onClick={() => handleDelete(rental.id)}
                                                 >
-                                                    Delete
+                                                    Удалить
                                                 </Button>
                                             </Box>
                                         </Box>
@@ -152,7 +151,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                     </List>
                 )}
                 <Button variant="contained" onClick={() => setOpen(true)}>
-                    Add Rental Listing
+                    Создать новое объявление
                 </Button>
             </Box>
 

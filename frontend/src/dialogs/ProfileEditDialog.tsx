@@ -7,15 +7,15 @@ import {
     TextField,
     Box,
     Typography,
-} from '@mui/material';
-import { ChangeEvent, useEffect, useState } from 'react';
-import authoredApi from '../api/authoredApi';
-import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
-import { useDispatch } from 'react-redux';
-import { AppDispatch } from '../state/store';
-import { fetchUser } from '../state/userSlice';
-import { ExtendedUser } from '../shared/types';
-import TransparentLoadingSpinner from '../components/TransparentLoadingSpinner';
+} from "@mui/material";
+import { ChangeEvent, useEffect, useState } from "react";
+import authoredApi from "../api/authoredApi";
+import PhoneMaskInput, { phoneRegex } from "../components/PhoneMaskInput";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "../state/store";
+import { fetchUser } from "../state/userSlice";
+import { ExtendedUser } from "../shared/types";
+import TransparentLoadingSpinner from "../components/TransparentLoadingSpinner";
 
 interface ProfileEditDialogProps {
     isOpen: boolean;
@@ -35,15 +35,15 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
     const [isLoading, setIsLoading] = useState(false);
 
     const [formData, setFormData] = useState({
-        firstName: '',
-        lastName: '',
-        phone: '',
+        firstName: "",
+        lastName: "",
+        phone: "",
     });
     const [formErrors, setFormErrors] = useState({
-        firstName: '',
-        lastName: '',
-        phone: '',
-        profilePicture: '',
+        firstName: "",
+        lastName: "",
+        phone: "",
+        profilePicture: "",
     });
 
     useEffect(() => {
@@ -64,25 +64,25 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
 
     const innerHandleClose = () => {
         handleClose();
-        setFormErrors({ firstName: '', lastName: '', phone: '', profilePicture: '' });
+        setFormErrors({ firstName: "", lastName: "", phone: "", profilePicture: "" });
     }
 
     const validateForm = () => {
         let valid = true;
-        const errors = { firstName: '', lastName: '', phone: '', profilePicture: '' };
+        const errors = { firstName: "", lastName: "", phone: "", profilePicture: "" };
 
         if (!formData.firstName || formData.firstName.length < 1 || formData.firstName.length > 255) {
-            errors.firstName = 'First name must be between 1 and 255 characters';
+            errors.firstName = "First name must be between 1 and 255 characters";
             valid = false;
         }
         if (!formData.lastName || formData.lastName.length < 1 || formData.lastName.length > 255) {
-            errors.lastName = 'Last name must be between 1 and 255 characters';
+            errors.lastName = "Last name must be between 1 and 255 characters";
             valid = false;
         }
 
-        formData.phone = formData.phone.replace(/[^+\d]/g, '');
+        formData.phone = formData.phone.replace(/[^+\d]/g, "");
         if (!formData.phone || !phoneRegex.test(formData.phone) || (formData.phone.length < 12)) {
-            errors.phone = 'Phone must follow international format (e.g., +123456789)';
+            errors.phone = "Phone must follow international format (e.g., +123456789)";
             valid = false;
         }
 
@@ -102,7 +102,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         if (file.size > MAX_FILE_SIZE) {
             setFormErrors(prev => ({
                 ...prev,
-                profilePicture: 'Image size must be less than 5MB'
+                profilePicture: "Image size must be less than 5MB"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -112,7 +112,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         if (!allowedFileTypes.includes(file.type)) {
             setFormErrors(prev => ({
                 ...prev,
-                profilePicture: 'Please upload a PNG or JPEG image'
+                profilePicture: "Please upload a PNG or JPEG image"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -120,7 +120,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         }
 
         setProfilePicture(file);
-        setFormErrors(prev => ({ ...prev, profilePicture: '' }));
+        setFormErrors(prev => ({ ...prev, profilePicture: "" }));
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -146,10 +146,10 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
     const handleDeletePhoto = () => {
         setProfilePicture(null);
         setImagePreview(null);
-        setFormErrors(prev => ({ ...prev, profilePicture: '' }));
-        const input = document.querySelector('input[type="file"]') as HTMLInputElement;
+        setFormErrors(prev => ({ ...prev, profilePicture: "" }));
+        const input = document.querySelector("input[type=\"file\"]") as HTMLInputElement;
         if (input) {
-            input.value = '';
+            input.value = "";
         }
         setDeleteMainImage(true);
     };
@@ -160,32 +160,32 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         setIsLoading(true);
 
         const finalFormData = new FormData();
-        finalFormData.append('data', new Blob([JSON.stringify(formData)], { type: 'application/json' }));
+        finalFormData.append("data", new Blob([JSON.stringify(formData)], { type: "application/json" }));
         if (profilePicture) {
             if (user?.imageData.link) {
-                finalFormData.append('mainImageAction', "change")
-                finalFormData.append('mainImageFile', profilePicture);
+                finalFormData.append("mainImageAction", "change")
+                finalFormData.append("mainImageFile", profilePicture);
             } else {
-                finalFormData.append('mainImageAction', "add")
-                finalFormData.append('mainImageFile', profilePicture);
+                finalFormData.append("mainImageAction", "add")
+                finalFormData.append("mainImageFile", profilePicture);
             }
         } else {
             if (deleteMainImage) {
-                finalFormData.append('mainImageAction', "delete");
+                finalFormData.append("mainImageAction", "delete");
             }
         }
 
         try {
             await authoredApi.patch(`/users/${userId}`, finalFormData, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "multipart/form-data",
                 },
             });
             await dispatch(fetchUser(userId)).unwrap();
             handleClose();
         } catch (err) {
-            console.error('Update error:', err);
-            alert('Failed to update profile. Please try again.');
+            console.error("Update error:", err);
+            alert("Не удалось обновить профиль. Попробуйте позже.");
         } finally {
             setIsLoading(false);
         }
@@ -194,37 +194,37 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
 
     return (
         <Dialog open={isOpen} onClose={handleClose}>
-            <DialogTitle>Edit Profile</DialogTitle>
+            <DialogTitle>Редактировать профиль</DialogTitle>
             <Box
                 sx={{
                     mt: 2,
-                    border: '2px dashed',
-                    borderColor: formErrors.profilePicture ? 'error.main' : 'grey.500',
+                    border: "2px dashed",
+                    borderColor: formErrors.profilePicture ? "error.main" : "grey.500",
                     borderRadius: 2,
                     p: 3,
-                    textAlign: 'center',
-                    bgcolor: 'grey.50',
-                    '&:hover': { bgcolor: 'grey.100' },
-                    minHeight: '120px',
-                    maxWidth: '400px',
-                    margin: '0 auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                    justifyContent: 'center',
+                    textAlign: "center",
+                    bgcolor: "grey.50",
+                    "&:hover": { bgcolor: "grey.100" },
+                    minHeight: "120px",
+                    maxWidth: "400px",
+                    margin: "0 auto",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    justifyContent: "center",
                 }}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
             >
                 <Typography variant="body1" sx={{ mb: 2 }}>
-                    {profilePicture ? `Selected: ${profilePicture.name}` : 'Drag and drop your profile picture here'}
+                    {profilePicture ? `Выбрано: ${profilePicture.name}` : "Перетащите сюда изображение или нажмите, чтобы выбрать"}
                 </Typography>
                 <Button
                     variant="outlined"
                     component="label"
-                    sx={{ textTransform: 'none' }}
+                    sx={{ textTransform: "none" }}
                 >
-                    Choose File
+                    Выбрать изображение
                     <input
                         type="file"
                         hidden
@@ -239,15 +239,15 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                 )}
                 {imagePreview && (
                     <>
-                        <Box sx={{ mt: 2, textAlign: 'center' }}>
+                        <Box sx={{ mt: 2, textAlign: "center" }}>
                             <img
                                 src={imagePreview}
                                 alt="Profile preview"
-                                style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }}
+                                style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "4px" }}
                             />
                         </Box>
                         <Button onClick={handleDeletePhoto} sx={{ mt: 2 }}>
-                            Delete Photo
+                            Удалить фото
                         </Button>
                     </>
                 )}
@@ -255,7 +255,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
             <DialogContent>
                 <TextField
                     margin="dense"
-                    label="First Name"
+                    label="Имя"
                     name="firstName"
                     value={formData.firstName}
                     onChange={handleChange}
@@ -265,7 +265,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                 />
                 <TextField
                     margin="dense"
-                    label="Last Name"
+                    label="Фамилия"
                     name="lastName"
                     value={formData.lastName}
                     onChange={handleChange}
@@ -275,13 +275,13 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                 />
                 <TextField
                     margin="dense"
-                    label="Phone"
+                    label="Номер телефона"
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
                     fullWidth
                     error={!!formErrors.phone}
-                    helperText={formErrors.phone || 'Format: +7 (123) 456-7890'}
+                    helperText={formErrors.phone || "Формат: +7 (123) 456-7890"}
                     slotProps={{
                         input: {
                             inputComponent: PhoneMaskInput,
@@ -290,9 +290,9 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
                 />
             </DialogContent>
             <DialogActions>
-                <Button onClick={innerHandleClose}>Cancel</Button>
+                <Button onClick={innerHandleClose}>Отменить</Button>
                 <Button onClick={handleSubmit} variant="contained">
-                    Save
+                    Сохранить
                 </Button>
             </DialogActions>
             <TransparentLoadingSpinner isLoading={isLoading}/>

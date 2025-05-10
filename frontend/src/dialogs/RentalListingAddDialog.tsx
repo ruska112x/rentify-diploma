@@ -10,11 +10,11 @@ import {
     Switch,
     Typography,
     IconButton,
-} from '@mui/material';
-import DeleteIcon from '@mui/icons-material/Delete';
-import { useState } from 'react';
-import authoredApi from '../api/authoredApi';
-import TransparentLoadingSpinner from '../components/TransparentLoadingSpinner';
+} from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
+import { useState } from "react";
+import authoredApi from "../api/authoredApi";
+import TransparentLoadingSpinner from "../components/TransparentLoadingSpinner";
 
 interface RentalListingAddDialogProps {
     isOpen: boolean;
@@ -30,21 +30,21 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     initializeRentalListings,
 }) => {
     const [formData, setFormData] = useState({
-        title: '',
-        description: '',
-        address: '',
-        tariffDescription: '',
+        title: "",
+        description: "",
+        address: "",
+        tariffDescription: "",
         autoRenew: false,
     });
 
     const [formErrors, setFormErrors] = useState({
-        title: '',
-        description: '',
-        address: '',
-        tariffDescription: '',
-        autoRenew: '',
-        mainImage: '',
-        additionalImages: '',
+        title: "",
+        description: "",
+        address: "",
+        tariffDescription: "",
+        autoRenew: "",
+        mainImage: "",
+        additionalImages: "",
     });
 
     const [mainImage, setMainImage] = useState<File | null>(null);
@@ -56,7 +56,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
 
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
     const MAX_ADDITIONAL_IMAGES = 4;
-    const ALLOWED_FILE_TYPES = ['image/png', 'image/jpeg'];
+    const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg"];
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -98,20 +98,20 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         if (file.size > MAX_FILE_SIZE) {
             setFormErrors((prev) => ({
                 ...prev,
-                mainImage: 'Main image must be less than 5MB',
+                mainImage: "Основное изображение должно быть меньше 5MB",
             }));
             return;
         }
         if (!ALLOWED_FILE_TYPES.includes(file.type)) {
             setFormErrors((prev) => ({
                 ...prev,
-                mainImage: 'Main image must be PNG or JPEG',
+                mainImage: "Основное изображение должно быть PNG или JPEG",
             }));
             return;
         }
 
         setMainImage(file);
-        setFormErrors((prev) => ({ ...prev, mainImage: '' }));
+        setFormErrors((prev) => ({ ...prev, mainImage: "" }));
 
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -142,14 +142,14 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             if (file.size > MAX_FILE_SIZE) {
                 setFormErrors((prev) => ({
                     ...prev,
-                    additionalImages: 'Each additional image must be less than 5MB',
+                    additionalImages: "Каждое дополнительное изображение должно быть меньше 5MB",
                 }));
                 return false;
             }
             if (!ALLOWED_FILE_TYPES.includes(file.type)) {
                 setFormErrors((prev) => ({
                     ...prev,
-                    additionalImages: 'Additional images must be PNG or JPEG',
+                    additionalImages: "Каждое дополнительное изображение должно быть PNG или JPEG",
                 }));
                 return false;
             }
@@ -159,13 +159,13 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         if (additionalImages.length + validFiles.length > MAX_ADDITIONAL_IMAGES) {
             setFormErrors((prev) => ({
                 ...prev,
-                additionalImages: `You can upload up to ${MAX_ADDITIONAL_IMAGES} additional images`,
+                additionalImages: `Вы можете загрузить максимум ${MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
             }));
             return;
         }
 
         setAdditionalImages((prev) => [...prev, ...validFiles]);
-        setFormErrors((prev) => ({ ...prev, additionalImages: '' }));
+        setFormErrors((prev) => ({ ...prev, additionalImages: "" }));
 
         const previews = validFiles.map((file) => {
             return new Promise<string>((resolve) => {
@@ -189,7 +189,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         if (!mainImage) {
             setFormErrors((prev) => ({
                 ...prev,
-                mainImage: 'Main image is required',
+                mainImage: "Основное изображение обязательно",
             }));
             return;
         }
@@ -199,7 +199,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         try {
             const formDataToSend = new FormData();
             formDataToSend.append(
-                'data',
+                "data",
                 new Blob(
                     [
                         JSON.stringify({
@@ -211,31 +211,31 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                             autoRenew: formData.autoRenew,
                         }),
                     ],
-                    { type: 'application/json' }
+                    { type: "application/json" }
                 )
             );
 
             if (mainImage) {
-                formDataToSend.append('mainImage', mainImage);
+                formDataToSend.append("mainImage", mainImage);
             }
 
             additionalImages.forEach((image) => {
                 formDataToSend.append(`additionalImages`, image);
             });
 
-            await authoredApi.post('/rentalListings/create', formDataToSend, {
+            await authoredApi.post("/rentalListings/create", formDataToSend, {
                 headers: {
-                    'Content-Type': 'multipart/form-data',
+                    "Content-Type": "multipart/form-data",
                 },
             });
 
             handleClose();
             initializeRentalListings();
             setFormData({
-                title: '',
-                description: '',
-                address: '',
-                tariffDescription: '',
+                title: "",
+                description: "",
+                address: "",
+                tariffDescription: "",
                 autoRenew: false,
             });
             setMainImage(null);
@@ -243,7 +243,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             setAdditionalImages([]);
             setAdditionalImagesPreviews([]);
         } catch (error) {
-            console.error('Error creating rental listing:', error);
+            console.error("Error creating rental listing:", error);
         } finally {
             setIsLoading(false);
         }
@@ -252,13 +252,13 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     const innerHandleClose = () => {
         handleClose();
         setFormErrors({
-            title: '',
-            description: '',
-            address: '',
-            tariffDescription: '',
-            autoRenew: '',
-            mainImage: '',
-            additionalImages: '',
+            title: "",
+            description: "",
+            address: "",
+            tariffDescription: "",
+            autoRenew: "",
+            mainImage: "",
+            additionalImages: "",
         });
         setMainImage(null);
         setMainImagePreview(null);
@@ -268,28 +268,28 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
 
     return (
         <Dialog open={isOpen} onClose={innerHandleClose} maxWidth="sm" fullWidth>
-            <DialogTitle>Create New Rental Listing</DialogTitle>
+            <DialogTitle>Создание нового объявления</DialogTitle>
             <DialogContent>
-                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
                     <Box
                         sx={{
-                            border: '2px dashed',
-                            borderColor: formErrors.mainImage ? 'error.main' : 'grey.500',
+                            border: "2px dashed",
+                            borderColor: formErrors.mainImage ? "error.main" : "grey.500",
                             borderRadius: 2,
                             p: 2,
-                            textAlign: 'center',
-                            bgcolor: 'grey.50',
-                            '&:hover': { bgcolor: 'grey.100' },
-                            minHeight: '100px',
+                            textAlign: "center",
+                            bgcolor: "grey.50",
+                            "&:hover": { bgcolor: "grey.100" },
+                            minHeight: "100px",
                         }}
                         onDragOver={handleMainImageDragOver}
                         onDrop={handleMainImageDrop}
                     >
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            {mainImage ? `Main Image: ${mainImage.name}` : 'Drag and drop main image here'}
+                            {mainImage ? `Main Image: ${mainImage.name}` : "Drag and drop main image here"}
                         </Typography>
-                        <Button variant="outlined" component="label" sx={{ textTransform: 'none' }}>
-                            Choose Main Image
+                        <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
+                            Выбрать основное изображение
                             <input
                                 type="file"
                                 hidden
@@ -298,16 +298,16 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                             />
                         </Button>
                         {formErrors.mainImage && (
-                            <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                            <Typography color="error" variant="caption" sx={{ mt: 1, display: "block" }}>
                                 {formErrors.mainImage}
                             </Typography>
                         )}
                         {mainImagePreview && (
-                            <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <Box sx={{ mt: 2, textAlign: "center" }}>
                                 <img
                                     src={mainImagePreview}
                                     alt="Main image preview"
-                                    style={{ maxWidth: '100%', maxHeight: '150px', borderRadius: '4px' }}
+                                    style={{ maxWidth: "100%", maxHeight: "150px", borderRadius: "4px" }}
                                 />
                             </Box>
                         )}
@@ -315,25 +315,25 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
 
                     <Box
                         sx={{
-                            border: '2px dashed',
-                            borderColor: formErrors.additionalImages ? 'error.main' : 'grey.500',
+                            border: "2px dashed",
+                            borderColor: formErrors.additionalImages ? "error.main" : "grey.500",
                             borderRadius: 2,
                             p: 2,
-                            textAlign: 'center',
-                            bgcolor: 'grey.50',
-                            '&:hover': { bgcolor: 'grey.100' },
-                            minHeight: '100px',
+                            textAlign: "center",
+                            bgcolor: "grey.50",
+                            "&:hover": { bgcolor: "grey.100" },
+                            minHeight: "100px",
                         }}
                         onDragOver={handleAdditionalImagesDragOver}
                         onDrop={handleAdditionalImagesDrop}
                     >
                         <Typography variant="body1" sx={{ mb: 1 }}>
                             {additionalImages.length > 0
-                                ? `Additional Images: ${additionalImages.map((img) => img.name).join(', ')}`
-                                : 'Drag and drop additional images here'}
+                                ? `Additional Images: ${additionalImages.map((img) => img.name).join(", ")}`
+                                : "Drag and drop additional images here"}
                         </Typography>
-                        <Button variant="outlined" component="label" sx={{ textTransform: 'none' }}>
-                            Choose Additional Images
+                        <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
+                            Выбрать дополнительные изображения
                             <input
                                 type="file"
                                 hidden
@@ -343,21 +343,21 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                             />
                         </Button>
                         {formErrors.additionalImages && (
-                            <Typography color="error" variant="caption" sx={{ mt: 1, display: 'block' }}>
+                            <Typography color="error" variant="caption" sx={{ mt: 1, display: "block" }}>
                                 {formErrors.additionalImages}
                             </Typography>
                         )}
                         {additionalImagesPreviews.length > 0 && (
-                            <Box sx={{ mt: 2, display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center' }}>
+                            <Box sx={{ mt: 2, display: "flex", flexWrap: "wrap", gap: 1, justifyContent: "center" }}>
                                 {additionalImagesPreviews.map((preview, index) => (
-                                    <Box key={index} sx={{ position: 'relative' }}>
+                                    <Box key={index} sx={{ position: "relative" }}>
                                         <img
                                             src={preview}
                                             alt={`Additional image ${index + 1}`}
-                                            style={{ maxWidth: '100px', maxHeight: '100px', borderRadius: '4px' }}
+                                            style={{ maxWidth: "100px", maxHeight: "100px", borderRadius: "4px" }}
                                         />
                                         <IconButton
-                                            sx={{ position: 'absolute', top: 0, right: 0 }}
+                                            sx={{ position: "absolute", top: 0, right: 0 }}
                                             onClick={() => handleDeleteAdditionalImage(index)}
                                         >
                                             <DeleteIcon color="error" />
@@ -370,7 +370,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                     </Box>
 
                     <TextField
-                        label="Title"
+                        label="Название"
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
@@ -380,7 +380,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         helperText={formErrors.title}
                     />
                     <TextField
-                        label="Description"
+                        label="Описание"
                         name="description"
                         value={formData.description}
                         onChange={handleChange}
@@ -391,7 +391,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         helperText={formErrors.description}
                     />
                     <TextField
-                        label="Address"
+                        label="Адроес"
                         name="address"
                         value={formData.address}
                         onChange={handleChange}
@@ -401,7 +401,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         helperText={formErrors.address}
                     />
                     <TextField
-                        label="Tariff Description"
+                        label="Тариф"
                         name="tariffDescription"
                         value={formData.tariffDescription}
                         onChange={handleChange}
@@ -418,14 +418,14 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                                 name="autoRenew"
                             />
                         }
-                        label="Auto Renew"
+                        label="Автопродление"
                     />
                 </Box>
             </DialogContent>
             <DialogActions>
                 <Button onClick={innerHandleClose}>Cancel</Button>
                 <Button onClick={handleSubmit} variant="contained" color="primary">
-                    Create
+                    Создать
                 </Button>
             </DialogActions>
             <TransparentLoadingSpinner isLoading={isLoading}/>

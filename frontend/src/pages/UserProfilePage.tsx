@@ -1,8 +1,8 @@
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router';
-import { RootState } from '../state/store';
-import ExtendedUserProfilePage from './ExtendedUserProfilePage';
-import PartialUserProfilePage from './PartialUserProfilePage';
+import { useSelector } from "react-redux";
+import { useParams } from "react-router";
+import { RootState } from "../state/store";
+import ExtendedUserProfilePage from "./ExtendedUserProfilePage";
+import PartialUserProfilePage from "./PartialUserProfilePage";
 
 const UserProfilePage: React.FC = () => {
     const { userId } = useParams<{ userId: string }>();

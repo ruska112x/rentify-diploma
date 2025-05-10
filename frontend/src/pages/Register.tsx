@@ -1,22 +1,22 @@
-import React, { useState, FormEvent, ChangeEvent } from 'react';
-import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton, Paper } from '@mui/material';
-import { useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
-import { AxiosError } from 'axios';
-import { AppDispatch } from '../state/store';
-import { setAccessToken } from '../state/authSlice';
-import { ErrorRegisterResponse, AccessToken } from '../shared/types';
-import api from '../api/api';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import PhoneMaskInput, { phoneRegex } from '../components/PhoneMaskInput';
+import React, { useState, FormEvent, ChangeEvent } from "react";
+import { TextField, Button, Container, Typography, Box, Alert, InputAdornment, IconButton, Paper } from "@mui/material";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
+import { AxiosError } from "axios";
+import { AppDispatch } from "../state/store";
+import { setAccessToken } from "../state/authSlice";
+import { ErrorRegisterResponse, AccessToken } from "../shared/types";
+import api from "../api/api";
+import { Visibility, VisibilityOff } from "@mui/icons-material";
+import PhoneMaskInput, { phoneRegex } from "../components/PhoneMaskInput";
 
 const Register: React.FC = () => {
-    const [email, setEmail] = useState<string>('');
-    const [password, setPassword] = useState<string>('');
-    const [rPassword, setRPassword] = useState<string>('');
-    const [firstName, setFirstName] = useState<string>('');
-    const [lastName, setLastName] = useState<string>('');
-    const [phone, setPhone] = useState<string>('');
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+    const [rPassword, setRPassword] = useState<string>("");
+    const [firstName, setFirstName] = useState<string>("");
+    const [lastName, setLastName] = useState<string>("");
+    const [phone, setPhone] = useState<string>("");
     const [phoneError, setPhoneError] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<{
@@ -37,10 +37,10 @@ const Register: React.FC = () => {
     const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const validatePhone = (value: string): string | null => {
-        const cleanValue = value.replace(/[^+\d]/g, '');
-        if (!cleanValue) return "Phone number is required";
-        if (!phoneRegex.test(cleanValue)) return "Phone number must follow the international format";
-        if (cleanValue.length < 12) return "Phone number must be full length";
+        const cleanValue = value.replace(/[^+\d]/g, "");
+        if (!cleanValue) return "Номер телефона обязателен";
+        if (!phoneRegex.test(cleanValue)) return "Номер телефона должен быть в международном формате";
+        if (cleanValue.length < 12) return "Номер телефона должен содержать 11 цифр";
         return null;
     };
 
@@ -80,7 +80,7 @@ const Register: React.FC = () => {
         if (file.size > MAX_FILE_SIZE) {
             setFieldErrors(prev => ({
                 ...prev,
-                profilePicture: 'Image size must be less than 5MB'
+                profilePicture: "Изображение слишком большого размера. Максимальный размер 5 МБ"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -90,7 +90,7 @@ const Register: React.FC = () => {
         if (!allowedFileTypes.includes(file.type)) {
             setFieldErrors(prev => ({
                 ...prev,
-                profilePicture: 'Please upload a PNG or JPEG image'
+                profilePicture: "Недопустимый формат файла. Допустимые форматы: PNG, JPEG"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -119,11 +119,11 @@ const Register: React.FC = () => {
         }
 
         if (password !== rPassword) {
-            setError('Passwords do not match');
+            setError("Пароли не совпадают");
             return;
         }
 
-        const cleanPhone = phone.replace(/[^+\d]/g, '');
+        const cleanPhone = phone.replace(/[^+\d]/g, "");
 
         const formFields = {
             email,
@@ -134,26 +134,26 @@ const Register: React.FC = () => {
         };
 
         const formData = new FormData();
-        formData.append('data', new Blob([JSON.stringify(formFields)], { type: 'application/json' }));
+        formData.append("data", new Blob([JSON.stringify(formFields)], { type: "application/json" }));
         if (profilePicture) {
-            formData.append('profilePicture', profilePicture);
+            formData.append("profilePicture", profilePicture);
         }
 
         try {
             const response = await api.post<AccessToken>(
-                '/auth/register',
+                "/auth/register",
                 formData,
                 {
                     withCredentials: true,
                     headers: {
-                        'Content-Type': 'multipart/form-data'
+                        "Content-Type": "multipart/form-data"
                     }
                 }
             );
             dispatch(setAccessToken({
                 accessToken: response.data.accessToken
             }));
-            navigate('/');
+            navigate("/");
         } catch (error) {
             const axiosError = error as AxiosError<ErrorRegisterResponse>;
             if (axiosError.response?.status === 409) {
@@ -183,11 +183,11 @@ const Register: React.FC = () => {
 
     return (
         <Paper component={Container} maxWidth="xs" sx={{ mt: 4, p: 4 }}>
-            <Box sx={{ mt: 1, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Box sx={{ mt: 1, display: "flex", flexDirection: "column", alignItems: "center" }}>
                 <Typography component="h1" variant="h5" sx={{ mb: 1 }}>
-                    Register
+                    Регистрация
                 </Typography>
-                <Alert severity="error">{'СЕРВИС НЕ НЕСЁТ НИКАКОЙ ОТВЕСТВЕННОСТИ ЗА ПОЛОМКУ, КРАЖУ, ПОТЕРЮ ВАШЕЙ ВЕЩИ!'}</Alert>
+                <Alert severity="error">{"СЕРВИС НЕ НЕСЁТ НИКАКОЙ ОТВЕСТВЕННОСТИ ЗА ПОЛОМКУ, КРАЖУ, ПОТЕРЮ ВАШЕЙ ВЕЩИ!"}</Alert>
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 2 }}>
@@ -197,31 +197,31 @@ const Register: React.FC = () => {
                     <Box
                         sx={{
                             mt: 2,
-                            border: '2px dashed',
-                            borderColor: fieldErrors.profilePicture ? 'error.main' : 'grey.500',
+                            border: "2px dashed",
+                            borderColor: fieldErrors.profilePicture ? "error.main" : "grey.500",
                             borderRadius: 2,
                             p: 3,
-                            textAlign: 'center',
-                            bgcolor: 'grey.50',
-                            '&:hover': { bgcolor: 'grey.100' },
-                            minHeight: '120px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            textAlign: "center",
+                            bgcolor: "grey.50",
+                            "&:hover": { bgcolor: "grey.100" },
+                            minHeight: "120px",
+                            display: "flex",
+                            flexDirection: "column",
+                            alignItems: "center",
+                            justifyContent: "center",
                         }}
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
                     >
                         <Typography variant="body1" sx={{ mb: 2 }}>
-                            {profilePicture ? `Selected: ${profilePicture.name}` : 'Drag and drop your profile picture here'}
+                            {profilePicture ? `Selected: ${profilePicture.name}` : "Перенесите файл сюда или нажмите, чтобы выбрать"}
                         </Typography>
                         <Button
                             variant="outlined"
                             component="label"
-                            sx={{ textTransform: 'none' }}
+                            sx={{ textTransform: "none" }}
                         >
-                            Choose File
+                            Выбрать файл
                             <input
                                 type="file"
                                 hidden
@@ -235,11 +235,11 @@ const Register: React.FC = () => {
                             </Typography>
                         )}
                         {imagePreview && (
-                            <Box sx={{ mt: 2, textAlign: 'center' }}>
+                            <Box sx={{ mt: 2, textAlign: "center" }}>
                                 <img
                                     src={imagePreview}
                                     alt="Profile preview"
-                                    style={{ maxWidth: '100%', maxHeight: '200px', borderRadius: '4px' }}
+                                    style={{ maxWidth: "100%", maxHeight: "200px", borderRadius: "4px" }}
                                 />
                             </Box>
                         )}
@@ -248,7 +248,7 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="Email Address"
+                        label="Электронная почта"
                         placeholder="example@mail.org"
                         type="email"
                         value={email}
@@ -260,8 +260,8 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="Password"
-                        type={showPassword ? 'text' : 'password'}
+                        label="Пароль"
+                        type={showPassword ? "text" : "password"}
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         error={!!fieldErrors.password}
@@ -286,7 +286,7 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="Confirm password"
+                        label="Повторите пароль"
                         type="password"
                         value={rPassword}
                         onChange={(e) => setRPassword(e.target.value)}
@@ -295,7 +295,7 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="First Name"
+                        label="Имя"
                         value={firstName}
                         onChange={(e) => setFirstName(e.target.value)}
                         error={!!fieldErrors.firstName}
@@ -305,7 +305,7 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="Last Name"
+                        label="Фамилия"
                         value={lastName}
                         onChange={(e) => setLastName(e.target.value)}
                         error={!!fieldErrors.lastName}
@@ -315,12 +315,12 @@ const Register: React.FC = () => {
                         margin="normal"
                         required
                         fullWidth
-                        label="Phone Number"
+                        label="Номер телефона"
                         placeholder="+7 (123) 456-7890"
                         value={phone}
                         onChange={handlePhoneChange}
                         error={!!phoneError || !!fieldErrors.phone}
-                        helperText={phoneError || fieldErrors.phone || "Use international format"}
+                        helperText={phoneError || fieldErrors.phone || "Используйте формат +7 (123) 456-7890"}
                         slotProps={{
                             input: {
                                 inputComponent: PhoneMaskInput,
@@ -334,7 +334,7 @@ const Register: React.FC = () => {
                         sx={{ mt: 3, mb: 2 }}
                         disabled={!!phoneError}
                     >
-                        Register
+                        Зарегистрироваться
                     </Button>
                 </Box>
             </Box>

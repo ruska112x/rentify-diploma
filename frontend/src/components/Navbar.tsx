@@ -1,10 +1,10 @@
-import React from 'react';
-import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router';
-import { logoutUser } from '../state/authSlice';
-import { AppDispatch, RootState } from '../state/store';
-import { clearUserInfo } from '../state/userSlice';
+import React from "react";
+import { AppBar, Toolbar, Typography, Button } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router";
+import { logoutUser } from "../state/authSlice";
+import { AppDispatch, RootState } from "../state/store";
+import { clearUserInfo } from "../state/userSlice";
 
 const Navbar: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
@@ -17,11 +17,11 @@ const Navbar: React.FC = () => {
       await dispatch(clearUserInfo());
     }
     logout();
-    navigate('/login');
+    navigate("/login");
   };
 
   return (
-    <AppBar position="static" sx={{ borderRadius: '0 0 10px 10px' }}>
+    <AppBar position="static" sx={{ borderRadius: "0 0 10px 10px" }}>
       <Toolbar>
         <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
           <Button color="inherit" sx={{ fontWeight: 700 }} component={Link} to="/">
@@ -31,19 +31,19 @@ const Navbar: React.FC = () => {
         {!isAuthenticated ? (
           <>
             <Button color="inherit" component={Link} to="/login">
-              Login
+              Войти
             </Button>
             <Button color="inherit" component={Link} to="/register">
-              Register
+              Регистрация
             </Button>
           </>
         ) : (
           <>
             <Button color="inherit" component={Link} to="/profile">
-              MyProfile
+              Личный кабинет
             </Button>
             <Button color="inherit" onClick={handleLogout}>
-              Logout
+              Выйти
             </Button>
           </>
         )}

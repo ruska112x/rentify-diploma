@@ -1,0 +1,209 @@
+databaseChangeLog:
+  - changeSet:
+      id: i-4
+      author: ruslan
+      changes:
+        - insert:
+            tableName: rental_listings
+            columns:
+              - column:
+                  name: id
+                  value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
+              - column:
+                  name: title
+                  value: "Minion"
+              - column:
+                  name: description
+                  value: "Great worker"
+              - column:
+                  name: address
+                  value: "Omsk, OmSU"
+              - column:
+                  name: tariff_description
+                  value: "$0.01 per second"
+              - column:
+                  name: auto_renew
+                  value: "false"
+              - column:
+                  name: main_photo_key
+                  value: "preinserted/minion.jpg"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: user_id
+                  value: "a7ff2d61-3725-46c0-8906-d1f07e6e0fb7"
+        - insert:
+            tableName: rental_listings
+            columns:
+              - column:
+                  name: id
+                  value: "9122ecef-c5b7-4de0-8f72-b3fbbfde209f"
+              - column:
+                  name: title
+                  value: "Beach Brella"
+              - column:
+                  name: description
+                  value: ""
+              - column:
+                  name: address
+                  value: "Omsk"
+              - column:
+                  name: tariff_description
+                  value: "$50 per day"
+              - column:
+                  name: auto_renew
+                  value: "false"
+              - column:
+                  name: main_photo_key
+                  value: "preinserted/beach_brella.jpg"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: user_id
+                  value: "a7ff2d61-3725-46c0-8906-d1f07e6e0fb7"
+        - insert:
+            tableName: rental_listings
+            columns:
+              - column:
+                  name: id
+                  value: "2bad6739-815b-4543-af03-34cf026f1c12"
+              - column:
+                  name: title
+                  value: "Bananas"
+              - column:
+                  name: description
+                  value: "Yummy bananas"
+              - column:
+                  name: address
+                  value: "Omsk"
+              - column:
+                  name: tariff_description
+                  value: "priceless"
+              - column:
+                  name: auto_renew
+                  value: "false"
+              - column:
+                  name: main_photo_key
+                  value: "preinserted/bananas.jpg"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: user_id
+                  value: "5d97cedb-5ee9-47fa-96da-5272f34b43ac"
+        - insert:
+            tableName: rental_listings
+            columns:
+              - column:
+                  name: id
+                  value: "120c256b-1834-4b78-a556-cde76b168e78"
+              - column:
+                  name: title
+                  value: "Matreshka"
+              - column:
+                  name: description
+                  value: ""
+              - column:
+                  name: address
+                  value: "Omsk"
+              - column:
+                  name: tariff_description
+                  value: "priceless"
+              - column:
+                  name: auto_renew
+                  value: "false"
+              - column:
+                  name: main_photo_key
+                  value: "preinserted/matreshka.jpg"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 01:00:00.000"
+              - column:
+                  name: user_id
+                  value: "5d97cedb-5ee9-47fa-96da-5272f34b43ac"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: file_key
+                  value: "preinserted/2.jpg"
+              - column:
+                  name: rental_listing_id
+                  value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: file_key
+                  value: "preinserted/3.jpeg"
+              - column:
+                  name: rental_listing_id
+                  value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: file_key
+                  value: "preinserted/4.jpg"
+              - column:
+                  name: rental_listing_id
+                  value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: file_key
+                  value: "preinserted/5.jpg"
+              - column:
+                  name: rental_listing_id
+                  value: "2bad6739-815b-4543-af03-34cf026f1c12"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "5"
+              - column:
+                  name: file_key
+                  value: "preinserted/6.jpg"
+              - column:
+                  name: rental_listing_id
+                  value: "2bad6739-815b-4543-af03-34cf026f1c12"
+        - insert:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  value: "6"
+              - column:
+                  name: file_key
+                  value: "preinserted/7.jpg"
+              - column:
+                  name: rental_listing_id
+                  value: "2bad6739-815b-4543-af03-34cf026f1c12"

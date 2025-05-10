@@ -1,0 +1,57 @@
+databaseChangeLog:
+  - changeSet:
+      id: 4
+      author: ruslan
+      changes:
+        - createTable:
+            tableName: bookings
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: start_date_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: end_date_time
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at_time
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at_time
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rental_listing_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: bookings
+            baseColumnNames: rental_listing_id
+            constraintName: fk_bookings_rental_listing
+            referencedTableName: rental_listings
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: bookings
+            baseColumnNames: user_id
+            constraintName: fk_bookings_user
+            referencedTableName: users
+            referencedColumnNames: id

@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: i-2
+      author: ruslan
+      changes:
+        - insert:
+            tableName: user_statuses
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "ACTIVE"
+        - insert:
+            tableName: user_statuses
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: name
+                  value: "DELETED"

@@ -1,3 +1,17 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/init-scheme.yaml
+      file: db/changelog/create/create-refresh-tokens.yaml
+  - include:
+      file: db/changelog/create/create-users.yaml
+  - include:
+      file: db/changelog/create/create-rental-listings.yaml
+  - include:
+      file: db/changelog/create/create-bookings.yaml
+  - include:
+      file: db/changelog/insert/insert-roles.yaml
+  - include:
+      file: db/changelog/insert/insert-user-statuses.yaml
+  - include:
+      file: db/changelog/insert/insert-users.yaml
+  - include:
+      file: db/changelog/insert/insert-rental-listings.yaml

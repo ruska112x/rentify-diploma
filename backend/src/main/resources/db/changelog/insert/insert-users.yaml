@@ -1,0 +1,83 @@
+databaseChangeLog:
+  - changeSet:
+      id: i-3
+      author: ruslan
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "a7ff2d61-3725-46c0-8906-d1f07e6e0fb7"
+              - column:
+                  name: email
+                  value: "gru@mail.org"
+              - column:
+                  name: password
+                  value: "$2a$10$8aZcAclN.Qly/9v6CKhwFOd9o1WKxg9YlS47tPeRQ.gSihoiHaGhK"
+              - column:
+                  name: first_name
+                  value: "Gru"
+              - column:
+                  name: last_name
+                  value: "Felonius"
+              - column:
+                  name: phone
+                  value: "+79999999999"
+              - column:
+                  name: photo_key
+                  value: "preinserted/gru.png"
+              - column:
+                  name: last_login_time
+                  value: "2025-05-10 06:00:00.000"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 00:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 00:00:00.000"
+              - column:
+                  name: role_id
+                  value: "1"
+              - column:
+                  name: status_id
+                  value: "1"
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: "5d97cedb-5ee9-47fa-96da-5272f34b43ac"
+              - column:
+                  name: email
+                  value: "dave@mail.org"
+              - column:
+                  name: password
+                  value: "$2a$10$/3MkBhwglPcvR6QVLhtKMe2WM3zSkKSgFUtFL9axxkDL.Dp7mi91i"
+              - column:
+                  name: first_name
+                  value: "Dave"
+              - column:
+                  name: last_name
+                  value: "Imperor"
+              - column:
+                  name: phone
+                  value: "+77777777777"
+              - column:
+                  name: photo_key
+                  value: "preinserted/dave.jpg"
+              - column:
+                  name: last_login_time
+                  value: "2025-05-10 06:00:00.000"
+              - column:
+                  name: created_at_time
+                  value: "2025-05-10 00:00:00.000"
+              - column:
+                  name: updated_at_time
+                  value: "2025-05-10 00:00:00.000"
+              - column:
+                  name: role_id
+                  value: "1"
+              - column:
+                  name: status_id
+                  value: "1"

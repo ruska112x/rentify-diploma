@@ -26,7 +26,7 @@ class BookingEntity(
     @Column(nullable = false)
     var updatedAtTime: Instant = Instant.now(),
     @ManyToOne
-    @JoinColumn(name = "rentalLisitng_id", nullable = false)
+    @JoinColumn(name = "rental_listing_id", nullable = false)
     val rentalListingEntity: RentalListingEntity,
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

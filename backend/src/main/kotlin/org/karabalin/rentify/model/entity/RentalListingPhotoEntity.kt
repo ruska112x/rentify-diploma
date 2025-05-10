@@ -18,6 +18,6 @@ data class RentalListingPhotoEntity(
     @Column(nullable = false)
     var fileKey: String,
     @ManyToOne
-    @JoinColumn(name = "rentalListing_id", nullable = false)
+    @JoinColumn(name = "rental_listing_id", nullable = false)
     val rentalListingEntity: RentalListingEntity,
 )

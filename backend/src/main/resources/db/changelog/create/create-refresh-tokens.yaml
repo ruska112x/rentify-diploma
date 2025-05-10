@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: ruslan
+      changes:
+        - createTable:
+            tableName: refresh_tokens
+            columns:
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    primaryKey: true
+                    unique: true
+                    nullable: false

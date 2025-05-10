@@ -1,0 +1,91 @@
+databaseChangeLog:
+  - changeSet:
+      id: 3
+      author: ruslan
+      changes:
+        - createTable:
+            tableName: rental_listings
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: address
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tariff_description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: auto_renew
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: main_photo_key
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at_time
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at_time
+                  type: timestamp
+                  defaultValueComputed: CURRENT_TIMESTAMP
+                  constraints:
+                    nullable: false
+              - column:
+                  name: user_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: rental_listings
+            baseColumnNames: user_id
+            constraintName: fk_rental_listings_user
+            referencedTableName: users
+            referencedColumnNames: id
+        - createTable:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: file_key
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rental_listing_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: rental_listing_photos
+            baseColumnNames: rental_listing_id
+            constraintName: fk_rental_listing_photos_rental_listing
+            referencedTableName: rental_listings
+            referencedColumnNames: id

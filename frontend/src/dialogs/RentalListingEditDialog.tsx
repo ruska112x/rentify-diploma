@@ -13,7 +13,7 @@ import {
     CircularProgress,
     Alert,
 } from "@mui/material";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
 import authoredApi from "../api/authoredApi";
 import { ExtendedRentalListing } from "../shared/types";
@@ -112,19 +112,52 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         });
     }, [rental]);
 
-    const validateForm = useCallback(() => {
-        const errors: FormErrors = {
-            title: formData.title ? "" : "Title is required",
+    const validateForm = () => {
+        let valid = true;
+        const newErrors: FormErrors = {
+            title: "",
             description: "",
-            address: formData.address ? "" : "Address is required",
-            tariffDescription: formData.tariffDescription ? "" : "Tariff description is required",
-            mainImage: mainImage ? "" : "Main image is required",
+            address: "",
+            tariffDescription: "",
+            mainImage: "",
             additionalImages: "",
             server: "",
         };
-        setFormErrors(errors);
-        return Object.values(errors).every((error) => !error);
-    }, [formData, mainImage]);
+        if (!mainImage) {
+            newErrors.mainImage = "Основное изображение обязательно";
+            valid = false;
+        }
+        if (!formData.title) {
+            newErrors.title = "Название обязательно";
+            valid = false;
+        }
+        if (!formData.address) {
+            newErrors.address = "Адрес обязателен";
+            valid = false;
+        }
+        if (!formData.tariffDescription) {
+            newErrors.tariffDescription = "Тариф обязателен";
+            valid = false;
+        }
+        if (formData.title.length < 1 || formData.title.length > 255) {
+            newErrors.title = "Название должно быть от 1 до 255 символов";
+            valid = false;
+        }
+        if (formData.description.length > 1023) {
+            newErrors.description = "Описание должно быть не более 1023 символов";
+            valid = false;
+        }
+        if (formData.address.length < 1 || formData.address.length > 255) {
+            newErrors.address = "Адрес должен быть от 1 до 255 символов";
+            valid = false;
+        }
+        if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
+            newErrors.tariffDescription = "Тариф должен быть от 1 до 255 символов";
+            valid = false;
+        }
+        setFormErrors(newErrors);
+        return valid;
+    };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -277,7 +310,17 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             let errorMessage = "Failed to update listing";
             if (axiosError.response) {
                 if (axiosError.response.status === 400) {
-                    errorMessage = "Invalid data format. Please check your inputs or contact support.";
+                    const errorData = axiosError.response.data as { [key: string]: string };
+                    const fieldErrors: FormErrors = {
+                        title: errorData.title || "",
+                        description: "",
+                        address: errorData.address || "",
+                        tariffDescription: errorData.tariffDescription || "",
+                        mainImage: "",
+                        additionalImages: "",
+                        server: "",
+                    };
+                    setFormErrors((prev) => ({ ...prev, ...fieldErrors }));
                 } else if (axiosError.response.status === 404) {
                     errorMessage = "Rental listing not found.";
                 } else if (axiosError.response.status === 405) {

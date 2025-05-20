@@ -34,17 +34,26 @@ class BookingController(
             val accessToken = authHeader.substring(7)
             val userId = jwtUtil.getUserIdFromToken(accessToken)
             if (userId != null) {
+                if (addBookingRequest.startDateTime.isAfter(
+                        addBookingRequest.endDateTime,
+                    )
+                ) {
+                    throw ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Дата нечала аренды не может быть после даты конца аренды",
+                    )
+                }
                 bookingService.create(addBookingRequest, userId)
             } else {
                 throw ResponseStatusException(
                     HttpStatus.NOT_FOUND,
-                    "Access token doesn't contains userId",
+                    "'Access' токен не содержит 'id' пользователя",
                 )
             }
         } else {
             throw ResponseStatusException(
                 HttpStatus.UNAUTHORIZED,
-                "Access token not found",
+                "'Access' токен не найден",
             )
         }
     }
@@ -79,6 +88,15 @@ class BookingController(
         @PathVariable bookingId: String,
         @RequestBody updateBookingRequest: UpdateBookingRequest,
     ) {
+        if (updateBookingRequest.startDateTime.isAfter(
+                updateBookingRequest.endDateTime,
+            )
+        ) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "Дата нечала аренды не может быть после даты конца аренды",
+            )
+        }
         bookingService.updateBookingById(bookingId, updateBookingRequest)
     }
 

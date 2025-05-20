@@ -72,17 +72,17 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         const errors = { firstName: "", lastName: "", phone: "", profilePicture: "" };
 
         if (!formData.firstName || formData.firstName.length < 1 || formData.firstName.length > 255) {
-            errors.firstName = "First name must be between 1 and 255 characters";
+            errors.firstName = "Имя должно содержать от 1 до 255 символов";
             valid = false;
         }
         if (!formData.lastName || formData.lastName.length < 1 || formData.lastName.length > 255) {
-            errors.lastName = "Last name must be between 1 and 255 characters";
+            errors.lastName = "Фамилия должна содержать от 1 до 255 символов";
             valid = false;
         }
 
         formData.phone = formData.phone.replace(/[^+\d]/g, "");
         if (!formData.phone || !phoneRegex.test(formData.phone) || (formData.phone.length < 12)) {
-            errors.phone = "Phone must follow international format (e.g., +123456789)";
+            errors.phone = "Номер телефона должен содержать 11 цифр и начинаться с +7";
             valid = false;
         }
 
@@ -102,7 +102,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         if (file.size > MAX_FILE_SIZE) {
             setFormErrors(prev => ({
                 ...prev,
-                profilePicture: "Image size must be less than 5MB"
+                profilePicture: "Размер файла не должен превышать 5 МБ"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -112,7 +112,7 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         if (!allowedFileTypes.includes(file.type)) {
             setFormErrors(prev => ({
                 ...prev,
-                profilePicture: "Please upload a PNG or JPEG image"
+                profilePicture: "Поддерживаются только PNG и JPEG"
             }));
             setProfilePicture(null);
             setImagePreview(null);

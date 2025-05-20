@@ -21,6 +21,14 @@ const Login: React.FC = () => {
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    if (!email || !password) {
+      setError("Пожалуйста, заполните все поля.");
+      return;
+    }
+    if (password.length < 8) {
+      setFieldErrors({ password: "Пароль должен содержать не менее 8 символов." });
+      return;
+    }
     try {
       const response = await api.post<AccessToken>("/auth/login", {
         email,
@@ -39,11 +47,16 @@ const Login: React.FC = () => {
         });
 
         if (!errorData.error) {
-          setError("An unexpected error occurred. Please try again.");
+          setError("Возникла ошибка. Пожалуйста, попробуйте еще раз.");
         }
+      } else if (axiosError.response?.status === 400) { 
+        const errorData = axiosError.response.data as { password: string };
+        setFieldErrors({
+          password: errorData.password,
+        });
       } else {
         console.error("Register error:", error);
-        setError("An unexpected error occurred. Please try again.");
+        setError("Возникла ошибка. Пожалуйста, попробуйте еще раз.");
       }
     }
   };
@@ -84,6 +97,8 @@ const Login: React.FC = () => {
             type={showPassword ? "text" : "password"}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            error={!!fieldErrors.password}
+            helperText={fieldErrors.password}
             slotProps={{
               input: {
                 endAdornment: (

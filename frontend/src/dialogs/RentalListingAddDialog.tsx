@@ -185,14 +185,55 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
     };
 
-    const handleSubmit = async () => {
+    const validateForm = () => {
+        let valid = true;
+        const newErrors = {
+            title: "",
+            description: "",
+            address: "",
+            tariffDescription: "",
+            autoRenew: "",
+            mainImage: "",
+            additionalImages: "",
+        };
         if (!mainImage) {
-            setFormErrors((prev) => ({
-                ...prev,
-                mainImage: "Основное изображение обязательно",
-            }));
-            return;
+            newErrors.mainImage = "Основное изображение обязательно";
+            valid = false;
         }
+        if (!formData.title) {
+            newErrors.title = "Название обязательно";
+            valid = false;
+        }
+        if (!formData.address) {
+            newErrors.address = "Адрес обязателен";
+            valid = false;
+        }
+        if (!formData.tariffDescription) {
+            newErrors.tariffDescription = "Тариф обязателен";
+            valid = false;
+        }
+        if (formData.title.length < 1 || formData.title.length > 255) {
+            newErrors.title = "Название должно быть от 1 до 255 символов";
+            valid = false;
+        }
+        if (formData.description.length > 1023) {
+            newErrors.description = "Описание должно быть не более 1023 символов";
+            valid = false;
+        }
+        if (formData.address.length < 1 || formData.address.length > 255) {
+            newErrors.address = "Адрес должен быть от 1 до 255 символов";
+            valid = false;
+        }
+        if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
+            newErrors.tariffDescription = "Тариф должен быть от 1 до 255 символов";
+            valid = false;
+        }
+        setFormErrors(newErrors);
+        return valid;
+    };
+
+    const handleSubmit = async () => {
+        if (!validateForm()) return;
 
         setIsLoading(true);
 
@@ -428,7 +469,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                     Создать
                 </Button>
             </DialogActions>
-            <TransparentLoadingSpinner isLoading={isLoading}/>
+            <TransparentLoadingSpinner isLoading={isLoading} />
         </Dialog>
     );
 };

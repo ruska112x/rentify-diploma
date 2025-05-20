@@ -18,9 +18,9 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: description
-                  type: text
+                  type: varchar(1023)
                   constraints:
-                    nullable: false
+                    nullable: true
               - column:
                   name: address
                   type: varchar(255)
@@ -28,7 +28,7 @@ databaseChangeLog:
                     nullable: false
               - column:
                   name: tariff_description
-                  type: text
+                  type: varchar(255)
                   constraints:
                     nullable: false
               - column:

@@ -5,6 +5,7 @@ import api from "../api/api";
 import RentalListingBigCard from "../components/RentalListingBigCard";
 import { Link } from "react-router";
 import LoadingSpinner from "../components/LoadingSpinner";
+import SearchBar from "../components/SearchBar";
 
 const HomePage = () => {
     const [rentalListings, setRentalListings] = useState<Array<PartialRentalListing>>([]);
@@ -30,9 +31,10 @@ const HomePage = () => {
     }
     return (
         <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", mt: 4 }}>
-            <Paper sx={{ minHeight: "10vh", minWidth: "50vw", maxWidth: "50vw", justifyContent: "center", display: "flex", alignItems: "center" }}>
+            <Paper sx={{ mb: 2, minHeight: "10vh", minWidth: "50vw", maxWidth: "50vw", justifyContent: "center", display: "flex", alignItems: "center" }}>
                 <Typography variant="h4">Топ 10 новых объявлений</Typography>
             </Paper>
+            <SearchBar />
             {
                 rentalListings.length === 0 ?
                     (<Typography variant="body1" sx={{ mt: 2 }}>

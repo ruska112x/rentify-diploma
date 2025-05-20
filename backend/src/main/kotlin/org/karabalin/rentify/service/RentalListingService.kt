@@ -1,7 +1,9 @@
 package org.karabalin.rentify.service
 
+import org.karabalin.rentify.configuration.RentalListingSpecification
 import org.karabalin.rentify.model.domain.RentalListing
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
+import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
 import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.model.entity.RentalListingEntity
@@ -11,6 +13,8 @@ import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.RentalListingStatusRepository
 import org.karabalin.rentify.repository.S3Repository
 import org.karabalin.rentify.repository.UserRepository
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -24,6 +28,7 @@ class RentalListingService(
     private val rentalListingRepository: RentalListingRepository,
     private val rentalListingPhotoRepository: RentalListingPhotoRepository,
     private val rentalListingStatusRepository: RentalListingStatusRepository,
+    private val rentalListingSpecification: RentalListingSpecification,
     private val s3Repository: S3Repository,
 ) {
     private val allowedFileTypes = setOf("image/png", "image/jpeg")
@@ -100,6 +105,40 @@ class RentalListingService(
                     it.address,
                     it.tariffDescription,
                     it.autoRenew,
+                    ImageData(
+                        it.mainPhotoKey,
+                        s3Repository.generatePresignedLink(it.mainPhotoKey),
+                    ),
+                    rentalListingPhotoRepository
+                        .findAllByRentalListingEntityId(
+                            it.id!!,
+                        ).map { photo ->
+                            ImageData(
+                                photo.fileKey,
+                                s3Repository.generatePresignedLink(
+                                    photo.fileKey,
+                                ),
+                            )
+                        },
+                    it.userEntity.id.toString(),
+                )
+            }
+
+    fun searchRentalListings(
+        searchQuery: String,
+        pageable: Pageable,
+    ): Page<GetPartialRentalListingResponse> =
+        rentalListingRepository
+            .findAll(
+                rentalListingSpecification.searchSpecification(searchQuery),
+                pageable,
+            ).map {
+                GetPartialRentalListingResponse(
+                    it.id.toString(),
+                    it.title,
+                    it.description,
+                    it.address,
+                    it.tariffDescription,
                     ImageData(
                         it.mainPhotoKey,
                         s3Repository.generatePresignedLink(it.mainPhotoKey),

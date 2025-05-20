@@ -2,11 +2,14 @@ package org.karabalin.rentify.repository
 
 import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.query.Param
 import java.util.UUID
 
-interface RentalListingRepository : JpaRepository<RentalListingEntity, UUID> {
+interface RentalListingRepository :
+    JpaRepository<RentalListingEntity, UUID>,
+    JpaSpecificationExecutor<RentalListingEntity> {
     fun findByUserEntityEmail(
         userEntityEmail: String,
     ): List<RentalListingEntity>

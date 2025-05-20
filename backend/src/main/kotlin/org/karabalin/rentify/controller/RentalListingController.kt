@@ -6,6 +6,9 @@ import org.karabalin.rentify.model.dto.GetExtendedRentalListingResponse
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.service.RentalListingService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PatchMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RequestPart
 import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.multipart.MultipartFile
@@ -173,6 +177,17 @@ class RentalListingUnauthorizedController(
                 )
             },
         )
+
+    @GetMapping("/searchRentalListings")
+    fun search(
+        @RequestParam("q") query: String,
+        @RequestParam("page") page: Int,
+        @RequestParam("size") size: Int,
+    ): Page<GetPartialRentalListingResponse> {
+        val pageable =
+            PageRequest.of(page, size, Sort.by("createdAtTime").descending())
+        return rentalListingService.searchRentalListings(query, pageable)
+    }
 
     @GetMapping("/rentalListings/{rentalListingId}")
     fun getRentalListingById(

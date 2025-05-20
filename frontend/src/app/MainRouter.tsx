@@ -13,6 +13,7 @@ import HomePage from "../pages/HomePage"
 import RentalListingPage from "../pages/RentalListingPage"
 import UserProfilePage from "../pages/UserProfilePage"
 import LoadingSpinner from "../components/LoadingSpinner"
+import SearchPage from "../pages/SearchPage"
 
 const MainRouter: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -39,6 +40,7 @@ const MainRouter: React.FC = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/profile" element={<MyProfile />} />
                 <Route path="/" element={<HomePage />} />
+                <Route path="/search" element={<SearchPage />} />
                 <Route path="/rentalListings/:rentalListingId" element={<RentalListingPage />} />
                 <Route path="/users/:userId" element={<UserProfilePage />} />
             </Routes>

@@ -4,6 +4,20 @@ databaseChangeLog:
       author: ruslan
       changes:
         - createTable:
+            tableName: rental_listing_statuses
+            columns:
+                - column:
+                    name: id
+                    type: bigint
+                    autoIncrement: true
+                    constraints:
+                      primaryKey: true
+                - column:
+                    name: name
+                    type: varchar(50)
+                    constraints:
+                      nullable: false
+        - createTable:
             tableName: rental_listings
             columns:
               - column:
@@ -58,11 +72,22 @@ databaseChangeLog:
                   type: uuid
                   constraints:
                     nullable: false
+              - column:
+                  name: status_id
+                  type: bigint
+                  constraints:
+                    nullable: false
         - addForeignKeyConstraint:
             baseTableName: rental_listings
             baseColumnNames: user_id
             constraintName: fk_rental_listings_user
             referencedTableName: users
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: rental_listings
+            baseColumnNames: status_id
+            constraintName: fk_rental_listings_statuses
+            referencedTableName: rental_listing_statuses
             referencedColumnNames: id
         - createTable:
             tableName: rental_listing_photos

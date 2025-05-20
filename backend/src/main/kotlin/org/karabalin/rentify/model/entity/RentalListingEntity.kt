@@ -37,6 +37,9 @@ class RentalListingEntity(
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     val userEntity: UserEntity,
+    @ManyToOne
+    @JoinColumn(name = "status_id", nullable = false)
+    var rentalListingStatusEntity: RentalListingStatusEntity,
 ) {
     @PreUpdate
     fun onUpdate() {

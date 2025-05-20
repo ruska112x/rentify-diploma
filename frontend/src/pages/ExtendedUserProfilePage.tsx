@@ -8,7 +8,9 @@ import {
     Paper,
     Button,
     List,
-    ListItem
+    ListItem,
+    Tabs,
+    Tab
 } from "@mui/material";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ImageSquare from "../components/ImageSquare";
@@ -20,10 +22,16 @@ import { parseJwtPayload } from "../shared/jwtDecode";
 const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ userId }) => {
     const { accessToken } = useSelector((state: RootState) => state.auth);
     const [user, setUser] = useState<ExtendedUser | null>(null);
-    const [rentalListings, setRentalListings] = useState<ExtendedRentalListing[]>([]);
+    const [activeRentalListings, setActiveRentalListings] = useState<Array<ExtendedRentalListing>>([]);
+    const [archivedRentalListings, setArchivedRentalListings] = useState<Array<ExtendedRentalListing>>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const navigate = useNavigate();
+
+    const [tabValue, setTabValue] = useState(0);
+    const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+        setTabValue(newValue);
+    };
 
     const fetchUserData = async () => {
         if (!userId) {
@@ -35,9 +43,14 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
         setLoading(true);
         try {
             const userResponse = await authoredApi.get(`/users/${userId}`);
-            const listingsResponse = await authoredApi.get(`/users/${userId}/rentalListings`);
             setUser(userResponse.data);
-            setRentalListings(listingsResponse.data);
+            const response = await authoredApi.get(`/users/${userId}/activeRentalListings`);
+            const listings: ExtendedRentalListing[] = response.data;
+            setActiveRentalListings(listings);
+
+            const archivedResponse = await authoredApi.get(`/users/${userId}/archivedRentalListings`);
+            const archivedListings: ExtendedRentalListing[] = archivedResponse.data;
+            setArchivedRentalListings(archivedListings);
             setError(null);
         } catch (err) {
             console.error("Error fetching user data:", err);
@@ -102,44 +115,95 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                         <Typography variant="h5" gutterBottom>
                             Rental Listings
                         </Typography>
-                        {rentalListings.length === 0 ? (
-                            <Typography variant="body1">
-                                No rental listings found.
-                            </Typography>
-                        ) : (
-                            <List>
-                                {rentalListings.map((listing, index) => (
-                                    <Paper key={index} elevation={1} sx={{ mb: 2, p: 2 }}>
-                                        <ListItem sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-                                            <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                                                <ImageSquare imageUrl={listing.mainImageData.link} altText="Главное изображение объявления" />
-                                                {listing.additionalImagesData.map((imageData, idx) => (
-                                                    <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link}  altText={`Дополнительное изображение ${idx}`} />
-                                                ))}
-                                            </Box>
-                                            <Typography
-                                                variant="h6"
-                                                component={Link}
-                                                to={`/rentalListings/${listing.id}`}
-                                                sx={{ textDecoration: "none", color: "primary.main", "&:hover": { textDecoration: "underline" } }}
-                                            >
-                                                {listing.title}
-                                            </Typography>
-                                            <Box display="flex" flexDirection="column">
-                                                <Typography component="span" variant="body2" sx={{ mt: 1 }}>
-                                                    {listing.description || "No description provided"}
+                        <Tabs value={tabValue} onChange={handleTabChange} centered>
+                            <Tab label="Активные" />
+                            <Tab label="Архивированные" />
+                        </Tabs>
+
+                        {tabValue === 0 &&
+                            (
+                                activeRentalListings.length === 0 ? (
+                                    <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+                                        Объявлений не найдено
+                                    </Typography>
+                                ) : (
+                                    <List>
+                                        {activeRentalListings.map((listing, index) => (
+                                            <Paper key={index} elevation={1} sx={{ mb: 2, p: 2 }}>
+                                                <ListItem sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                                    <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                                                        <ImageSquare imageUrl={listing.mainImageData.link} altText="Главное изображение объявления" />
+                                                        {listing.additionalImagesData.map((imageData, idx) => (
+                                                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} altText={`Дополнительное изображение ${idx}`} />
+                                                        ))}
+                                                    </Box>
+                                                    <Typography
+                                                        variant="h6"
+                                                        component={Link}
+                                                        to={`/rentalListings/${listing.id}`}
+                                                        sx={{ textDecoration: "none", color: "primary.main", "&:hover": { textDecoration: "underline" } }}
+                                                    >
+                                                        {listing.title}
+                                                    </Typography>
+                                                    <Box display="flex" flexDirection="column">
+                                                        <Typography component="span" variant="body2" sx={{ mt: 1 }}>
+                                                            {listing.description || "No description provided"}
+                                                        </Typography>
+                                                        <Typography component="span" variant="body2">
+                                                            Address: {listing.address}
+                                                        </Typography>
+                                                        <Typography component="span" variant="body2">
+                                                            Tariff: {listing.tariffDescription}
+                                                        </Typography>
+                                                    </Box>
+                                                </ListItem>
+                                            </Paper>
+                                        ))}
+                                    </List>
+                                )
+                            )
+                        }
+
+                        {tabValue === 1 && (
+                            archivedRentalListings.length === 0 ? (
+                                <Typography variant="body1" sx={{ mt: 2, mb: 2 }}>
+                                    Объявлений не найдено
+                                </Typography>
+                            ) : (
+                                <List>
+                                    {archivedRentalListings.map((listing, index) => (
+                                        <Paper key={index} elevation={1} sx={{ mb: 2, p: 2 }}>
+                                            <ListItem sx={{ display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+                                                <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
+                                                    <ImageSquare imageUrl={listing.mainImageData.link} altText="Главное изображение объявления" />
+                                                    {listing.additionalImagesData.map((imageData, idx) => (
+                                                        <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} altText={`Дополнительное изображение ${idx}`} />
+                                                    ))}
+                                                </Box>
+                                                <Typography
+                                                    variant="h6"
+                                                    component={Link}
+                                                    to={`/rentalListings/${listing.id}`}
+                                                    sx={{ textDecoration: "none", color: "primary.main", "&:hover": { textDecoration: "underline" } }}
+                                                >
+                                                    {listing.title}
                                                 </Typography>
-                                                <Typography component="span" variant="body2">
-                                                    Address: {listing.address}
-                                                </Typography>
-                                                <Typography component="span" variant="body2">
-                                                    Tariff: {listing.tariffDescription}
-                                                </Typography>
-                                            </Box>
-                                        </ListItem>
-                                    </Paper>
-                                ))}
-                            </List>
+                                                <Box display="flex" flexDirection="column">
+                                                    <Typography component="span" variant="body2" sx={{ mt: 1 }}>
+                                                        {listing.description || "No description provided"}
+                                                    </Typography>
+                                                    <Typography component="span" variant="body2">
+                                                        Address: {listing.address}
+                                                    </Typography>
+                                                    <Typography component="span" variant="body2">
+                                                        Tariff: {listing.tariffDescription}
+                                                    </Typography>
+                                                </Box>
+                                            </ListItem>
+                                        </Paper>
+                                    ))}
+                                </List>
+                            )
                         )}
                     </Box>
                 </Box>

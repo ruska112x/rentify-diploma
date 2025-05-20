@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: i-4
+      author: ruslan
+      changes:
+        - insert:
+            tableName: rental_listing_statuses
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: name
+                  value: "ACTIVE"
+        - insert:
+            tableName: rental_listing_statuses
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: name
+                  value: "ARCHIVED"

@@ -45,24 +45,49 @@ class RentalListingController(
         )
     }
 
-    @GetMapping("/users/{userId}/rentalListings")
-    fun getRentalListingsByUserId(
+    @GetMapping("/users/{userId}/activeRentalListings")
+    fun getActiveRentalListingsByUserId(
         @PathVariable userId: String,
     ): ResponseEntity<List<GetExtendedRentalListingResponse>> =
         ResponseEntity.ok(
-            rentalListingService.findRentalListingsByUserEntityId(userId).map {
-                GetExtendedRentalListingResponse(
-                    it.id,
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.autoRenew,
-                    it.mainImageData,
-                    it.additionalImagesData,
-                    it.userId,
-                )
-            },
+            rentalListingService
+                .findActiveRentalListingsByUserEntityId(userId)
+                .map {
+                    GetExtendedRentalListingResponse(
+                        it.id,
+                        it.title,
+                        it.description,
+                        it.address,
+                        it.tariffDescription,
+                        it.autoRenew,
+                        it.mainImageData,
+                        it.additionalImagesData,
+                        it.userId,
+                    )
+                },
+        )
+
+    @GetMapping("/users/{userId}/archivedRentalListings")
+    fun getArchivedRentalListingsByUserId(
+        @PathVariable userId: String,
+    ): ResponseEntity<List<GetExtendedRentalListingResponse>> =
+        ResponseEntity.ok(
+            rentalListingService
+                .findArchivedRentalListingsByUserEntityId(
+                    userId,
+                ).map {
+                    GetExtendedRentalListingResponse(
+                        it.id,
+                        it.title,
+                        it.description,
+                        it.address,
+                        it.tariffDescription,
+                        it.autoRenew,
+                        it.mainImageData,
+                        it.additionalImagesData,
+                        it.userId,
+                    )
+                },
         )
 
     @PostMapping(
@@ -80,6 +105,13 @@ class RentalListingController(
             mainImage,
             additionalImages,
         )
+    }
+
+    @PostMapping("/archiveRentalListings/{rentalId}")
+    fun archive(
+        @PathVariable rentalId: String,
+    ) {
+        rentalListingService.archiveRentalListingById(rentalId)
     }
 
     @PatchMapping(
@@ -164,22 +196,45 @@ class RentalListingUnauthorizedController(
         )
     }
 
-    @GetMapping("/users/{userId}/rentalListings")
-    fun getRentalListingsByUserId(
+    @GetMapping("/users/{userId}/activeRentalListings")
+    fun getActiveRentalListingsByUserId(
         @PathVariable userId: String,
     ): ResponseEntity<List<GetPartialRentalListingResponse>> =
         ResponseEntity.ok(
-            rentalListingService.findRentalListingsByUserEntityId(userId).map {
-                GetPartialRentalListingResponse(
-                    it.id,
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.mainImageData,
-                    it.additionalImagesData,
-                    it.userId,
-                )
-            },
+            rentalListingService
+                .findActiveRentalListingsByUserEntityId(userId)
+                .map {
+                    GetPartialRentalListingResponse(
+                        it.id,
+                        it.title,
+                        it.description,
+                        it.address,
+                        it.tariffDescription,
+                        it.mainImageData,
+                        it.additionalImagesData,
+                        it.userId,
+                    )
+                },
+        )
+
+    @GetMapping("/users/{userId}/archivedRentalListings")
+    fun getArchivedRentalListingsByUserId(
+        @PathVariable userId: String,
+    ): ResponseEntity<List<GetPartialRentalListingResponse>> =
+        ResponseEntity.ok(
+            rentalListingService
+                .findArchivedRentalListingsByUserEntityId(userId)
+                .map {
+                    GetPartialRentalListingResponse(
+                        it.id,
+                        it.title,
+                        it.description,
+                        it.address,
+                        it.tariffDescription,
+                        it.mainImageData,
+                        it.additionalImagesData,
+                        it.userId,
+                    )
+                },
         )
 }

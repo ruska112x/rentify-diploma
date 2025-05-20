@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: i-4
+      id: i-5
       author: ruslan
       changes:
         - insert:
@@ -36,6 +36,9 @@ databaseChangeLog:
               - column:
                   name: user_id
                   value: "a7ff2d61-3725-46c0-8906-d1f07e6e0fb7"
+              - column:
+                  name: status_id
+                  value: "1"
         - insert:
             tableName: rental_listings
             columns:
@@ -69,6 +72,9 @@ databaseChangeLog:
               - column:
                   name: user_id
                   value: "a7ff2d61-3725-46c0-8906-d1f07e6e0fb7"
+              - column:
+                  name: status_id
+                  value: "1"
         - insert:
             tableName: rental_listings
             columns:
@@ -102,6 +108,9 @@ databaseChangeLog:
               - column:
                   name: user_id
                   value: "5d97cedb-5ee9-47fa-96da-5272f34b43ac"
+              - column:
+                  name: status_id
+                  value: "1"
         - insert:
             tableName: rental_listings
             columns:
@@ -135,6 +144,9 @@ databaseChangeLog:
               - column:
                   name: user_id
                   value: "5d97cedb-5ee9-47fa-96da-5272f34b43ac"
+              - column:
+                  name: status_id
+                  value: "1"
         - insert:
             tableName: rental_listing_photos
             columns:

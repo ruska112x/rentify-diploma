@@ -432,7 +432,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         helperText={formErrors.description}
                     />
                     <TextField
-                        label="Адроес"
+                        label="Адрес"
                         name="address"
                         value={formData.address}
                         onChange={handleChange}

@@ -76,7 +76,10 @@ class BookingService(
 
     fun getBookingsByUserId(userId: String): List<GetBookingResponse> {
         val bookingList =
-            bookingRepository.getBookingsByUserEntityId(UUID.fromString(userId))
+            bookingRepository
+                .findByUserEntityIdOrderByStartDateTimeAsc(
+                    UUID.fromString(userId),
+                )
         val getBookingResponseList =
             bookingList.map {
                 GetBookingResponse(
@@ -94,9 +97,10 @@ class BookingService(
         rentalListingId: String,
     ): List<GetBookingResponse> {
         val bookingList =
-            bookingRepository.getBookingsByRentalListingEntityId(
-                UUID.fromString(rentalListingId),
-            )
+            bookingRepository
+                .findByRentalListingEntityIdOrderByStartDateTimeAsc(
+                    UUID.fromString(rentalListingId),
+                )
         val getBookingResponseList =
             bookingList.map {
                 GetBookingResponse(

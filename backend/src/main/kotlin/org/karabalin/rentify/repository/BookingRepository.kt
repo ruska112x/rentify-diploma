@@ -5,9 +5,11 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.UUID
 
 interface BookingRepository : JpaRepository<BookingEntity, UUID> {
-    fun getBookingsByRentalListingEntityId(
+    fun findByRentalListingEntityIdOrderByStartDateTimeAsc(
         rentalListingId: UUID,
     ): List<BookingEntity>
 
-    fun getBookingsByUserEntityId(userId: UUID): List<BookingEntity>
+    fun findByUserEntityIdOrderByStartDateTimeAsc(
+        userId: UUID,
+    ): List<BookingEntity>
 }

@@ -4,10 +4,12 @@ import org.karabalin.rentify.configuration.RentalListingSpecification
 import org.karabalin.rentify.model.domain.RentalListing
 import org.karabalin.rentify.model.dto.AddRentalListingRequest
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
-import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
+import org.karabalin.rentify.model.entity.RentalListingAddressEntity
 import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.model.entity.RentalListingPhotoEntity
+import org.karabalin.rentify.model.mapper.RentalListingMapper
+import org.karabalin.rentify.repository.RentalListingAddressRepository
 import org.karabalin.rentify.repository.RentalListingPhotoRepository
 import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.RentalListingStatusRepository
@@ -29,7 +31,9 @@ class RentalListingService(
     private val rentalListingPhotoRepository: RentalListingPhotoRepository,
     private val rentalListingStatusRepository: RentalListingStatusRepository,
     private val rentalListingSpecification: RentalListingSpecification,
+    private val rentalListingAddressRepository: RentalListingAddressRepository,
     private val s3Repository: S3Repository,
+    private val rentalListingMapper: RentalListingMapper,
 ) {
     private val allowedFileTypes = setOf("image/png", "image/jpeg")
     private val maxFileSize = 5 * 1024 * 1024
@@ -59,8 +63,7 @@ class RentalListingService(
                 additionalPhotoKeys.add(link)
             }
         }
-        val rentalListingStatusOptional =
-            rentalListingStatusRepository.findByName("ACTIVE")
+        val rentalListingStatusOptional = rentalListingStatusRepository.findByName("ACTIVE")
         val rentalListingStatus =
             rentalListingStatusOptional.orElseThrow {
                 ResponseStatusException(
@@ -69,11 +72,23 @@ class RentalListingService(
                 )
             }
 
+        val rentalListingAddressEntity =
+            RentalListingAddressEntity(
+                0,
+                addRentalListingRequest.address.district,
+                addRentalListingRequest.address.locality,
+                addRentalListingRequest.address.street,
+                addRentalListingRequest.address.houseNumber,
+                addRentalListingRequest.address.additionalInfo,
+            )
+
+        rentalListingAddressRepository.save(rentalListingAddressEntity)
+
         val rentalListing =
             RentalListingEntity(
                 title = addRentalListingRequest.title,
                 description = addRentalListingRequest.description,
-                address = addRentalListingRequest.address,
+                rentalListingAddressEntity = rentalListingAddressEntity,
                 tariffDescription = addRentalListingRequest.tariffDescription,
                 autoRenew = addRentalListingRequest.autoRenew,
                 mainPhotoKey = mainPhotoKey,
@@ -93,37 +108,6 @@ class RentalListingService(
         )
     }
 
-    fun findRentalListingsByUserEntityId(userId: String): List<RentalListing> =
-        rentalListingRepository
-            .findAllByUserEntityId(UUID.fromString(userId))
-            .sortedBy { it.createdAtTime }
-            .map {
-                RentalListing(
-                    it.id.toString(),
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.autoRenew,
-                    ImageData(
-                        it.mainPhotoKey,
-                        s3Repository.generatePresignedLink(it.mainPhotoKey),
-                    ),
-                    rentalListingPhotoRepository
-                        .findAllByRentalListingEntityId(
-                            it.id!!,
-                        ).map { photo ->
-                            ImageData(
-                                photo.fileKey,
-                                s3Repository.generatePresignedLink(
-                                    photo.fileKey,
-                                ),
-                            )
-                        },
-                    it.userEntity.id.toString(),
-                )
-            }
-
     fun searchRentalListings(
         searchQuery: String,
         pageable: Pageable,
@@ -133,104 +117,25 @@ class RentalListingService(
                 rentalListingSpecification.searchSpecification(searchQuery),
                 pageable,
             ).map {
-                GetPartialRentalListingResponse(
-                    it.id.toString(),
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    ImageData(
-                        it.mainPhotoKey,
-                        s3Repository.generatePresignedLink(it.mainPhotoKey),
-                    ),
-                    rentalListingPhotoRepository
-                        .findAllByRentalListingEntityId(
-                            it.id!!,
-                        ).map { photo ->
-                            ImageData(
-                                photo.fileKey,
-                                s3Repository.generatePresignedLink(
-                                    photo.fileKey,
-                                ),
-                            )
-                        },
-                    it.userEntity.id.toString(),
-                )
+                rentalListingMapper.domainToPartialDto(rentalListingMapper.entityToDomain(it))
             }
 
-    fun findActiveRentalListingsByUserEntityId(
-        userId: String,
-    ): List<RentalListing> =
-        rentalListingRepository
-            .findAllActiveByUserEntityId(UUID.fromString(userId))
-            .sortedBy { it.createdAtTime }
-            .map {
-                RentalListing(
-                    it.id.toString(),
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.autoRenew,
-                    ImageData(
-                        it.mainPhotoKey,
-                        s3Repository.generatePresignedLink(it.mainPhotoKey),
-                    ),
-                    rentalListingPhotoRepository
-                        .findAllByRentalListingEntityId(
-                            it.id!!,
-                        ).map { photo ->
-                            ImageData(
-                                photo.fileKey,
-                                s3Repository.generatePresignedLink(
-                                    photo.fileKey,
-                                ),
-                            )
-                        },
-                    it.userEntity.id.toString(),
-                )
-            }
+    fun findActiveRentalListingsByUserEntityId(userId: String): List<RentalListing> =
+        rentalListingRepository.findAllActiveByUserEntityId(UUID.fromString(userId)).map {
+            rentalListingMapper.entityToDomain(it)
+        }
 
-    fun findArchivedRentalListingsByUserEntityId(
-        userId: String,
-    ): List<RentalListing> =
-        rentalListingRepository
-            .findAllArchivedByUserEntityId(UUID.fromString(userId))
-            .sortedBy { it.createdAtTime }
-            .map {
-                RentalListing(
-                    it.id.toString(),
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.autoRenew,
-                    ImageData(
-                        it.mainPhotoKey,
-                        s3Repository.generatePresignedLink(it.mainPhotoKey),
-                    ),
-                    rentalListingPhotoRepository
-                        .findAllByRentalListingEntityId(
-                            it.id!!,
-                        ).map { photo ->
-                            ImageData(
-                                photo.fileKey,
-                                s3Repository.generatePresignedLink(
-                                    photo.fileKey,
-                                ),
-                            )
-                        },
-                    it.userEntity.id.toString(),
-                )
-            }
+    fun findArchivedRentalListingsByUserEntityId(userId: String): List<RentalListing> =
+        rentalListingRepository.findAllArchivedByUserEntityId(UUID.fromString(userId)).map {
+            rentalListingMapper.entityToDomain(it)
+        }
 
     @Transactional
     fun archiveRentalListingById(rentalListingId: String) {
         val rentalListingStatusOptional =
-            rentalListingStatusRepository
-                .findByName(
-                    "ARCHIVED",
-                )
+            rentalListingStatusRepository.findByName(
+                "ARCHIVED",
+            )
         val rentalListingStatus =
             rentalListingStatusOptional.orElseThrow {
                 ResponseStatusException(
@@ -256,8 +161,7 @@ class RentalListingService(
     }
 
     fun findRentalListingById(rentalListingId: String): RentalListing {
-        val rentalListingOptional =
-            rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
         val rentalListing =
             rentalListingOptional.orElseThrow {
                 ResponseStatusException(
@@ -265,54 +169,12 @@ class RentalListingService(
                     "RentalListing with id `$rentalListingId` not found",
                 )
             }
-        return RentalListing(
-            rentalListing.id.toString(),
-            rentalListing.title,
-            rentalListing.description,
-            rentalListing.address,
-            rentalListing.tariffDescription,
-            rentalListing.autoRenew,
-            ImageData(
-                rentalListing.mainPhotoKey,
-                s3Repository.generatePresignedLink(rentalListing.mainPhotoKey),
-            ),
-            rentalListingPhotoRepository
-                .findAllByRentalListingEntityId(
-                    rentalListing.id!!,
-                ).map { photo ->
-                    ImageData(
-                        photo.fileKey,
-                        s3Repository.generatePresignedLink(photo.fileKey),
-                    )
-                },
-            rentalListing.userEntity.id.toString(),
-        )
+        return rentalListingMapper.entityToDomain(rentalListing)
     }
 
     fun findNewestRentalListings(): List<RentalListing> =
         rentalListingRepository.findAllByOrderByCreatedAtTimeDesc().map {
-            RentalListing(
-                it.id.toString(),
-                it.title,
-                it.description,
-                it.address,
-                it.tariffDescription,
-                it.autoRenew,
-                ImageData(
-                    it.mainPhotoKey,
-                    s3Repository.generatePresignedLink(it.mainPhotoKey),
-                ),
-                rentalListingPhotoRepository
-                    .findAllByRentalListingEntityId(
-                        it.id!!,
-                    ).map { photo ->
-                        ImageData(
-                            photo.fileKey,
-                            s3Repository.generatePresignedLink(photo.fileKey),
-                        )
-                    },
-                it.userEntity.id.toString(),
-            )
+            rentalListingMapper.entityToDomain(it)
         }
 
     @Transactional
@@ -324,19 +186,20 @@ class RentalListingService(
         newImageFiles: List<MultipartFile>?,
     ) {
         val rentalListing =
-            rentalListingRepository
-                .findById(UUID.fromString(rentalListingId))
-                .orElseThrow {
-                    ResponseStatusException(
-                        HttpStatus.NOT_FOUND,
-                        "RentalListing with id `$rentalListingId` not found",
-                    )
-                }
+            rentalListingRepository.findById(UUID.fromString(rentalListingId)).orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "RentalListing with id `$rentalListingId` not found",
+                )
+            }
+
+        rentalListingAddressRepository.findById(
+            rentalListing.rentalListingAddressEntity.id,
+        )
 
         with(rentalListing) {
             title = request.title
             description = request.description
-            address = request.address
             tariffDescription = request.tariffDescription
             autoRenew = request.autoRenew
         }
@@ -392,8 +255,7 @@ class RentalListingService(
 
     @Transactional
     fun deleteById(rentalListingId: String) {
-        val rentalListingOptional =
-            rentalListingRepository.findById(UUID.fromString(rentalListingId))
+        val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
         if (rentalListingOptional.isPresent) {
             val rentalListingPhotoEntityList =
                 rentalListingPhotoRepository.findAllByRentalListingEntityId(

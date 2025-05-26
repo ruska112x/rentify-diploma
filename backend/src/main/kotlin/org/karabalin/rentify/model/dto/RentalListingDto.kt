@@ -3,6 +3,14 @@ package org.karabalin.rentify.model.dto
 import jakarta.validation.constraints.NotBlank
 import org.hibernate.validator.constraints.Length
 
+data class RentalListingAddressDto(
+    val district: String?,
+    val locality: String,
+    val street: String,
+    val houseNumber: String,
+    val additionalInfo: String?,
+)
+
 data class AddRentalListingRequest(
     val userId: String,
     @field:NotBlank
@@ -13,13 +21,7 @@ data class AddRentalListingRequest(
     )
     val title: String,
     val description: String,
-    @field:NotBlank
-    @field:Length(
-        min = 1,
-        max = 255,
-        message = "Address must be at least 1 characters long",
-    )
-    val address: String,
+    val address: RentalListingAddressDto,
     @field:NotBlank
     @field:Length(
         min = 1,
@@ -34,7 +36,7 @@ data class GetExtendedRentalListingResponse(
     val id: String,
     val title: String,
     val description: String,
-    val address: String,
+    val address: RentalListingAddressDto,
     val tariffDescription: String,
     val autoRenew: Boolean,
     val mainImageData: ImageData,
@@ -62,13 +64,7 @@ data class UpdateRentalListingRequest(
     )
     val title: String,
     val description: String,
-    @field:NotBlank
-    @field:Length(
-        min = 1,
-        max = 255,
-        message = "Address must be at least 1 characters long",
-    )
-    val address: String,
+    val address: RentalListingAddressDto,
     @field:NotBlank
     @field:Length(
         min = 1,

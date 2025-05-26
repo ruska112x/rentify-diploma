@@ -18,20 +18,27 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
         height: "300px",
         width: "100%",
         boxSizing: "border-box",
+        borderRadius: 2,
+        overflow: "hidden",
       }}
     >
       <Box sx={{ flexShrink: 0, mr: 4 }}>
-        <ImageSquare imageUrl={rental.mainImageData.link} size={256} altText="Главное изображение объявления" />
+        <ImageSquare
+          imageUrl={rental.mainImageData?.link || ""}
+          size={256}
+          altText={rental.title ? `Главное изображение для ${rental.title}` : "Главное изображение объявления"}
+          fallbackText="Изображение отсутствует"
+        />
       </Box>
-      <Box sx={{ flexGrow: 1 }}>
-        <Typography variant="h6" component="h3">
-          {rental.title}
+      <Box sx={{ flexGrow: 1, display: "flex", flexDirection: "column", gap: 1 }}>
+        <Typography variant="h6" component="h3" sx={{ fontWeight: "medium" }}>
+          {rental.title || "Без названия"}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+        <Typography variant="body2" color="text.secondary">
           Адрес: {rental.address}
         </Typography>
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-          Тариф: {rental.tariffDescription}
+        <Typography variant="body2" color="text.secondary">
+          Тариф: {rental.tariffDescription || "Не указан"}
         </Typography>
       </Box>
     </Paper>

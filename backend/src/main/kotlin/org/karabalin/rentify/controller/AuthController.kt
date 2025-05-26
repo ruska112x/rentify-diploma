@@ -28,8 +28,7 @@ class AuthController(
     private val authService: AuthService,
     private val userService: UserService,
     private val refreshTokenService: RefreshTokenService,
-    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity:
-        Long,
+    @Value("\${jwt.refreshTokenValidity}") private val refreshTokenValidity: Long,
 ) {
     @PostMapping("/register")
     fun register(

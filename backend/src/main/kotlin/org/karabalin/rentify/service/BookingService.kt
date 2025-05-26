@@ -93,9 +93,7 @@ class BookingService(
         return getBookingResponseList
     }
 
-    fun getBookingsByRentalListingId(
-        rentalListingId: String,
-    ): List<GetBookingResponse> {
+    fun getBookingsByRentalListingId(rentalListingId: String): List<GetBookingResponse> {
         val bookingList =
             bookingRepository
                 .findByRentalListingEntityIdOrderByStartDateTimeAsc(

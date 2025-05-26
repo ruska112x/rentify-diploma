@@ -30,18 +30,6 @@ export interface PartialUser {
     imageData: ImageData;
 }
 
-export interface PartialRentalListing {
-    id: string;
-    title: string;
-    description: string;
-    address: string;
-    tariffDescription: string;
-    autoRenew: boolean;
-    mainImageData: ImageData;
-    additionalImagesData: ImageData[];
-    userId: string;
-}
-
 export interface ExtendedUser {
     email: string;
     firstName: string;
@@ -51,14 +39,34 @@ export interface ExtendedUser {
     imageData: ImageData;
 }
 
+export interface RentalListingAddress {
+  district?: string | null;
+  locality: string;
+  street: string;
+  houseNumber: string;
+  additionalInfo?: string | null;
+}
+
+export interface PartialRentalListing {
+  id: string;
+  title: string;
+  description: string;
+  address: string;
+  tariffDescription: string;
+  autoRenew: boolean;
+  mainImageData: ImageData;
+  additionalImagesData: ImageData[];
+  userId: string;
+}
+
 export interface ExtendedRentalListing {
-    id: string;
-    title: string;
-    description: string;
-    address: string;
-    tariffDescription: string;
-    autoRenew: boolean;
-    mainImageData: ImageData;
-    additionalImagesData: ImageData[];
-    userId: string;
+  id: string;
+  title: string;
+  description: string;
+  address: RentalListingAddress | string;
+  tariffDescription: string;
+  autoRenew: boolean;
+  mainImageData: ImageData;
+  additionalImagesData: ImageData[];
+  userId: string;
 }

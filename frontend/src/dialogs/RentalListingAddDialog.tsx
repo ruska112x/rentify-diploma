@@ -13,8 +13,8 @@ import {
 } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
-import authoredApi from "../api/authoredApi";
 import TransparentLoadingSpinner from "../components/TransparentLoadingSpinner";
+import authoredApi from "../api/authoredApi";
 
 interface RentalListingAddDialogProps {
     isOpen: boolean;
@@ -32,9 +32,16 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     const [formData, setFormData] = useState({
         title: "",
         description: "",
-        address: "",
         tariffDescription: "",
         autoRenew: false,
+    });
+
+    const [address, setAddress] = useState({
+        district: "",
+        locality: "",
+        street: "",
+        houseNumber: "",
+        additionalInfo: "",
     });
 
     const [formErrors, setFormErrors] = useState({
@@ -42,7 +49,6 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         description: "",
         address: "",
         tariffDescription: "",
-        autoRenew: "",
         mainImage: "",
         additionalImages: "",
     });
@@ -66,6 +72,14 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         }));
     };
 
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setAddress((prev) => ({
+            ...prev,
+            [name]: value,
+        }));
+    };
+
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({
             ...prev,
@@ -73,6 +87,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         }));
     };
 
+    // Handle image drag-and-drop and file input
     const handleMainImageDragOver = (e: React.DragEvent<HTMLDivElement>) => {
         e.preventDefault();
         e.stopPropagation();
@@ -185,6 +200,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         setAdditionalImages((prev) => prev.filter((_, i) => i !== index));
     };
 
+    // Validate form based on DTO constraints
     const validateForm = () => {
         let valid = true;
         const newErrors = {
@@ -192,10 +208,10 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             description: "",
             address: "",
             tariffDescription: "",
-            autoRenew: "",
             mainImage: "",
             additionalImages: "",
         };
+
         if (!mainImage) {
             newErrors.mainImage = "Основное изображение обязательно";
             valid = false;
@@ -203,16 +219,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         if (!formData.title) {
             newErrors.title = "Название обязательно";
             valid = false;
-        }
-        if (!formData.address) {
-            newErrors.address = "Адрес обязателен";
-            valid = false;
-        }
-        if (!formData.tariffDescription) {
-            newErrors.tariffDescription = "Тариф обязателен";
-            valid = false;
-        }
-        if (formData.title.length < 1 || formData.title.length > 255) {
+        } else if (formData.title.length < 1 || formData.title.length > 255) {
             newErrors.title = "Название должно быть от 1 до 255 символов";
             valid = false;
         }
@@ -220,18 +227,23 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             newErrors.description = "Описание должно быть не более 1023 символов";
             valid = false;
         }
-        if (formData.address.length < 1 || formData.address.length > 255) {
-            newErrors.address = "Адрес должен быть от 1 до 255 символов";
+        if (!formData.tariffDescription) {
+            newErrors.tariffDescription = "Тариф обязателен";
             valid = false;
-        }
-        if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
+        } else if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
             newErrors.tariffDescription = "Тариф должен быть от 1 до 255 символов";
             valid = false;
         }
+        if (!address.locality || !address.street || !address.houseNumber) {
+            newErrors.address = "Населенный пункт, улица и номер дома обязательны";
+            valid = false;
+        }
+
         setFormErrors(newErrors);
         return valid;
     };
 
+    // Handle form submission
     const handleSubmit = async () => {
         if (!validateForm()) return;
 
@@ -247,7 +259,13 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                             userId,
                             title: formData.title,
                             description: formData.description,
-                            address: formData.address,
+                            address: {
+                                district: address.district || null,
+                                locality: address.locality,
+                                street: address.street,
+                                houseNumber: address.houseNumber,
+                                additionalInfo: address.additionalInfo || null,
+                            },
                             tariffDescription: formData.tariffDescription,
                             autoRenew: formData.autoRenew,
                         }),
@@ -261,7 +279,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             }
 
             additionalImages.forEach((image) => {
-                formDataToSend.append(`additionalImages`, image);
+                formDataToSend.append("additionalImages", image);
             });
 
             await authoredApi.post("/rentalListings/create", formDataToSend, {
@@ -275,9 +293,15 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             setFormData({
                 title: "",
                 description: "",
-                address: "",
                 tariffDescription: "",
                 autoRenew: false,
+            });
+            setAddress({
+                district: "",
+                locality: "",
+                street: "",
+                houseNumber: "",
+                additionalInfo: "",
             });
             setMainImage(null);
             setMainImagePreview(null);
@@ -285,6 +309,10 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             setAdditionalImagesPreviews([]);
         } catch (error) {
             console.error("Error creating rental listing:", error);
+            setFormErrors((prev) => ({
+                ...prev,
+                address: "Ошибка при создании объявления. Проверьте данные адреса.",
+            }));
         } finally {
             setIsLoading(false);
         }
@@ -297,9 +325,21 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             description: "",
             address: "",
             tariffDescription: "",
-            autoRenew: "",
             mainImage: "",
             additionalImages: "",
+        });
+        setFormData({
+            title: "",
+            description: "",
+            tariffDescription: "",
+            autoRenew: false,
+        });
+        setAddress({
+            district: "",
+            locality: "",
+            street: "",
+            houseNumber: "",
+            additionalInfo: "",
         });
         setMainImage(null);
         setMainImagePreview(null);
@@ -312,6 +352,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             <DialogTitle>Создание нового объявления</DialogTitle>
             <DialogContent>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
+                    {/* Main Image Upload */}
                     <Box
                         sx={{
                             border: "2px dashed",
@@ -327,7 +368,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         onDrop={handleMainImageDrop}
                     >
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            {mainImage ? `Main Image: ${mainImage.name}` : "Drag and drop main image here"}
+                            {mainImage ? `Основное изображение: ${mainImage.name}` : "Перетащите основное изображение сюда"}
                         </Typography>
                         <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
                             Выбрать основное изображение
@@ -354,6 +395,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         )}
                     </Box>
 
+                    {/* Additional Images Upload */}
                     <Box
                         sx={{
                             border: "2px dashed",
@@ -370,8 +412,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                     >
                         <Typography variant="body1" sx={{ mb: 1 }}>
                             {additionalImages.length > 0
-                                ? `Additional Images: ${additionalImages.map((img) => img.name).join(", ")}`
-                                : "Drag and drop additional images here"}
+                                ? `Дополнительные изображения: ${additionalImages.map((img) => img.name).join(", ")}`
+                                : "Перетащите дополнительные изображения сюда"}
                         </Typography>
                         <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
                             Выбрать дополнительные изображения
@@ -404,12 +446,12 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                                             <DeleteIcon color="error" />
                                         </IconButton>
                                     </Box>
-
                                 ))}
                             </Box>
                         )}
                     </Box>
 
+                    {/* Form Fields */}
                     <TextField
                         label="Название"
                         name="title"
@@ -431,16 +473,57 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         error={!!formErrors.description}
                         helperText={formErrors.description}
                     />
+
+                    {/* Address Fields */}
                     <TextField
-                        label="Адрес"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
+                        label="Район"
+                        name="district"
+                        value={address.district}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Населенный пункт"
+                        name="locality"
+                        value={address.locality}
+                        onChange={handleAddressChange}
                         fullWidth
                         required
                         error={!!formErrors.address}
                         helperText={formErrors.address}
                     />
+                    <TextField
+                        label="Улица"
+                        name="street"
+                        value={address.street}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        required
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Номер дома"
+                        name="houseNumber"
+                        value={address.houseNumber}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        required
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Дополнительная информация"
+                        name="additionalInfo"
+                        value={address.additionalInfo}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+
                     <TextField
                         label="Тариф"
                         name="tariffDescription"
@@ -464,7 +547,7 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                 </Box>
             </DialogContent>
             <DialogActions>
-                <Button onClick={innerHandleClose}>Cancel</Button>
+                <Button onClick={innerHandleClose}>Отмена</Button>
                 <Button onClick={handleSubmit} variant="contained" color="primary">
                     Создать
                 </Button>

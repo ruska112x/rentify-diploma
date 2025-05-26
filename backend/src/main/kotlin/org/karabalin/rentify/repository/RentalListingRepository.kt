@@ -10,9 +10,7 @@ import java.util.UUID
 interface RentalListingRepository :
     JpaRepository<RentalListingEntity, UUID>,
     JpaSpecificationExecutor<RentalListingEntity> {
-    fun findByUserEntityEmail(
-        userEntityEmail: String,
-    ): List<RentalListingEntity>
+    fun findByUserEntityEmail(userEntityEmail: String): List<RentalListingEntity>
 
     fun findAllByUserEntityId(userEntityId: UUID): List<RentalListingEntity>
 

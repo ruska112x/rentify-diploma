@@ -6,9 +6,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class RentalListingSpecification {
-    fun searchSpecification(
-        searchQuery: String,
-    ): Specification<RentalListingEntity> =
+    fun searchSpecification(searchQuery: String): Specification<RentalListingEntity> =
         Specification { root, _, cb ->
             if (searchQuery.isBlank()) {
                 cb.conjunction()

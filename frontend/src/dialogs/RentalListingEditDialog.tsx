@@ -13,8 +13,8 @@ import {
     CircularProgress,
     Alert,
 } from "@mui/material";
-import { useEffect, useState } from "react";
 import DeleteIcon from "@mui/icons-material/Delete";
+import { useEffect, useState } from "react";
 import authoredApi from "../api/authoredApi";
 import { ExtendedRentalListing } from "../shared/types";
 import { AxiosError } from "axios";
@@ -29,9 +29,16 @@ interface RentalListingEditDialogProps {
 interface FormData {
     title: string;
     description: string;
-    address: string;
     tariffDescription: string;
     autoRenew: boolean;
+}
+
+interface AddressData {
+    district: string;
+    locality: string;
+    street: string;
+    houseNumber: string;
+    additionalInfo: string;
 }
 
 interface Image {
@@ -51,7 +58,7 @@ interface FormErrors {
     server: string;
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_ADDITIONAL_IMAGES = 4;
 const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg"];
 
@@ -64,10 +71,18 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
-        address: "",
         tariffDescription: "",
         autoRenew: false,
     });
+
+    const [address, setAddress] = useState<AddressData>({
+        district: "",
+        locality: "",
+        street: "",
+        houseNumber: "",
+        additionalInfo: "",
+    });
+
     const [mainImage, setMainImage] = useState<Image | null>(null);
     const [additionalImages, setAdditionalImages] = useState<Image[]>([]);
     const [deleteImageKeys, setDeleteImageKeys] = useState<string[]>([]);
@@ -86,9 +101,15 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         setFormData({
             title: rental.title,
             description: rental.description,
-            address: rental.address,
             tariffDescription: rental.tariffDescription,
             autoRenew: rental.autoRenew,
+        });
+        setAddress({
+            district: address.district || "",
+            locality: address.locality || "",
+            street: address.street || "",
+            houseNumber: address.houseNumber || "",
+            additionalInfo: address.additionalInfo || "",
         });
         setMainImage({
             key: rental.mainImageData.key ?? "",
@@ -123,6 +144,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             additionalImages: "",
             server: "",
         };
+
         if (!mainImage) {
             newErrors.mainImage = "Основное изображение обязательно";
             valid = false;
@@ -130,16 +152,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         if (!formData.title) {
             newErrors.title = "Название обязательно";
             valid = false;
-        }
-        if (!formData.address) {
-            newErrors.address = "Адрес обязателен";
-            valid = false;
-        }
-        if (!formData.tariffDescription) {
-            newErrors.tariffDescription = "Тариф обязателен";
-            valid = false;
-        }
-        if (formData.title.length < 1 || formData.title.length > 255) {
+        } else if (formData.title.length < 1 || formData.title.length > 255) {
             newErrors.title = "Название должно быть от 1 до 255 символов";
             valid = false;
         }
@@ -147,14 +160,18 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             newErrors.description = "Описание должно быть не более 1023 символов";
             valid = false;
         }
-        if (formData.address.length < 1 || formData.address.length > 255) {
-            newErrors.address = "Адрес должен быть от 1 до 255 символов";
+        if (!formData.tariffDescription) {
+            newErrors.tariffDescription = "Тариф обязателен";
             valid = false;
-        }
-        if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
+        } else if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
             newErrors.tariffDescription = "Тариф должен быть от 1 до 255 символов";
             valid = false;
         }
+        if (!address.locality || !address.street || !address.houseNumber) {
+            newErrors.address = "Населенный пункт, улица и номер дома обязательны";
+            valid = false;
+        }
+
         setFormErrors(newErrors);
         return valid;
     };
@@ -164,6 +181,11 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         setFormData((prev) => ({ ...prev, [name]: value }));
     };
 
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setAddress((prev) => ({ ...prev, [name]: value }));
+    };
+
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData((prev) => ({ ...prev, autoRenew: e.target.checked }));
     };
@@ -171,11 +193,11 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const processImage = (file: File): Promise<Image> => {
         return new Promise((resolve, reject) => {
             if (file.size > MAX_FILE_SIZE) {
-                reject("Image size exceeds 5MB");
+                reject("Размер изображения превышает 5MB");
                 return;
             }
             if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                reject("Image must be PNG or JPEG");
+                reject("Изображение должно быть в формате PNG или JPEG");
                 return;
             }
             const reader = new FileReader();
@@ -187,7 +209,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                     file,
                 });
             };
-            reader.onerror = () => reject("Error reading file");
+            reader.onerror = () => reject("Ошибка чтения файла");
             reader.readAsDataURL(file);
         });
     };
@@ -245,7 +267,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         if (additionalImages.length + newImages.length > MAX_ADDITIONAL_IMAGES) {
             setFormErrors((prev) => ({
                 ...prev,
-                additionalImages: `You can upload up to ${MAX_ADDITIONAL_IMAGES} additional images`,
+                additionalImages: `Вы можете загрузить максимум ${MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
             }));
             return;
         }
@@ -270,7 +292,24 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             const formDataToSend = new FormData();
             formDataToSend.append(
                 "data",
-                new Blob([JSON.stringify(formData)], { type: "application/json" })
+                new Blob(
+                    [
+                        JSON.stringify({
+                            title: formData.title,
+                            description: formData.description,
+                            address: {
+                                district: address.district || null,
+                                locality: address.locality,
+                                street: address.street,
+                                houseNumber: address.houseNumber,
+                                additionalInfo: address.additionalInfo || null,
+                            },
+                            tariffDescription: formData.tariffDescription,
+                            autoRenew: formData.autoRenew,
+                        }),
+                    ],
+                    { type: "application/json" }
+                )
             );
 
             if (mainImage?.isNew && mainImage.file) {
@@ -298,22 +337,28 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             setFormData({
                 title: "",
                 description: "",
-                address: "",
                 tariffDescription: "",
                 autoRenew: false,
+            });
+            setAddress({
+                district: "",
+                locality: "",
+                street: "",
+                houseNumber: "",
+                additionalInfo: "",
             });
             setMainImage(null);
             setAdditionalImages([]);
             setDeleteImageKeys([]);
         } catch (error) {
             const axiosError = error as AxiosError;
-            let errorMessage = "Failed to update listing";
+            let errorMessage = "Не удалось обновить объявление";
             if (axiosError.response) {
                 if (axiosError.response.status === 400) {
                     const errorData = axiosError.response.data as { [key: string]: string };
                     const fieldErrors: FormErrors = {
                         title: errorData.title || "",
-                        description: "",
+                        description: errorData.description || "",
                         address: errorData.address || "",
                         tariffDescription: errorData.tariffDescription || "",
                         mainImage: "",
@@ -322,9 +367,9 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                     };
                     setFormErrors((prev) => ({ ...prev, ...fieldErrors }));
                 } else if (axiosError.response.status === 404) {
-                    errorMessage = "Rental listing not found.";
+                    errorMessage = "Объявление не найдено.";
                 } else if (axiosError.response.status === 405) {
-                    errorMessage = "Server does not support this operation. Please contact support.";
+                    errorMessage = "Сервер не поддерживает эту операцию. Обратитесь в поддержку.";
                 }
             }
             setFormErrors((prev) => ({ ...prev, server: errorMessage }));
@@ -406,13 +451,13 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                     >
                         <Typography variant="body1" sx={{ mb: 1 }}>
                             {additionalImages.some((img) => img.isNew)
-                                ? `New Images: ${additionalImages
+                                ? `Новые изображения: ${additionalImages
                                     .filter((img) => img.isNew)
                                     .map((img) => img.file!.name)
                                     .join(", ")}`
                                 : additionalImages.length > 0
-                                    ? "Current Additional Images"
-                                    : "Drag and drop additional images here"}
+                                    ? "Текущие дополнительные изображения"
+                                    : "Перетащите дополнительные изображения сюда"}
                         </Typography>
                         <Button variant="outlined" component="label" sx={{ textTransform: "none" }}>
                             Выбрать дополнительные изображения
@@ -435,7 +480,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                                     <Box key={image.key} sx={{ position: "relative" }}>
                                         <img
                                             src={image.preview}
-                                            alt={`Additional image`}
+                                            alt="Additional image"
                                             style={{ maxWidth: "100px", maxHeight: "100px", borderRadius: "4px" }}
                                         />
                                         <IconButton
@@ -472,12 +517,50 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                         helperText={formErrors.description}
                     />
                     <TextField
-                        label="Адрес"
-                        name="address"
-                        value={formData.address}
-                        onChange={handleChange}
+                        label="Район"
+                        name="district"
+                        value={address.district}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Населенный пункт"
+                        name="locality"
+                        value={address.locality}
+                        onChange={handleAddressChange}
                         fullWidth
                         required
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Улица"
+                        name="street"
+                        value={address.street}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        required
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Номер дома"
+                        name="houseNumber"
+                        value={address.houseNumber}
+                        onChange={handleAddressChange}
+                        fullWidth
+                        required
+                        error={!!formErrors.address}
+                        helperText={formErrors.address}
+                    />
+                    <TextField
+                        label="Дополнительная информация"
+                        name="additionalInfo"
+                        value={address.additionalInfo}
+                        onChange={handleAddressChange}
+                        fullWidth
                         error={!!formErrors.address}
                         helperText={formErrors.address}
                     />

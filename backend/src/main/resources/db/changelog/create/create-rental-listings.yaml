@@ -6,17 +6,51 @@ databaseChangeLog:
         - createTable:
             tableName: rental_listing_statuses
             columns:
-                - column:
-                    name: id
-                    type: bigint
-                    autoIncrement: true
-                    constraints:
-                      primaryKey: true
-                - column:
-                    name: name
-                    type: varchar(50)
-                    constraints:
-                      nullable: false
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: name
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+        - createTable:
+            tableName: rental_listing_addresses
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: district
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: locality
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: street
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: house_number
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: additional_info
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
         - createTable:
             tableName: rental_listings
             columns:
@@ -36,8 +70,8 @@ databaseChangeLog:
                   constraints:
                     nullable: true
               - column:
-                  name: address
-                  type: varchar(255)
+                  name: address_id
+                  type: bigint
                   constraints:
                     nullable: false
               - column:
@@ -88,6 +122,12 @@ databaseChangeLog:
             baseColumnNames: status_id
             constraintName: fk_rental_listings_statuses
             referencedTableName: rental_listing_statuses
+            referencedColumnNames: id
+        - addForeignKeyConstraint:
+            baseTableName: rental_listings
+            baseColumnNames: address_id
+            constraintName: fk_rental_listings_addresses
+            referencedTableName: rental_listing_addresses
             referencedColumnNames: id
         - createTable:
             tableName: rental_listing_photos

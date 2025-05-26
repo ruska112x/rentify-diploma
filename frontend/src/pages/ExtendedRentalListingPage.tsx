@@ -7,8 +7,7 @@ import {
     Paper,
     Button,
 } from "@mui/material";
-import { useNavigate } from "react-router";
-import { Link } from "react-router";
+import { useNavigate, Link as RouterLink } from "react-router";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ImageSquare from "../components/ImageSquare";
 import authoredApi from "../api/authoredApi";
@@ -17,7 +16,11 @@ import { parseJwtPayload } from "../shared/jwtDecode";
 import { useSelector } from "react-redux";
 import { RootState } from "../state/store";
 
-const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined }> = ({ rentalListingId }) => {
+interface ExtendedRentalListingPageProps {
+    rentalListingId: string | undefined;
+}
+
+const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ rentalListingId }) => {
     const { accessToken } = useSelector((state: RootState) => state.auth);
     const [listing, setListing] = useState<ExtendedRentalListing | null>(null);
     const [user, setUser] = useState<ExtendedUser>({
@@ -28,8 +31,8 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
         roleName: "",
         imageData: {
             key: "",
-            link: ""
-        }
+            link: "",
+        },
     });
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -45,16 +48,38 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
         setIsBookingDialogOpen(false);
     };
 
-    const handleBookingSuccess = () => { };
+    const handleBookingSuccess = () => {
+    };
 
     const isNotMyRentalListing = () => {
-        const userId = parseJwtPayload(accessToken!).sub;
-        return listing && userId !== listing.userId;
+        if (!accessToken || !listing) return false;
+        const userId = parseJwtPayload(accessToken)?.sub;
+        return userId && listing.userId !== userId;
+    };
+
+    const formatAddress = (address: ExtendedRentalListing["address"]) => {
+        if (typeof address === "string") {
+            return address && address.trim() ? address : "Адрес не указан";
+        }
+
+        if (!address || typeof address !== "object") {
+            return "Адрес не указан";
+        }
+
+        const parts = [
+            address.district,
+            address.locality,
+            address.street,
+            address.houseNumber,
+            address.additionalInfo,
+        ].filter((part) => part && part.trim());
+
+        return parts.length > 0 ? parts.join(", ") : "Адрес не указан";
     };
 
     const fetchRentalListing = async () => {
         if (!rentalListingId) {
-            setError("Invalid rental listing ID");
+            setError("Неверный идентификатор объявления");
             setLoading(false);
             return;
         }
@@ -67,8 +92,8 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
             setUser(userResponse.data);
             setError(null);
         } catch (err) {
-            console.error("Error fetching rental listing:", err);
-            setError("Failed to load rental listing. Please try again.");
+            console.error("Ошибка при загрузки объявления:", err);
+            setError("Не удалось загрузить объявление. Попробуйте снова.");
         } finally {
             setLoading(false);
         }
@@ -79,88 +104,119 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
     }, [rentalListingId]);
 
     if (loading) {
-        return (
-            <LoadingSpinner />
-        );
+        return <LoadingSpinner />;
     }
 
     if (error || !listing) {
         return (
-            <Container sx={{ mt: 4 }}>
+            <Container sx={{ mt: 5 }}>
                 <Typography variant="h6" color="error">
-                    {error || "Rental listing not found"}
+                    {error || "Объявление не найдено"}
                 </Typography>
                 <Button
                     variant="contained"
-                    onClick={() => navigate("/")}
+                    onClick={() => navigate("/rentals")} // Assuming /rentals is the listings route
                     sx={{ mt: 2 }}
                 >
-                    Back to Listings
+                    Вернуться к списку
                 </Button>
             </Container>
         );
     }
 
     return (
-        <Container sx={{ mt: 4, mb: 4 }}>
-            <Paper elevation={2}>
-                <Box sx={{ p: 2, display: "flex", flexDirection: "row", gap: 2 }}>
-                    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                        <Typography variant="h4" gutterBottom>
+        <Container sx={{ mt: 5, mb: 5 }}>
+            <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+                <Box sx={{ display: "flex", flexDirection: "row", gap: "20px", flexWrap: "wrap" }}>
+                    <Box sx={{ flex: "2 1 600px", display: "flexDirection", flexDirection: "column", gap: "20px", }}>
+                        <Typography variant="h4" component="h1" gutterBottom>
                             {listing.title}
                         </Typography>
-                        <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                            <ImageSquare imageUrl={listing.mainImageData.link} showFullScreen={true} size={256} altText="Главное изображение объявления" />
-                            {listing.additionalImagesData.map((imageData, idx) => (
-                                <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} showFullScreen={true} size={196} altText={`Дополнительное изображение ${idx}`} />
+                        <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", flexWrap: "wrap", mb: 2 }}>
+                            <ImageSquare
+                                imageUrl={listing.mainImageData?.link || ""}
+                                showFullScreen={true}
+                                size={400} // Increased size for better detail
+                                altText={listing.title ? `Главное изображение для ${listing.title}` : "Главное изображение объявления"}
+                                fallbackText="Изображение отсутствует"
+                            />
+                            {listing.additionalImagesData?.map((imageData, index) => (
+                                <ImageSquare
+                                    key={`${listing.id}-additional-${index}`}
+                                    imageUrl={imageData?.link || ""}
+                                    showFullScreen={true}
+                                    size={180} // Smaller thumbnails
+                                    altText={`Дополнительное изображение ${index + 1}`}
+                                    fallbackText="Изображение отсутствует"
+                                />
                             ))}
                         </Box>
-                        <Box>
-                            <Typography variant="body1" sx={{ mb: 1 }}>
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                            <Typography variant="body1">
                                 <strong>Описание:</strong> {listing.description || "Нет описания"}
                             </Typography>
-                            <Typography variant="body1" sx={{ mb: 1 }}>
-                                <strong>Адрес:</strong> {listing.address}
+                            <Typography variant="body1">
+                                <strong>Адрес:</strong> {formatAddress(listing.address)}
                             </Typography>
-                            <Typography variant="body1" sx={{ mb: 1 }}>
-                                <strong>Тариф:</strong> {listing.tariffDescription}
+                            <Typography variant="body1">
+                                <strong>Тариф:</strong> {listing.tariffDescription || "Не указан"}
                             </Typography>
                         </Box>
                     </Box>
-                    <Box marginTop={4} sx={{ backgroundColor: "#f5f5f5", padding: 2, borderRadius: 2, width: "300px" }}>
-                        <Typography variant="h5" gutterBottom>
-                            <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: "none" }}>
-                                Владелец: {user.firstName + " " + user.lastName}
-                            </Link>
+                    <Box
+                        sx={{
+                            flex: "1 0 240px",
+                            backgroundColor: "grey.50",
+                            padding: "16px",
+                            borderRadius: "12px",
+                            width: { xs: "100%", sm: "300px" },
+                            minWidth: "240px",
+                        }}
+                    >
+                        <Typography variant="h6" component="h2" gutterBottom>
+                            <RouterLink
+                                to="/users/${listing.userId}"
+                                style={{ textDecoration: "none", color: "inherit" }}
+                            >
+                                Владелец: {user.firstName || user.lastName ? `${user.firstName} ${user.lastName}`.trim() : "Не указан"}
+                            </RouterLink>
                         </Typography>
                         <Box sx={{ mt: 2, textAlign: "center" }}>
-                            <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" />
+                            <ImageSquare
+                                imageUrl={user.imageData?.link || ""}
+                                size={120} // Smaller user avatar
+                                altText={user.firstName || user.lastName ? `Фото ${user.firstName || user.lastName}` : "Фото пользователя"}
+                                fallbackText="Нет фото"
+                            />
                         </Box>
-                        <Typography variant="h6" gutterBottom>
-                            Электронная почта: {user.email}
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
+                            <strong>Email:</strong> {user.email || "Не указан"}
                         </Typography>
-                        <Typography variant="h6" gutterBottom>
-                            Номер телефона: {user.phone}
+                        <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+                            <strong>Телефон:</strong> {user.phone || "Не указан"}
                         </Typography>
                     </Box>
                 </Box>
-                {
-                    isNotMyRentalListing() && (
-                        <Box sx={{ margin: 2 }}>
-                            <Button variant="contained" sx={{ mb: 2}} onClick={handleOpenBookingDialog}>
-                                Забронировать
-                            </Button>
-                        </Box>
-                    )
+                {isNotMyRentalListing() && (
+                    <Box sx={{ mt: "10px", p: "2" }}>
+                        < Button variant="contained"
+                            color="primary"
+                            onClick={() => handleOpenBookingDialog()}
+                            sx={{ padding: "8px 16px" }}
+                        >
+                            Забронировать
+                        </Button>
+                    </Box>
+                )
                 }
-            </Paper>
+            </Paper >
             <BookingAddDialog
                 isOpen={isBookingDialogOpen}
                 rentalListingId={rentalListingId!}
-                handleClose={handleCloseBookingDialog}
+                handleClose={() => handleCloseBookingDialog()}
                 onBookingSuccess={handleBookingSuccess}
             />
-        </Container>
+        </Container >
     );
 };
 

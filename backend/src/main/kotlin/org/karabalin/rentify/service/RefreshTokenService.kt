@@ -13,8 +13,7 @@ class RefreshTokenService(
         refreshTokenRepository.save(refreshTokenEntity)
     }
 
-    fun isAvailable(token: String): Boolean =
-        refreshTokenRepository.existsById(token)
+    fun isAvailable(token: String): Boolean = refreshTokenRepository.existsById(token)
 
     fun delete(token: String) {
         refreshTokenRepository.deleteById(token)

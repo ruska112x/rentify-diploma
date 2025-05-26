@@ -13,7 +13,7 @@ import api from "../api/api";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ImageSquare from "../components/ImageSquare";
 
-const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined }> = ({ rentalListingId }) => {
+const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }> = ({ rentalListingId }) => {
     const [listing, setListing] = useState<PartialRentalListing | null>(null);
     const [user, setUser] = useState<PartialUser>({
         firstName: "",
@@ -116,4 +116,4 @@ const ExtendedRentalListingPage: React.FC<{ rentalListingId: string | undefined 
     );
 };
 
-export default ExtendedRentalListingPage;
+export default PartialRentalListingPage;

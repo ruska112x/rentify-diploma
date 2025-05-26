@@ -5,6 +5,7 @@ import org.karabalin.rentify.model.dto.AddRentalListingRequest
 import org.karabalin.rentify.model.dto.GetExtendedRentalListingResponse
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
 import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
+import org.karabalin.rentify.model.mapper.RentalListingMapper
 import org.karabalin.rentify.service.RentalListingService
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
@@ -25,6 +26,7 @@ import org.springframework.web.multipart.MultipartFile
 @RequestMapping("/authorizedApi/v1")
 class RentalListingController(
     private val rentalListingService: RentalListingService,
+    private val rentalListingMapper: RentalListingMapper,
 ) {
     @GetMapping("/rentalListings/{rentalListingId}")
     fun getRentalListingById(
@@ -33,17 +35,7 @@ class RentalListingController(
         val rentalListing =
             rentalListingService.findRentalListingById(rentalListingId)
         val getExtendedRentalListingResponse =
-            GetExtendedRentalListingResponse(
-                rentalListing.id,
-                rentalListing.title,
-                rentalListing.description,
-                rentalListing.address,
-                rentalListing.tariffDescription,
-                rentalListing.autoRenew,
-                rentalListing.mainImageData,
-                rentalListing.additionalImagesData,
-                rentalListing.userId,
-            )
+            rentalListingMapper.domainToExtendedDto(rentalListing)
         return ResponseEntity.ok(
             getExtendedRentalListingResponse,
         )
@@ -57,17 +49,7 @@ class RentalListingController(
             rentalListingService
                 .findActiveRentalListingsByUserEntityId(userId)
                 .map {
-                    GetExtendedRentalListingResponse(
-                        it.id,
-                        it.title,
-                        it.description,
-                        it.address,
-                        it.tariffDescription,
-                        it.autoRenew,
-                        it.mainImageData,
-                        it.additionalImagesData,
-                        it.userId,
-                    )
+                    rentalListingMapper.domainToExtendedDto(it)
                 },
         )
 
@@ -80,17 +62,7 @@ class RentalListingController(
                 .findArchivedRentalListingsByUserEntityId(
                     userId,
                 ).map {
-                    GetExtendedRentalListingResponse(
-                        it.id,
-                        it.title,
-                        it.description,
-                        it.address,
-                        it.tariffDescription,
-                        it.autoRenew,
-                        it.mainImageData,
-                        it.additionalImagesData,
-                        it.userId,
-                    )
+                    rentalListingMapper.domainToExtendedDto(it)
                 },
         )
 
@@ -99,8 +71,7 @@ class RentalListingController(
         consumes = ["multipart/form-data"],
     )
     fun create(
-        @Valid @RequestPart("data") addRentalListingRequest:
-            AddRentalListingRequest,
+        @Valid @RequestPart("data") addRentalListingRequest: AddRentalListingRequest,
         @RequestPart("mainImage") mainImage: MultipartFile,
         @RequestPart("additionalImages") additionalImages: List<MultipartFile>?,
     ) {
@@ -124,8 +95,7 @@ class RentalListingController(
     )
     fun updateRentalListingById(
         @PathVariable rentalListingId: String,
-        @RequestPart("data") updateRentalListingRequest:
-            UpdateRentalListingRequest,
+        @RequestPart("data") updateRentalListingRequest: UpdateRentalListingRequest,
         @RequestPart(
             value = "mainImageFile",
             required = false,
@@ -160,21 +130,13 @@ class RentalListingController(
 @RequestMapping("/unauthorizedApi/v1")
 class RentalListingUnauthorizedController(
     private val rentalListingService: RentalListingService,
+    private val rentalListingMapper: RentalListingMapper,
 ) {
     @GetMapping("/rentalListings")
     fun getNewestRentalListings(): ResponseEntity<List<GetPartialRentalListingResponse>> =
         ResponseEntity.ok(
             rentalListingService.findNewestRentalListings().map {
-                GetPartialRentalListingResponse(
-                    it.id,
-                    it.title,
-                    it.description,
-                    it.address,
-                    it.tariffDescription,
-                    it.mainImageData,
-                    it.additionalImagesData,
-                    it.userId,
-                )
+                rentalListingMapper.domainToPartialDto(it)
             },
         )
 
@@ -196,16 +158,7 @@ class RentalListingUnauthorizedController(
         val rentalListing =
             rentalListingService.findRentalListingById(rentalListingId)
         val getPartialRentalListingResponse =
-            GetPartialRentalListingResponse(
-                rentalListing.id,
-                rentalListing.title,
-                rentalListing.description,
-                rentalListing.address,
-                rentalListing.tariffDescription,
-                rentalListing.mainImageData,
-                rentalListing.additionalImagesData,
-                rentalListing.userId,
-            )
+            rentalListingMapper.domainToPartialDto(rentalListing)
         return ResponseEntity.ok(
             getPartialRentalListingResponse,
         )
@@ -219,16 +172,7 @@ class RentalListingUnauthorizedController(
             rentalListingService
                 .findActiveRentalListingsByUserEntityId(userId)
                 .map {
-                    GetPartialRentalListingResponse(
-                        it.id,
-                        it.title,
-                        it.description,
-                        it.address,
-                        it.tariffDescription,
-                        it.mainImageData,
-                        it.additionalImagesData,
-                        it.userId,
-                    )
+                    rentalListingMapper.domainToPartialDto(it)
                 },
         )
 
@@ -240,16 +184,7 @@ class RentalListingUnauthorizedController(
             rentalListingService
                 .findArchivedRentalListingsByUserEntityId(userId)
                 .map {
-                    GetPartialRentalListingResponse(
-                        it.id,
-                        it.title,
-                        it.description,
-                        it.address,
-                        it.tariffDescription,
-                        it.mainImageData,
-                        it.additionalImagesData,
-                        it.userId,
-                    )
+                    rentalListingMapper.domainToPartialDto(it)
                 },
         )
 }

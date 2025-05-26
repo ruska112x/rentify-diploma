@@ -11,6 +11,13 @@ data class RentalListingAddressDto(
     val additionalInfo: String?,
 )
 
+class RentalListingTariffDto(
+    val perHour: String,
+    val perDay: String?,
+    val perWeek: String?,
+    val additionalInfo: String?,
+)
+
 data class AddRentalListingRequest(
     val userId: String,
     @field:NotBlank
@@ -22,13 +29,7 @@ data class AddRentalListingRequest(
     val title: String,
     val description: String,
     val address: RentalListingAddressDto,
-    @field:NotBlank
-    @field:Length(
-        min = 1,
-        max = 255,
-        message = "Tariff must be at least 1 characters long",
-    )
-    val tariffDescription: String,
+    val tariff: RentalListingTariffDto,
     val autoRenew: Boolean,
 )
 
@@ -37,7 +38,7 @@ data class GetExtendedRentalListingResponse(
     val title: String,
     val description: String,
     val address: RentalListingAddressDto,
-    val tariffDescription: String,
+    val tariff: RentalListingTariffDto,
     val autoRenew: Boolean,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
@@ -49,7 +50,7 @@ data class GetPartialRentalListingResponse(
     val title: String,
     val description: String,
     val address: String,
-    val tariffDescription: String,
+    val tariff: String,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
     val userId: String,
@@ -65,12 +66,6 @@ data class UpdateRentalListingRequest(
     val title: String,
     val description: String,
     val address: RentalListingAddressDto,
-    @field:NotBlank
-    @field:Length(
-        min = 1,
-        max = 255,
-        message = "Tariff must be at least 1 characters long",
-    )
-    val tariffDescription: String,
+    val tariff: RentalListingTariffDto,
     val autoRenew: Boolean,
 )

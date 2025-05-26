@@ -19,9 +19,8 @@ class RentalListingEntity(
     @Id @GeneratedValue(strategy = GenerationType.UUID) val id: UUID? = null,
     @Column(nullable = false) var title: String,
     @Column(nullable = false) var description: String,
-    @OneToOne
-    @JoinColumn(name = "address_id") var rentalListingAddressEntity: RentalListingAddressEntity,
-    @Column(nullable = false) var tariffDescription: String,
+    @OneToOne @JoinColumn(name = "address_id") var rentalListingAddressEntity: RentalListingAddressEntity,
+    @OneToOne @JoinColumn(name = "tariff_id") var rentalListingTariffEntity: RentalListingTariffEntity,
     @Column(nullable = false) var autoRenew: Boolean,
     @Column(nullable = false) var mainPhotoKey: String,
     @Column(

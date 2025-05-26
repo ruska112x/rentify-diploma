@@ -29,7 +29,6 @@ interface RentalListingEditDialogProps {
 interface FormData {
     title: string;
     description: string;
-    tariffDescription: string;
     autoRenew: boolean;
 }
 
@@ -38,6 +37,13 @@ interface AddressData {
     locality: string;
     street: string;
     houseNumber: string;
+    additionalInfo: string;
+}
+
+interface TariffData {
+    perHour: string;
+    perDay: string;
+    perWeek: string;
     additionalInfo: string;
 }
 
@@ -52,7 +58,7 @@ interface FormErrors {
     title: string;
     description: string;
     address: string;
-    tariffDescription: string;
+    tariff: string;
     mainImage: string;
     additionalImages: string;
     server: string;
@@ -71,7 +77,6 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const [formData, setFormData] = useState<FormData>({
         title: "",
         description: "",
-        tariffDescription: "",
         autoRenew: false,
     });
 
@@ -83,6 +88,13 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         additionalInfo: "",
     });
 
+    const [tariff, setTariff] = useState<TariffData>({
+        perHour: "",
+        perDay: "",
+        perWeek: "",
+        additionalInfo: "",
+    });
+
     const [mainImage, setMainImage] = useState<Image | null>(null);
     const [additionalImages, setAdditionalImages] = useState<Image[]>([]);
     const [deleteImageKeys, setDeleteImageKeys] = useState<string[]>([]);
@@ -90,7 +102,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         title: "",
         description: "",
         address: "",
-        tariffDescription: "",
+        tariff: "",
         mainImage: "",
         additionalImages: "",
         server: "",
@@ -101,15 +113,20 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         setFormData({
             title: rental.title,
             description: rental.description,
-            tariffDescription: rental.tariffDescription,
             autoRenew: rental.autoRenew,
         });
         setAddress({
-            district: address.district || "",
-            locality: address.locality || "",
-            street: address.street || "",
-            houseNumber: address.houseNumber || "",
-            additionalInfo: address.additionalInfo || "",
+            district: rental.address.district || "",
+            locality: rental.address.locality || "",
+            street: rental.address.street || "",
+            houseNumber: rental.address.houseNumber || "",
+            additionalInfo: rental.address.additionalInfo || "",
+        });
+        setTariff({
+            perHour: rental.tariff.perHour || "",
+            perDay: rental.tariff.perDay || "",
+            perWeek: rental.tariff.perWeek || "",
+            additionalInfo: rental.tariff.additionalInfo || "",
         });
         setMainImage({
             key: rental.mainImageData.key ?? "",
@@ -126,7 +143,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             title: "",
             description: "",
             address: "",
-            tariffDescription: "",
+            tariff: "",
             mainImage: "",
             additionalImages: "",
             server: "",
@@ -139,7 +156,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             title: "",
             description: "",
             address: "",
-            tariffDescription: "",
+            tariff: "",
             mainImage: "",
             additionalImages: "",
             server: "",
@@ -160,11 +177,20 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             newErrors.description = "Описание должно быть не более 1023 символов";
             valid = false;
         }
-        if (!formData.tariffDescription) {
-            newErrors.tariffDescription = "Тариф обязателен";
+        if (!tariff.perHour) {
+            newErrors.tariff = "Тариф за час обязателен";
             valid = false;
-        } else if (formData.tariffDescription.length < 1 || formData.tariffDescription.length > 255) {
-            newErrors.tariffDescription = "Тариф должен быть от 1 до 255 символов";
+        }
+        if (tariff.perDay && tariff.perDay.length > 255) {
+            newErrors.tariff = "Тариф за день должен быть не более 255 символов";
+            valid = false;
+        }
+        if (tariff.perWeek && tariff.perWeek.length > 255) {
+            newErrors.tariff = "Тариф за неделю должен быть не более 255 символов";
+            valid = false;
+        }
+        if (tariff.additionalInfo && tariff.additionalInfo.length > 255) {
+            newErrors.tariff = "Дополнительная информация тарифа должна быть не более 255 символов";
             valid = false;
         }
         if (!address.locality || !address.street || !address.houseNumber) {
@@ -184,6 +210,11 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setAddress((prev) => ({ ...prev, [name]: value }));
+    };
+
+    const handleTariffChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const { name, value } = e.target;
+        setTariff((prev) => ({ ...prev, [name]: value }));
     };
 
     const handleSwitchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -304,7 +335,12 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                                 houseNumber: address.houseNumber,
                                 additionalInfo: address.additionalInfo || null,
                             },
-                            tariffDescription: formData.tariffDescription,
+                            tariff: {
+                                perHour: tariff.perHour,
+                                perDay: tariff.perDay || null,
+                                perWeek: tariff.perWeek || null,
+                                additionalInfo: tariff.additionalInfo || null,
+                            },
                             autoRenew: formData.autoRenew,
                         }),
                     ],
@@ -337,7 +373,6 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             setFormData({
                 title: "",
                 description: "",
-                tariffDescription: "",
                 autoRenew: false,
             });
             setAddress({
@@ -345,6 +380,12 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                 locality: "",
                 street: "",
                 houseNumber: "",
+                additionalInfo: "",
+            });
+            setTariff({
+                perHour: "",
+                perDay: "",
+                perWeek: "",
                 additionalInfo: "",
             });
             setMainImage(null);
@@ -360,7 +401,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                         title: errorData.title || "",
                         description: errorData.description || "",
                         address: errorData.address || "",
-                        tariffDescription: errorData.tariffDescription || "",
+                        tariff: errorData.tariff || "",
                         mainImage: "",
                         additionalImages: "",
                         server: "",
@@ -565,14 +606,41 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                         helperText={formErrors.address}
                     />
                     <TextField
-                        label="Тариф"
-                        name="tariffDescription"
-                        value={formData.tariffDescription}
-                        onChange={handleChange}
+                        label="Тариф за час"
+                        name="perHour"
+                        value={tariff.perHour}
+                        onChange={handleTariffChange}
                         fullWidth
                         required
-                        error={!!formErrors.tariffDescription}
-                        helperText={formErrors.tariffDescription}
+                        error={!!formErrors.tariff}
+                        helperText={formErrors.tariff}
+                    />
+                    <TextField
+                        label="Тариф за день"
+                        name="perDay"
+                        value={tariff.perDay}
+                        onChange={handleTariffChange}
+                        fullWidth
+                        error={!!formErrors.tariff}
+                        helperText={formErrors.tariff}
+                    />
+                    <TextField
+                        label="Тариф за неделю"
+                        name="perWeek"
+                        value={tariff.perWeek}
+                        onChange={handleTariffChange}
+                        fullWidth
+                        error={!!formErrors.tariff}
+                        helperText={formErrors.tariff}
+                    />
+                    <TextField
+                        label="Дополнительная информация тарифа"
+                        name="additionalInfo"
+                        value={tariff.additionalInfo}
+                        onChange={handleTariffChange}
+                        fullWidth
+                        error={!!formErrors.tariff}
+                        helperText={formErrors.tariff}
                     />
                     <FormControlLabel
                         control={<Switch checked={formData.autoRenew} onChange={handleSwitchChange} />}

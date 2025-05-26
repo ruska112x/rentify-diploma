@@ -10,12 +10,19 @@ data class RentalListingAddress(
     val additionalInfo: String?,
 )
 
+class RentalListingTariff(
+    val perHour: String,
+    val perDay: String?,
+    val perWeek: String?,
+    val additionalInfo: String?,
+)
+
 data class RentalListing(
     val id: String,
     val title: String,
     val description: String,
     val address: RentalListingAddress,
-    val tariffDescription: String,
+    val tariff: RentalListingTariff,
     val autoRenew: Boolean,
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,

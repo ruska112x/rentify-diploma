@@ -35,10 +35,10 @@ const RentalListingBigCard: React.FC<RentalListingBigCardProps> = ({ rental }) =
           {rental.title || "Без названия"}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Адрес: {rental.address}
+          Населённый пункт: {rental.address}
         </Typography>
         <Typography variant="body2" color="text.secondary">
-          Тариф: {rental.tariffDescription || "Не указан"}
+          Цена за час аренды: {rental.tariff || "Не указан"}
         </Typography>
       </Box>
     </Paper>

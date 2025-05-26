@@ -52,6 +52,54 @@ databaseChangeLog:
                   constraints:
                     nullable: true
         - createTable:
+            tableName: rental_listing_tariffs
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: per_hour
+                  type: varchar(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: per_day
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: per_week
+                  type: varchar(50)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: additional_info
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+        - createTable:
+            tableName: rental_listing_photos
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+              - column:
+                  name: file_key
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: rental_listing_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+        - createTable:
             tableName: rental_listings
             columns:
               - column:
@@ -75,8 +123,8 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: tariff_description
-                  type: varchar(255)
+                  name: tariff_id
+                  type: bigint
                   constraints:
                     nullable: false
               - column:
@@ -129,25 +177,12 @@ databaseChangeLog:
             constraintName: fk_rental_listings_addresses
             referencedTableName: rental_listing_addresses
             referencedColumnNames: id
-        - createTable:
-            tableName: rental_listing_photos
-            columns:
-              - column:
-                  name: id
-                  type: bigint
-                  autoIncrement: true
-                  constraints:
-                    primaryKey: true
-              - column:
-                  name: file_key
-                  type: varchar(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: rental_listing_id
-                  type: uuid
-                  constraints:
-                    nullable: false
+        - addForeignKeyConstraint:
+            baseTableName: rental_listings
+            baseColumnNames: address_id
+            constraintName: fk_rental_listings_tariffs
+            referencedTableName: rental_listing_tariffs
+            referencedColumnNames: id
         - addForeignKeyConstraint:
             baseTableName: rental_listing_photos
             baseColumnNames: rental_listing_id

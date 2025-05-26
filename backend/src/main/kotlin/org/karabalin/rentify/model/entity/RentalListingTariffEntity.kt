@@ -8,12 +8,11 @@ import jakarta.persistence.Id
 import jakarta.persistence.Table
 
 @Entity
-@Table(name = "rental_listing_addresses")
-class RentalListingAddressEntity(
+@Table(name = "rental_listing_tariffs")
+class RentalListingTariffEntity(
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY) val id: Long = 0,
-    @Column(nullable = true) var district: String?,
-    @Column(nullable = false) var locality: String,
-    @Column(nullable = false) var street: String,
-    @Column(nullable = false) var houseNumber: String,
+    @Column(nullable = true) var perHour: String,
+    @Column(nullable = false) var perDay: String?,
+    @Column(nullable = false) var perWeek: String?,
     @Column(nullable = true) var additionalInfo: String?,
 )

@@ -2,12 +2,15 @@ package org.karabalin.rentify.model.mapper
 
 import org.karabalin.rentify.model.domain.RentalListing
 import org.karabalin.rentify.model.domain.RentalListingAddress
+import org.karabalin.rentify.model.domain.RentalListingTariff
 import org.karabalin.rentify.model.dto.GetExtendedRentalListingResponse
 import org.karabalin.rentify.model.dto.GetPartialRentalListingResponse
 import org.karabalin.rentify.model.dto.ImageData
 import org.karabalin.rentify.model.dto.RentalListingAddressDto
+import org.karabalin.rentify.model.dto.RentalListingTariffDto
 import org.karabalin.rentify.model.entity.RentalListingAddressEntity
 import org.karabalin.rentify.model.entity.RentalListingEntity
+import org.karabalin.rentify.model.entity.RentalListingTariffEntity
 import org.karabalin.rentify.repository.RentalListingPhotoRepository
 import org.karabalin.rentify.repository.S3Repository
 import org.springframework.stereotype.Component
@@ -24,7 +27,7 @@ class RentalListingMapper(
             entity.title,
             entity.description,
             addressEntityToDomain(entity.rentalListingAddressEntity),
-            entity.tariffDescription,
+            tariffEntityToDomain(entity.rentalListingTariffEntity),
             entity.autoRenew,
             imageKeyToImageData(entity.mainPhotoKey),
             getAdditionalImagesByRentalListingEntityId(entity.id!!),
@@ -37,7 +40,7 @@ class RentalListingMapper(
             domain.title,
             domain.description,
             domain.address.locality,
-            domain.tariffDescription,
+            domain.tariff.perHour,
             domain.mainImageData,
             domain.additionalImagesData,
             domain.userId,
@@ -49,7 +52,7 @@ class RentalListingMapper(
             domain.title,
             domain.description,
             addressDomainToDto(domain.address),
-            domain.tariffDescription,
+            tariffDomainToDto(domain.tariff),
             domain.autoRenew,
             domain.mainImageData,
             domain.additionalImagesData,
@@ -71,6 +74,22 @@ class RentalListingMapper(
             domain.locality,
             domain.street,
             domain.houseNumber,
+            domain.additionalInfo,
+        )
+
+    fun tariffEntityToDomain(entity: RentalListingTariffEntity): RentalListingTariff =
+        RentalListingTariff(
+            entity.perHour,
+            entity.perDay,
+            entity.perWeek,
+            entity.additionalInfo,
+        )
+
+    fun tariffDomainToDto(domain: RentalListingTariff): RentalListingTariffDto =
+        RentalListingTariffDto(
+            domain.perHour,
+            domain.perDay,
+            domain.perWeek,
             domain.additionalInfo,
         )
 

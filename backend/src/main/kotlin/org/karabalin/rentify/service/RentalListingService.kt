@@ -8,11 +8,13 @@ import org.karabalin.rentify.model.dto.UpdateRentalListingRequest
 import org.karabalin.rentify.model.entity.RentalListingAddressEntity
 import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.model.entity.RentalListingPhotoEntity
+import org.karabalin.rentify.model.entity.RentalListingTariffEntity
 import org.karabalin.rentify.model.mapper.RentalListingMapper
 import org.karabalin.rentify.repository.RentalListingAddressRepository
 import org.karabalin.rentify.repository.RentalListingPhotoRepository
 import org.karabalin.rentify.repository.RentalListingRepository
 import org.karabalin.rentify.repository.RentalListingStatusRepository
+import org.karabalin.rentify.repository.RentalListingTariffRepository
 import org.karabalin.rentify.repository.S3Repository
 import org.karabalin.rentify.repository.UserRepository
 import org.springframework.data.domain.Page
@@ -32,6 +34,7 @@ class RentalListingService(
     private val rentalListingStatusRepository: RentalListingStatusRepository,
     private val rentalListingSpecification: RentalListingSpecification,
     private val rentalListingAddressRepository: RentalListingAddressRepository,
+    private val rentalListingTariffRepository: RentalListingTariffRepository,
     private val s3Repository: S3Repository,
     private val rentalListingMapper: RentalListingMapper,
 ) {
@@ -84,12 +87,23 @@ class RentalListingService(
 
         rentalListingAddressRepository.save(rentalListingAddressEntity)
 
+        val rentalListingTariffEntity =
+            RentalListingTariffEntity(
+                0,
+                addRentalListingRequest.tariff.perHour,
+                addRentalListingRequest.tariff.perDay,
+                addRentalListingRequest.tariff.perWeek,
+                addRentalListingRequest.tariff.additionalInfo,
+            )
+
+        rentalListingTariffRepository.save(rentalListingTariffEntity)
+
         val rentalListing =
             RentalListingEntity(
                 title = addRentalListingRequest.title,
                 description = addRentalListingRequest.description,
                 rentalListingAddressEntity = rentalListingAddressEntity,
-                tariffDescription = addRentalListingRequest.tariffDescription,
+                rentalListingTariffEntity = rentalListingTariffEntity,
                 autoRenew = addRentalListingRequest.autoRenew,
                 mainPhotoKey = mainPhotoKey,
                 userEntity = user,
@@ -160,6 +174,36 @@ class RentalListingService(
         rentalListingRepository.save(rentalListingEntity)
     }
 
+    @Transactional
+    fun unarchiveRentalListingById(rentalListingId: String) {
+        val rentalListingStatusOptional =
+            rentalListingStatusRepository.findByName(
+                "ACTIVE",
+            )
+        val rentalListingStatus =
+            rentalListingStatusOptional.orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Rental Listing Status with name ACTIVE not found",
+                )
+            }
+
+        val rentalListingEntityOptional =
+            rentalListingRepository.findById(
+                UUID.fromString(rentalListingId),
+            )
+        val rentalListingEntity =
+            rentalListingEntityOptional.orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "RentalListing with id `$rentalListingId` not found",
+                )
+            }
+
+        rentalListingEntity.rentalListingStatusEntity = rentalListingStatus
+        rentalListingRepository.save(rentalListingEntity)
+    }
+
     fun findRentalListingById(rentalListingId: String): RentalListing {
         val rentalListingOptional = rentalListingRepository.findById(UUID.fromString(rentalListingId))
         val rentalListing =
@@ -193,14 +237,50 @@ class RentalListingService(
                 )
             }
 
-        rentalListingAddressRepository.findById(
-            rentalListing.rentalListingAddressEntity.id,
-        )
+        val rentalListingAddressOptional =
+            rentalListingAddressRepository.findById(
+                rentalListing.rentalListingAddressEntity.id,
+            )
+
+        val rentalListingAddressEntity =
+            rentalListingAddressOptional.orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "RentalListing Address with id `${rentalListing.rentalListingAddressEntity.id}` not found",
+                )
+            }
+
+        rentalListingAddressEntity.district = request.address.district
+        rentalListingAddressEntity.locality = request.address.locality
+        rentalListingAddressEntity.street = request.address.street
+        rentalListingAddressEntity.houseNumber = request.address.houseNumber
+        rentalListingAddressEntity.additionalInfo = request.address.additionalInfo
+
+        rentalListingAddressRepository.save(rentalListingAddressEntity)
+
+        val rentalListingTariffOptional =
+            rentalListingTariffRepository.findById(
+                rentalListing.rentalListingTariffEntity.id,
+            )
+
+        val rentalListingTariffEntity =
+            rentalListingTariffOptional.orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "RentalListing Tariff with id `${rentalListing.rentalListingAddressEntity.id}` not found",
+                )
+            }
+
+        rentalListingTariffEntity.perHour = request.tariff.perHour
+        rentalListingTariffEntity.perDay = request.tariff.perDay
+        rentalListingTariffEntity.perWeek = request.tariff.perWeek
+        rentalListingTariffEntity.additionalInfo = request.tariff.additionalInfo
+
+        rentalListingTariffRepository.save(rentalListingTariffEntity)
 
         with(rentalListing) {
             title = request.title
             description = request.description
-            tariffDescription = request.tariffDescription
             autoRenew = request.autoRenew
         }
 

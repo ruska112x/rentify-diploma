@@ -89,6 +89,13 @@ class RentalListingController(
         rentalListingService.archiveRentalListingById(rentalId)
     }
 
+    @PostMapping("/unarchiveRentalListings/{rentalId}")
+    fun unarchive(
+        @PathVariable rentalId: String,
+    ) {
+        rentalListingService.unarchiveRentalListingById(rentalId)
+    }
+
     @PatchMapping(
         value = ["/rentalListings/{rentalListingId}"],
         consumes = ["multipart/form-data"],

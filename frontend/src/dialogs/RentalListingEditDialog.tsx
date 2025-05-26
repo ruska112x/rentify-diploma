@@ -424,6 +424,9 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         <Dialog open={isOpen} onClose={handleClose} maxWidth="sm" fullWidth>
             <DialogTitle>Обновить объявление</DialogTitle>
             <DialogContent>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                    Основные данные:
+                </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
                     {formErrors.server && (
                         <Alert severity="error" sx={{ mb: 2 }}>
@@ -557,6 +560,9 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                         error={!!formErrors.description}
                         helperText={formErrors.description}
                     />
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                        Адрес:
+                    </Typography>
                     <TextField
                         label="Район"
                         name="district"
@@ -605,6 +611,9 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                         error={!!formErrors.address}
                         helperText={formErrors.address}
                     />
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                        Цены и тарифы:
+                    </Typography>
                     <TextField
                         label="Тариф за час"
                         name="perHour"

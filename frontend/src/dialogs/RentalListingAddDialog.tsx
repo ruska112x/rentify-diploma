@@ -389,6 +389,9 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         <Dialog open={isOpen} onClose={innerHandleClose} maxWidth="sm" fullWidth>
             <DialogTitle>Создание нового объявления</DialogTitle>
             <DialogContent>
+                <Typography variant="h6" sx={{ mt: 2 }}>
+                    Основные данные:
+                </Typography>
                 <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1 }}>
                     {/* Main Image Upload */}
                     <Box
@@ -511,8 +514,9 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         error={!!formErrors.description}
                         helperText={formErrors.description}
                     />
-
-                    {/* Address Fields */}
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                        Адрес:
+                    </Typography>
                     <TextField
                         label="Район"
                         name="district"
@@ -561,7 +565,9 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         error={!!formErrors.address}
                         helperText={formErrors.address}
                     />
-
+                    <Typography variant="h6" sx={{ mt: 2 }}>
+                        Цены и тарифы:
+                    </Typography>
                     <TextField
                         label="Цена за час"
                         name="perHour"

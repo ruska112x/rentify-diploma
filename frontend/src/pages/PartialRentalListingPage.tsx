@@ -97,7 +97,7 @@ const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }
                             <strong>Адрес:</strong> {listing.address}
                         </Typography>
                         <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Тариф:</strong> {listing.tariffDescription}
+                            <strong>Тариф:</strong> {listing.tariff}
                         </Typography>
                     </Box>
                 </Box>

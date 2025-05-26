@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link, Navigate } from "react-router";
-import { ExtendedRentalListing, ExtendedUser } from "../shared/types";
+import { ExtendedRentalListing, ExtendedUser, RentalListingAddress, RentalListingTariff } from "../shared/types";
 import {
     Box,
     Container,
@@ -63,6 +63,27 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
     useEffect(() => {
         fetchUserData();
     }, [userId]);
+
+    const formatAddress = (address: RentalListingAddress) => {
+        const parts = [
+            address.locality,
+            address.street,
+            address.houseNumber,
+            address.district ? `(${address.district})` : null,
+            address.additionalInfo,
+        ].filter(Boolean);
+        return parts.join(", ");
+    };
+
+    const formatTariff = (tariff: RentalListingTariff) => {
+        const parts = [
+            tariff.perHour ? `За час: ${tariff.perHour}` : null,
+            tariff.perDay ? `За день: ${tariff.perDay}` : null,
+            tariff.perWeek ? `За неделю: ${tariff.perWeek}` : null,
+            tariff.additionalInfo ? `Доп. инфо: ${tariff.additionalInfo}` : null,
+        ].filter(Boolean);
+        return parts.join("; ");
+    };
 
     if (loading) {
         return (
@@ -150,10 +171,10 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                                                             {listing.description || "No description provided"}
                                                         </Typography>
                                                         <Typography component="span" variant="body2">
-                                                            Address: {listing.address}
+                                                            Address: {formatAddress(listing.address)}
                                                         </Typography>
                                                         <Typography component="span" variant="body2">
-                                                            Tariff: {listing.tariffDescription}
+                                                            Tariff: {formatTariff(listing.tariff)}
                                                         </Typography>
                                                     </Box>
                                                 </ListItem>
@@ -193,10 +214,10 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
                                                         {listing.description || "No description provided"}
                                                     </Typography>
                                                     <Typography component="span" variant="body2">
-                                                        Address: {listing.address}
+                                                        Address: {formatAddress(listing.address)}
                                                     </Typography>
                                                     <Typography component="span" variant="body2">
-                                                        Tariff: {listing.tariffDescription}
+                                                        Tariff: {formatTariff(listing.tariff)}
                                                     </Typography>
                                                 </Box>
                                             </ListItem>

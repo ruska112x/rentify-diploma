@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ExtendedRentalListing, ExtendedUser } from "../shared/types";
+import { ExtendedRentalListing, ExtendedUser, RentalListingAddress, RentalListingTariff } from "../shared/types";
 import {
     Box,
     Container,
@@ -57,26 +57,6 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
         return userId && listing.userId !== userId;
     };
 
-    const formatAddress = (address: ExtendedRentalListing["address"]) => {
-        if (typeof address === "string") {
-            return address && address.trim() ? address : "Адрес не указан";
-        }
-
-        if (!address || typeof address !== "object") {
-            return "Адрес не указан";
-        }
-
-        const parts = [
-            address.district,
-            address.locality,
-            address.street,
-            address.houseNumber,
-            address.additionalInfo,
-        ].filter((part) => part && part.trim());
-
-        return parts.length > 0 ? parts.join(", ") : "Адрес не указан";
-    };
-
     const fetchRentalListing = async () => {
         if (!rentalListingId) {
             setError("Неверный идентификатор объявления");
@@ -102,6 +82,26 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
     useEffect(() => {
         fetchRentalListing();
     }, [rentalListingId]);
+    const formatAddress = (address: RentalListingAddress) => {
+        const parts = [
+            address.locality,
+            address.street,
+            address.houseNumber,
+            address.district ? `(${address.district})` : null,
+            address.additionalInfo,
+        ].filter(Boolean);
+        return parts.join(", ");
+    };
+
+    const formatTariff = (tariff: RentalListingTariff) => {
+        const parts = [
+            tariff.perHour ? `За час: ${tariff.perHour}` : null,
+            tariff.perDay ? `За день: ${tariff.perDay}` : null,
+            tariff.perWeek ? `За неделю: ${tariff.perWeek}` : null,
+            tariff.additionalInfo ? `Доп. инфо: ${tariff.additionalInfo}` : null,
+        ].filter(Boolean);
+        return parts.join("; ");
+    };
 
     if (loading) {
         return <LoadingSpinner />;
@@ -159,7 +159,7 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
                                 <strong>Адрес:</strong> {formatAddress(listing.address)}
                             </Typography>
                             <Typography variant="body1">
-                                <strong>Тариф:</strong> {listing.tariffDescription || "Не указан"}
+                                <strong>Тариф:</strong> {formatTariff(listing.tariff) || "Не указан"}
                             </Typography>
                         </Box>
                     </Box>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { ExtendedRentalListing, PartialRentalListing, PartialUser } from "../shared/types";
+import { PartialRentalListing, PartialUser } from "../shared/types";
 import {
     Box,
     Container,
@@ -41,11 +41,11 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
             const userResponse = await api.get(`/users/${userId}`);
             setUser(userResponse.data);
             const response = await api.get(`/users/${userId}/activeRentalListings`);
-            const listings: ExtendedRentalListing[] = response.data;
+            const listings: PartialRentalListing[] = response.data;
             setActiveRentalListings(listings);
 
             const archivedResponse = await api.get(`/users/${userId}/archivedRentalListings`);
-            const archivedListings: ExtendedRentalListing[] = archivedResponse.data;
+            const archivedListings: PartialRentalListing[] = archivedResponse.data;
             setArchivedRentalListings(archivedListings);
             setError(null);
         } catch (err) {
@@ -137,7 +137,7 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                                                             Адрес: {listing.address}
                                                         </Typography>
                                                         <Typography component="span" variant="body2">
-                                                            Тариф: {listing.tariffDescription}
+                                                            Тариф: {listing.tariff}
                                                         </Typography>
                                                     </Box>
                                                 </ListItem>
@@ -180,7 +180,7 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                                                         Адрес: {listing.address}
                                                     </Typography>
                                                     <Typography component="span" variant="body2">
-                                                        Тариф: {listing.tariffDescription}
+                                                        Тариф: {listing.tariff}
                                                     </Typography>
                                                 </Box>
                                             </ListItem>

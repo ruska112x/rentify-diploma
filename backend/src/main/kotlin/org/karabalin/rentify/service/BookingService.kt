@@ -137,4 +137,10 @@ class BookingService(
             bookingRepository.delete(it)
         }
     }
+
+    @Transactional
+    fun deleteBookingByUserEntityId(userEntityId: String) {
+        val bookings = bookingRepository.findByUserEntityIdOrderByStartDateTimeAsc(UUID.fromString(userEntityId))
+        bookingRepository.deleteAll(bookings)
+    }
 }

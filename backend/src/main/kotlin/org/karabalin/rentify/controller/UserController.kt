@@ -6,7 +6,9 @@ import org.karabalin.rentify.model.domain.User
 import org.karabalin.rentify.model.dto.GetExtendedUserResponse
 import org.karabalin.rentify.model.dto.GetPartialUserResponse
 import org.karabalin.rentify.model.dto.UpdateUserRequest
+import org.karabalin.rentify.service.BookingService
 import org.karabalin.rentify.service.RefreshTokenService
+import org.karabalin.rentify.service.RentalListingService
 import org.karabalin.rentify.service.UserService
 import org.karabalin.rentify.util.JwtUtil
 import org.springframework.http.HttpStatus
@@ -27,6 +29,8 @@ import java.util.Optional
 class UserController(
     private val refreshTokenService: RefreshTokenService,
     private val userService: UserService,
+    private val bookingService: BookingService,
+    private val rentalListingService: RentalListingService,
     private val jwtUtil: JwtUtil,
 ) {
     @GetMapping("/{userId}")
@@ -84,6 +88,8 @@ class UserController(
             val accessToken = authHeader.substring(7)
             val userId = jwtUtil.getUserIdFromToken(accessToken)
             if (userId != null) {
+                bookingService.deleteBookingByUserEntityId(userId)
+                rentalListingService.archiveRentalListingsByUserEntityId(userId)
                 userService.deleteById(userId)
                 refreshTokenService.delete(accessToken)
             }

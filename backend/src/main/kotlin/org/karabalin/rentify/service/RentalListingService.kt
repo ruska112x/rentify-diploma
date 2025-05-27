@@ -10,6 +10,7 @@ import org.karabalin.rentify.model.entity.RentalListingEntity
 import org.karabalin.rentify.model.entity.RentalListingPhotoEntity
 import org.karabalin.rentify.model.entity.RentalListingTariffEntity
 import org.karabalin.rentify.model.mapper.RentalListingMapper
+import org.karabalin.rentify.repository.BookingRepository
 import org.karabalin.rentify.repository.RentalListingAddressRepository
 import org.karabalin.rentify.repository.RentalListingPhotoRepository
 import org.karabalin.rentify.repository.RentalListingRepository
@@ -35,6 +36,7 @@ class RentalListingService(
     private val rentalListingSpecification: RentalListingSpecification,
     private val rentalListingAddressRepository: RentalListingAddressRepository,
     private val rentalListingTariffRepository: RentalListingTariffRepository,
+    private val bookingRepository: BookingRepository,
     private val s3Repository: S3Repository,
     private val rentalListingMapper: RentalListingMapper,
 ) {
@@ -172,6 +174,27 @@ class RentalListingService(
 
         rentalListingEntity.rentalListingStatusEntity = rentalListingStatus
         rentalListingRepository.save(rentalListingEntity)
+    }
+
+    @Transactional
+    fun archiveRentalListingsByUserEntityId(userEntityId: String) {
+        val rentalListingStatusOptional =
+            rentalListingStatusRepository.findByName(
+                "ARCHIVED",
+            )
+        val rentalListingStatus =
+            rentalListingStatusOptional.orElseThrow {
+                ResponseStatusException(
+                    HttpStatus.NOT_FOUND,
+                    "Rental Listing Status with name ARCHIVED not found",
+                )
+            }
+
+        val rentalListings = rentalListingRepository.findAllActiveByUserEntityId(UUID.fromString(userEntityId))
+        rentalListings.forEach {
+            it.rentalListingStatusEntity = rentalListingStatus
+        }
+        rentalListingRepository.saveAll(rentalListings)
     }
 
     @Transactional

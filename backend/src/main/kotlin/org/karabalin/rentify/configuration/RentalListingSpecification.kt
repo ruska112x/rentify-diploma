@@ -15,7 +15,6 @@ class RentalListingSpecification {
                 cb.or(
                     cb.like(cb.lower(root.get("title")), searchPattern),
                     cb.like(cb.lower(root.get("description")), searchPattern),
-                    cb.like(cb.lower(root.get("address")), searchPattern),
                 )
             }
         }

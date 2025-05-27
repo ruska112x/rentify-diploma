@@ -175,7 +175,7 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
                     >
                         <Typography variant="h6" component="h2" gutterBottom>
                             <RouterLink
-                                to="/users/${listing.userId}"
+                                to={"/users/"+ listing.userId}
                                 style={{ textDecoration: "none", color: "inherit" }}
                             >
                                 Владелец: {user.firstName || user.lastName ? `${user.firstName} ${user.lastName}`.trim() : "Не указан"}

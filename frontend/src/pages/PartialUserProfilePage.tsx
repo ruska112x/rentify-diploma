@@ -50,7 +50,7 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
             setError(null);
         } catch (err) {
             console.error("Error fetching user data:", err);
-            setError("Failed to load user profile. Please try again.");
+            setError("Не удалось удалить аккаунт. Пожалуйста, попробуйте позже.");
         } finally {
             setLoading(false);
         }

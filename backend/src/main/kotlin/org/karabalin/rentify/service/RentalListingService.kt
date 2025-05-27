@@ -172,8 +172,16 @@ class RentalListingService(
                 )
             }
 
-        rentalListingEntity.rentalListingStatusEntity = rentalListingStatus
-        rentalListingRepository.save(rentalListingEntity)
+        val bookings = bookingRepository.findByRentalListingEntityIdOrderByStartDateTimeAsc(rentalListingEntity.id!!)
+        if (bookings.isNotEmpty()) {
+            throw ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "You can't archive your rental listing while there is active bookings",
+            )
+        } else {
+            rentalListingEntity.rentalListingStatusEntity = rentalListingStatus
+            rentalListingRepository.save(rentalListingEntity)
+        }
     }
 
     @Transactional

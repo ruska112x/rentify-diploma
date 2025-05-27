@@ -54,7 +54,7 @@ const ExtendedUserProfilePage: React.FC<{ userId: string | undefined }> = ({ use
             setError(null);
         } catch (err) {
             console.error("Error fetching user data:", err);
-            setError("Failed to load user profile. Please try again.");
+            setError("Не удалось загрузить профиль. Попробуйте позже");
         } finally {
             setLoading(false);
         }

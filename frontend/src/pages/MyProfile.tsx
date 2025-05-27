@@ -61,7 +61,6 @@ const MyProfile: React.FC = () => {
                     <Tab label="Данные профиля" />
                     <Tab label="Ваши объявления" />
                     <Tab label="Ваши аренды" />
-                    <Tab label="Отзывы" />
                 </Tabs>
 
                 {tabValue === 0 && (

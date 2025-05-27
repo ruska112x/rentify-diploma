@@ -9,6 +9,8 @@ import {
     Button,
     Tabs,
     Tab,
+    Dialog,
+    Alert,
 } from "@mui/material";
 import RentalListingAddDialog from "../dialogs/RentalListingAddDialog";
 import RentalListingEditDialog from "../dialogs/RentalListingEditDialog";
@@ -17,6 +19,7 @@ import LoadingSpinner from "./LoadingSpinner";
 import ImageSquare from "./ImageSquare";
 import RentalListingBookingsCard from "./RentalListingBookingsCard";
 import { ExtendedRentalListing, RentalListingAddress, RentalListingTariff } from "../shared/types";
+import { AxiosError } from "axios";
 
 interface RentalListingsCardProps {
     userId: string;
@@ -79,6 +82,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
         },
         additionalImagesData: [],
         userId: "",
+        status: ""
     });
 
     const handleClose = () => {
@@ -110,6 +114,11 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
             await authoredApi.post(`/archiveRentalListings/${id}`);
             initializeRentalListings();
         } catch (err) {
+            const axiosError = err as AxiosError;
+            if (axiosError.status === 400) {
+                setOnDeleteFailDialog(true);
+                return;
+            }
             console.error("Archive error:", err);
             alert("Не удалось архивировать объявление. Пожалуйста, попробуйте позже.");
         }
@@ -144,6 +153,11 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
             tariff.additionalInfo ? `Доп. инфо: ${tariff.additionalInfo}` : null,
         ].filter(Boolean);
         return parts.join("; ");
+    };
+
+    const [onDeleteFailDialog, setOnDeleteFailDialog] = useState(false);
+    const onDeleteFailDialogHandleClose = () => {
+        setOnDeleteFailDialog(false);
     };
 
     if (loading) {
@@ -274,7 +288,7 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                                                         size="small"
                                                         onClick={() => handleUnarchive(rental.id)}
                                                     >
-                                                        Убрать из архива
+                                                        Восстановить
                                                     </Button>
                                                     <Button
                                                         variant="contained"
@@ -311,6 +325,14 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
                 handleClose={handleCloseUpdateDialog}
                 initializeRentalListings={initializeRentalListings}
             />
+            <Dialog open={onDeleteFailDialog} onClose={onDeleteFailDialogHandleClose}>
+                <Box sx={{ p: 2 }}>
+                    <Alert severity="error">Вы не можете архивировать объявление, пока есть активные аренды!</Alert>
+                    <Button variant="contained" onClick={onDeleteFailDialogHandleClose} sx={{ mt: 2 }}>
+                        Закрыть
+                    </Button>
+                </Box>
+            </Dialog>
         </>
     );
 };

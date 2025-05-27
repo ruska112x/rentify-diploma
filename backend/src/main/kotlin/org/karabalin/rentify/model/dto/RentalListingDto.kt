@@ -43,6 +43,7 @@ data class GetExtendedRentalListingResponse(
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
     val userId: String,
+    val status: String,
 )
 
 data class GetPartialRentalListingResponse(

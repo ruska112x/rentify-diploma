@@ -11,8 +11,8 @@ databaseChangeLog:
       file: db/changelog/insert/insert-roles.yaml
   - include:
       file: db/changelog/insert/insert-user-statuses.yaml
-#  - include:
-#      file: db/changelog/insert/insert-users.yaml
+  #  - include:
+  #      file: db/changelog/insert/insert-users.yaml
   - include:
       file: db/changelog/insert/insert-rental-listing-statuses.yaml
 #  - include:

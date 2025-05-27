@@ -351,7 +351,7 @@ const BookingEditDialog: React.FC<BookingDialogProps> = ({
                         color="primary"
                         disabled={isLoading}
                     >
-                        {isLoading ? <CircularProgress size={24} /> : "Update"}
+                        {isLoading ? <CircularProgress size={24} /> : "Обновить"}
                     </Button>
                 </DialogActions>
             </Dialog>

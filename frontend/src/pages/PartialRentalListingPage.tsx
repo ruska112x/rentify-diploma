@@ -79,29 +79,49 @@ const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }
     return (
         <Container sx={{ mt: 4, mb: 4 }}>
             <Paper elevation={2} sx={{ p: 3, display: "flex", flexDirection: "row", gap: 2 }}>
-                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-                    <Typography variant="h4" gutterBottom>
+                <Box sx={{ flex: "2 1 600px", display: "flexDirection", flexDirection: "column", gap: "20px", }}>
+                    <Typography variant="h4" component="h1" gutterBottom>
                         {listing.title}
                     </Typography>
-                    <Box sx={{ display: "flex", flexDirection: "row", gap: 1, flexWrap: "wrap", mb: 2 }}>
-                        <ImageSquare imageUrl={listing.mainImageData.link} showFullScreen={true} size={256} altText="Главное изображение объявления" />
-                        {listing.additionalImagesData.map((imageData, idx) => (
-                            <ImageSquare key={`${listing.id}-additional-${idx}`} imageUrl={imageData.link} showFullScreen={true} size={196} altText={`Дополнительное изображение ${idx}`} />
+                    <Box sx={{ display: "flex", flexDirection: "row", gap: "10px", flexWrap: "wrap", mb: 2 }}>
+                        <ImageSquare
+                            imageUrl={listing.mainImageData?.link || ""}
+                            showFullScreen={true}
+                            size={400} // Increased size for better detail
+                            altText={listing.title ? `Главное изображение для ${listing.title}` : "Главное изображение объявления"}
+                            fallbackText="Изображение отсутствует"
+                        />
+                        {listing.additionalImagesData?.map((imageData, index) => (
+                            <ImageSquare
+                                key={`${listing.id}-additional-${index}`}
+                                imageUrl={imageData?.link || ""}
+                                showFullScreen={true}
+                                size={180} // Smaller thumbnails
+                                altText={`Дополнительное изображение ${index + 1}`}
+                                fallbackText="Изображение отсутствует"
+                            />
                         ))}
                     </Box>
-                    <Box>
-                        <Typography variant="body1" sx={{ mb: 1 }}>
+                    <Box sx={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                        <Typography variant="body1">
                             <strong>Описание:</strong> {listing.description || "Нет описания"}
                         </Typography>
-                        <Typography variant="body1" sx={{ mb: 1 }}>
+                        <Typography variant="body1">
                             <strong>Адрес:</strong> {listing.address}
                         </Typography>
-                        <Typography variant="body1" sx={{ mb: 1 }}>
-                            <strong>Тариф:</strong> {listing.tariff}
+                        <Typography variant="body1">
+                            <strong>Тариф:</strong> {listing.tariff || "Не указан"}
                         </Typography>
                     </Box>
                 </Box>
-                <Box marginTop={4} sx={{ backgroundColor: "#f5f5f5", padding: 2, borderRadius: 2, width: "300px" }}>
+                <Box sx={{
+                    flex: "1 0 240px",
+                    backgroundColor: "grey.50",
+                    padding: "16px",
+                    borderRadius: "12px",
+                    width: { xs: "100%", sm: "300px" },
+                    minWidth: "240px",
+                }}>
                     <Typography variant="h5" gutterBottom>
                         <Link key={listing.userId} to={`/users/${listing.userId}`} style={{ textDecoration: "none" }}>
                             Владелец {user.firstName + " " + user.lastName}

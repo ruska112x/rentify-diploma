@@ -27,4 +27,5 @@ data class RentalListing(
     val mainImageData: ImageData,
     val additionalImagesData: List<ImageData>,
     val userId: String,
+    val status: String,
 )

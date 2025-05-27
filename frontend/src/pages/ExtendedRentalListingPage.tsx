@@ -175,8 +175,8 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
                     >
                         <Typography variant="h6" component="h2" gutterBottom>
                             <RouterLink
-                                to={"/users/"+ listing.userId}
-                                style={{ textDecoration: "none", color: "inherit" }}
+                                to={"/users/" + listing.userId}
+                                style={{ textDecoration: "none" }}
                             >
                                 Владелец: {user.firstName || user.lastName ? `${user.firstName} ${user.lastName}`.trim() : "Не указан"}
                             </RouterLink>
@@ -184,7 +184,7 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
                         <Box sx={{ mt: 2, textAlign: "center" }}>
                             <ImageSquare
                                 imageUrl={user.imageData?.link || ""}
-                                size={120} // Smaller user avatar
+                                size={120}
                                 altText={user.firstName || user.lastName ? `Фото ${user.firstName || user.lastName}` : "Фото пользователя"}
                                 fallbackText="Нет фото"
                             />
@@ -197,7 +197,7 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
                         </Typography>
                     </Box>
                 </Box>
-                {isNotMyRentalListing() && (
+                {isNotMyRentalListing() && listing.status !== "ARCHIVED" && (
                     <Box sx={{ mt: "10px", p: "2" }}>
                         < Button variant="contained"
                             color="primary"

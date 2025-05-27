@@ -408,7 +408,7 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                         color="primary"
                         disabled={isLoading}
                     >
-                        {isLoading ? <CircularProgress size={24} /> : "Book"}
+                        {isLoading ? <CircularProgress size={24} /> : "Забронировать"}
                     </Button>
                 </DialogActions>
             </Dialog>

@@ -82,4 +82,5 @@ export interface ExtendedRentalListing {
         link: string;
     }>;
     userId: string;
+    status: string;
 }

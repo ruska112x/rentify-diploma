@@ -32,6 +32,7 @@ class RentalListingMapper(
             imageKeyToImageData(entity.mainPhotoKey),
             getAdditionalImagesByRentalListingEntityId(entity.id!!),
             entity.userEntity.id.toString(),
+            entity.rentalListingStatusEntity.name,
         )
 
     fun domainToPartialDto(domain: RentalListing): GetPartialRentalListingResponse =
@@ -57,6 +58,7 @@ class RentalListingMapper(
             domain.mainImageData,
             domain.additionalImagesData,
             domain.userId,
+            domain.status,
         )
 
     fun addressEntityToDomain(entity: RentalListingAddressEntity): RentalListingAddress =

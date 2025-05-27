@@ -7,7 +7,8 @@ import {
     ListItem,
     ListItemText,
     Alert,
-    Button
+    Button,
+    Dialog
 } from "@mui/material";
 import { AppDispatch, RootState } from "../state/store";
 import { clearUserInfo, fetchUser } from "../state/userSlice";
@@ -17,6 +18,7 @@ import { useNavigate } from "react-router";
 import ProfileEditDialog from "../dialogs/ProfileEditDialog";
 import LoadingSpinner from "./LoadingSpinner";
 import ImageSquare from "./ImageSquare";
+import { AxiosError } from "axios";
 
 const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     const dispatch = useDispatch<AppDispatch>();
@@ -48,10 +50,20 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
             await dispatch(clearUserInfo());
             navigate("/login");
         } catch (err) {
+            const axiosError = err as AxiosError;
+            if (axiosError.status === 400) {
+                setOnDeleteFailDialog(true);
+                return;
+            }
             console.error("Delete error:", err);
             alert("Не удалось удалить аккаунт. Пожалуйста, попробуйте позже.");
         }
     }
+
+    const [onDeleteFailDialog, setOnDeleteFailDialog] = useState(false);
+    const onDeleteFailDialogHandleClose = () => {
+        setOnDeleteFailDialog(false);
+    };
 
     if (loading) {
         return (
@@ -98,6 +110,14 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
             </Box>
 
             <ProfileEditDialog isOpen={open} userId={userId} user={user} handleClose={handleClose} />
+            <Dialog open={onDeleteFailDialog} onClose={onDeleteFailDialogHandleClose}>
+                <Box sx={{ p: 2 }}>
+                    <Alert severity="error">Вы не можете удалить аккаунт, пока есть активные аренды на ваши объявления!</Alert>
+                    <Button variant="contained" onClick={onDeleteFailDialogHandleClose} sx={{ mt: 2 }}>
+                        Закрыть
+                    </Button>
+                </Box>
+            </Dialog>
         </>
     );
 }

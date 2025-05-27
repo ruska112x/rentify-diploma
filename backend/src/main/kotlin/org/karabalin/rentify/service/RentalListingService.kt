@@ -192,6 +192,13 @@ class RentalListingService(
 
         val rentalListings = rentalListingRepository.findAllActiveByUserEntityId(UUID.fromString(userEntityId))
         rentalListings.forEach {
+            val bookings = bookingRepository.findByRentalListingEntityIdOrderByStartDateTimeAsc(it.id!!)
+            if (bookings.isNotEmpty()) {
+                throw ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "You can't delete your account while there is active bookings on your listings",
+                )
+            }
             it.rentalListingStatusEntity = rentalListingStatus
         }
         rentalListingRepository.saveAll(rentalListings)

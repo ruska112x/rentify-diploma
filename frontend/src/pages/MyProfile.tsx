@@ -4,10 +4,6 @@ import {
     Container,
     Paper,
     Typography,
-    Box,
-    List,
-    ListItem,
-    ListItemText,
     Tabs,
     Tab,
 } from "@mui/material";
@@ -78,17 +74,6 @@ const MyProfile: React.FC = () => {
 
                 {tabValue === 2 && (
                     <BookingsCard userId={userId} />
-                )}
-
-                {tabValue === 3 && (
-                    <Box sx={{ mt: 1 }}>
-                        <Typography variant="h5">Отзывы</Typography>
-                        <List>
-                            <ListItem>
-                                <ListItemText primary="3.1" secondary="3.2" />
-                            </ListItem>
-                        </List>
-                    </Box>
                 )}
             </Paper>
 

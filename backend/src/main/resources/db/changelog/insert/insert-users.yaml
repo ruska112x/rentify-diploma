@@ -23,7 +23,7 @@ databaseChangeLog:
                   value: "Петров"
               - column:
                   name: phone
-                  value: "+79999999999"
+                  value: "+79178430349"
               - column:
                   name: photo_key
                   value: "preinserted/gru.jpg"
@@ -62,7 +62,7 @@ databaseChangeLog:
                   value: "Иванов"
               - column:
                   name: phone
-                  value: "+77777777777"
+                  value: "+79155767777"
               - column:
                   name: photo_key
                   value: "preinserted/dave2.jpg"

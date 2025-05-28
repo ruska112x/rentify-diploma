@@ -4,6 +4,45 @@ databaseChangeLog:
       author: ruslan
       changes:
         - insert:
+            tableName: rental_listing_addresses
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: district
+                  value: "Ленинский район"
+              - column:
+                  name: locality
+                  value: "Омск"
+              - column:
+                  name: street
+                  value: "Проспект Карла Маркса"
+              - column:
+                  name: house_number
+                  value: "68"
+              - column:
+                  name: additional_info
+                  value: "Бываю только по вторникам"
+        - insert:
+            tableName: rental_listing_tariffs
+            columns:
+              - column:
+                  name: id
+                  value: "1"
+              - column:
+                  name: per_hour
+                  value: "500р"
+              - column:
+                  name: per_day
+                  value: "5000р"
+              - column:
+                  name: per_week
+                  value: "30000р"
+              - column:
+                  name: additional_info
+                  value: "На более длительный период аренды обсуждаем цену инивидуально"
+        - insert:
             tableName: rental_listings
             columns:
               - column:
@@ -11,22 +50,25 @@ databaseChangeLog:
                   value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
               - column:
                   name: title
-                  value: "Minion"
+                  value: "Перфоратор"
               - column:
                   name: description
-                  value: "Great worker"
+                  value: "Легкий, удобный перфоратор Макита HR 2470 отличается высокой производительностью,
+                          функциональностью и долговечностью, которые оценят по достоинству, как профессионалы,
+                          так и мастера-любители. Модель предназначена для сверления, сверления с ударом и долбления.
+                          Механизм перфоратора Makita HR 2470 надежно защищен от пыли, что предохраняет его от преждевременного износа."
               - column:
-                  name: address
-                  value: "Omsk, OmSU"
+                  name: address_id
+                  value: "1"
               - column:
-                  name: tariff_description
-                  value: "$0.01 per second"
+                  name: tariff_id
+                  value: "1"
               - column:
                   name: auto_renew
                   value: "false"
               - column:
                   name: main_photo_key
-                  value: "preinserted/minion.jpg"
+                  value: "preinserted/perf01.jpg"
               - column:
                   name: created_at_time
                   value: "2025-05-10 01:00:00.000"
@@ -39,6 +81,45 @@ databaseChangeLog:
               - column:
                   name: status_id
                   value: "1"
+        - insert:
+            tableName: rental_listing_addresses
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: district
+                  value: "Советский район"
+              - column:
+                  name: locality
+                  value: "Омск"
+              - column:
+                  name: street
+                  value: "Нефтезаводская"
+              - column:
+                  name: house_number
+                  value: "12"
+              - column:
+                  name: additional_info
+                  value: "Бываю только по выходным"
+        - insert:
+            tableName: rental_listing_tariffs
+            columns:
+              - column:
+                  name: id
+                  value: "2"
+              - column:
+                  name: per_hour
+                  value: "50р"
+              - column:
+                  name: per_day
+                  value: "1000р"
+              - column:
+                  name: per_week
+                  value: "10000р"
+              - column:
+                  name: additional_info
+                  value: "На более длительный период аренды обсуждаем цену инивидуально"
         - insert:
             tableName: rental_listings
             columns:
@@ -47,22 +128,22 @@ databaseChangeLog:
                   value: "9122ecef-c5b7-4de0-8f72-b3fbbfde209f"
               - column:
                   name: title
-                  value: "Beach Brella"
+                  value: "Пляжный зонт"
               - column:
                   name: description
-                  value: ""
+                  value: "Хороший большой пляжный зонт"
               - column:
-                  name: address
-                  value: "Omsk"
+                  name: address_id
+                  value: "2"
               - column:
-                  name: tariff_description
-                  value: "$50 per day"
+                  name: tariff_id
+                  value: "2"
               - column:
                   name: auto_renew
                   value: "false"
               - column:
                   name: main_photo_key
-                  value: "preinserted/beach_brella.jpg"
+                  value: "preinserted/brella01.png"
               - column:
                   name: created_at_time
                   value: "2025-05-10 01:00:00.000"
@@ -76,6 +157,45 @@ databaseChangeLog:
                   name: status_id
                   value: "1"
         - insert:
+            tableName: rental_listing_addresses
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: district
+                  value: "Центральный район"
+              - column:
+                  name: locality
+                  value: "Омск"
+              - column:
+                  name: street
+                  value: "Таубе"
+              - column:
+                  name: house_number
+                  value: "5"
+              - column:
+                  name: additional_info
+                  value: "Бываю только по будням"
+        - insert:
+            tableName: rental_listing_tariffs
+            columns:
+              - column:
+                  name: id
+                  value: "3"
+              - column:
+                  name: per_hour
+                  value: "2000р"
+              - column:
+                  name: per_day
+                  value: "30000р"
+              - column:
+                  name: per_week
+                  value: "150000р"
+              - column:
+                  name: additional_info
+                  value: "На более длительный период аренды обсуждаем цену инивидуально"
+        - insert:
             tableName: rental_listings
             columns:
               - column:
@@ -83,22 +203,25 @@ databaseChangeLog:
                   value: "2bad6739-815b-4543-af03-34cf026f1c12"
               - column:
                   name: title
-                  value: "Bananas"
+                  value: "Снегоход"
               - column:
                   name: description
-                  value: "Yummy bananas"
+                  value: "Один из самых легких современных снегоходов для езды по глубокому снегу. Надежный и простой.
+                          Сочетает в своей конструкции легкое шасси AXYS®, жесткую заднюю подвеску RMK®,
+                          мощный двигатель 800 H.O. Cleanfire® и эксклюзивную конструкцию гусеницы Polaris,
+                          что позволяет RMK® легко выпрыгивать на снежную поверхность."
               - column:
-                  name: address
-                  value: "Omsk"
+                  name: address_id
+                  value: "3"
               - column:
-                  name: tariff_description
-                  value: "priceless"
+                  name: tariff_id
+                  value: "3"
               - column:
                   name: auto_renew
                   value: "false"
               - column:
                   name: main_photo_key
-                  value: "preinserted/bananas.jpg"
+                  value: "preinserted/sneg01.jpg"
               - column:
                   name: created_at_time
                   value: "2025-05-10 01:00:00.000"
@@ -112,6 +235,45 @@ databaseChangeLog:
                   name: status_id
                   value: "1"
         - insert:
+            tableName: rental_listing_addresses
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: district
+                  value: "Центральный район"
+              - column:
+                  name: locality
+                  value: "Омск"
+              - column:
+                  name: street
+                  value: "Красный Путь"
+              - column:
+                  name: house_number
+                  value: "1"
+              - column:
+                  name: additional_info
+                  value: "Бываю только по будням"
+        - insert:
+            tableName: rental_listing_tariffs
+            columns:
+              - column:
+                  name: id
+                  value: "4"
+              - column:
+                  name: per_hour
+                  value: "50р"
+              - column:
+                  name: per_day
+                  value: "1000р"
+              - column:
+                  name: per_week
+                  value: "5000р"
+              - column:
+                  name: additional_info
+                  value: "На более длительный период аренды обсуждаем цену инивидуально"
+        - insert:
             tableName: rental_listings
             columns:
               - column:
@@ -119,16 +281,16 @@ databaseChangeLog:
                   value: "120c256b-1834-4b78-a556-cde76b168e78"
               - column:
                   name: title
-                  value: "Matreshka"
+                  value: "Матрёшка"
               - column:
                   name: description
                   value: ""
               - column:
-                  name: address
-                  value: "Omsk"
+                  name: address_id
+                  value: "4"
               - column:
-                  name: tariff_description
-                  value: "priceless"
+                  name: tariff_id
+                  value: "4"
               - column:
                   name: auto_renew
                   value: "false"
@@ -155,7 +317,7 @@ databaseChangeLog:
                   value: "1"
               - column:
                   name: file_key
-                  value: "preinserted/2.jpg"
+                  value: "preinserted/perf02.jpg"
               - column:
                   name: rental_listing_id
                   value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
@@ -167,7 +329,7 @@ databaseChangeLog:
                   value: "2"
               - column:
                   name: file_key
-                  value: "preinserted/3.jpeg"
+                  value: "preinserted/perf03.jpg"
               - column:
                   name: rental_listing_id
                   value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
@@ -179,10 +341,10 @@ databaseChangeLog:
                   value: "3"
               - column:
                   name: file_key
-                  value: "preinserted/4.jpg"
+                  value: "preinserted/brella02.png"
               - column:
                   name: rental_listing_id
-                  value: "51bac846-14b3-4ec4-9781-483fb572d3f7"
+                  value: "9122ecef-c5b7-4de0-8f72-b3fbbfde209f"
         - insert:
             tableName: rental_listing_photos
             columns:
@@ -191,7 +353,7 @@ databaseChangeLog:
                   value: "4"
               - column:
                   name: file_key
-                  value: "preinserted/5.jpg"
+                  value: "preinserted/sneg02.jpg"
               - column:
                   name: rental_listing_id
                   value: "2bad6739-815b-4543-af03-34cf026f1c12"
@@ -203,19 +365,7 @@ databaseChangeLog:
                   value: "5"
               - column:
                   name: file_key
-                  value: "preinserted/6.jpg"
-              - column:
-                  name: rental_listing_id
-                  value: "2bad6739-815b-4543-af03-34cf026f1c12"
-        - insert:
-            tableName: rental_listing_photos
-            columns:
-              - column:
-                  name: id
-                  value: "6"
-              - column:
-                  name: file_key
-                  value: "preinserted/7.jpg"
+                  value: "preinserted/sneg03.jpg"
               - column:
                   name: rental_listing_id
                   value: "2bad6739-815b-4543-af03-34cf026f1c12"

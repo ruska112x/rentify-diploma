@@ -17,16 +17,16 @@ databaseChangeLog:
                   value: "$2a$10$8aZcAclN.Qly/9v6CKhwFOd9o1WKxg9YlS47tPeRQ.gSihoiHaGhK"
               - column:
                   name: first_name
-                  value: "Gru"
+                  value: "Иван"
               - column:
                   name: last_name
-                  value: "Felonius"
+                  value: "Петров"
               - column:
                   name: phone
                   value: "+79999999999"
               - column:
                   name: photo_key
-                  value: "preinserted/gru.png"
+                  value: "preinserted/gru.jpg"
               - column:
                   name: last_login_time
                   value: "2025-05-10 06:00:00.000"
@@ -56,16 +56,16 @@ databaseChangeLog:
                   value: "$2a$10$/3MkBhwglPcvR6QVLhtKMe2WM3zSkKSgFUtFL9axxkDL.Dp7mi91i"
               - column:
                   name: first_name
-                  value: "Dave"
+                  value: "Пётр"
               - column:
                   name: last_name
-                  value: "Imperor"
+                  value: "Иванов"
               - column:
                   name: phone
                   value: "+77777777777"
               - column:
                   name: photo_key
-                  value: "preinserted/dave.jpg"
+                  value: "preinserted/dave2.jpg"
               - column:
                   name: last_login_time
                   value: "2025-05-10 06:00:00.000"

@@ -134,10 +134,10 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                                                             {listing.description || "No description provided"}
                                                         </Typography>
                                                         <Typography component="span" variant="body2">
-                                                            Адрес: {listing.address}
+                                                            <strong>Населённый пункт:</strong> {listing.address}
                                                         </Typography>
                                                         <Typography component="span" variant="body2">
-                                                            Тариф: {listing.tariff}
+                                                            <strong>Цена за час аренды:</strong> {listing.tariff}
                                                         </Typography>
                                                     </Box>
                                                 </ListItem>
@@ -177,10 +177,10 @@ const PartialUserProfilePage: React.FC<{ userId: string | undefined }> = ({ user
                                                         {listing.description || "No description provided"}
                                                     </Typography>
                                                     <Typography component="span" variant="body2">
-                                                        Адрес: {listing.address}
+                                                        <strong>Населённый пункт:</strong> {listing.address}
                                                     </Typography>
                                                     <Typography component="span" variant="body2">
-                                                        Тариф: {listing.tariff}
+                                                        <strong>Цена за час аренды:</strong> {listing.tariff}
                                                     </Typography>
                                                 </Box>
                                             </ListItem>

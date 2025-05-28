@@ -31,10 +31,10 @@ const HomePage = () => {
     }
     return (
         <Container sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", mt: 4 }}>
-            <Paper sx={{ mb: 2, minHeight: "10vh", minWidth: "50vw", maxWidth: "50vw", justifyContent: "center", display: "flex", alignItems: "center" }}>
-                <Typography variant="h4">Топ 10 новых объявлений</Typography>
-            </Paper>
+            <Paper sx={{ p: 4, mb: 2, minHeight: "10vh", minWidth: "50vw", maxWidth: "75vw", display: "flex"}}>
+                <Typography m={2} variant="h5">Топ 10 новых объявлений</Typography>
             <SearchBar />
+            </Paper>
             {
                 rentalListings.length === 0 ?
                     (<Typography variant="body1" sx={{ mt: 2 }}>

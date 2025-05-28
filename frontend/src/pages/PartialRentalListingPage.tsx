@@ -87,7 +87,7 @@ const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }
                         <ImageSquare
                             imageUrl={listing.mainImageData?.link || ""}
                             showFullScreen={true}
-                            size={400} // Increased size for better detail
+                            size={400}
                             altText={listing.title ? `Главное изображение для ${listing.title}` : "Главное изображение объявления"}
                             fallbackText="Изображение отсутствует"
                         />
@@ -96,7 +96,7 @@ const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }
                                 key={`${listing.id}-additional-${index}`}
                                 imageUrl={imageData?.link || ""}
                                 showFullScreen={true}
-                                size={180} // Smaller thumbnails
+                                size={180}
                                 altText={`Дополнительное изображение ${index + 1}`}
                                 fallbackText="Изображение отсутствует"
                             />
@@ -107,10 +107,10 @@ const PartialRentalListingPage: React.FC<{ rentalListingId: string | undefined }
                             <strong>Описание:</strong> {listing.description || "Нет описания"}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Адрес:</strong> {listing.address}
+                            <strong>Населённый пункт:</strong> {listing.address}
                         </Typography>
                         <Typography variant="body1">
-                            <strong>Тариф:</strong> {listing.tariff || "Не указан"}
+                            <strong>Цена за час аренды:</strong> {listing.tariff || "Не указан"}
                         </Typography>
                     </Box>
                 </Box>

@@ -1,10 +1,11 @@
 import React, { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Box, Card, CardContent, Typography, Pagination, Grid2 } from "@mui/material";
+import { Box, Typography, Pagination, Grid2 } from "@mui/material";
 import { Link, useSearchParams } from "react-router";
 import SearchBar from "../components/SearchBar";
 import { RootState, AppDispatch } from "../state/store";
 import { searchListings } from "../state/searchSlice";
+import RentalListingBigCard from "../components/RentalListingBigCard";
 
 const SearchPage: React.FC = () => {
     const dispatch = useDispatch<AppDispatch>();
@@ -33,23 +34,12 @@ const SearchPage: React.FC = () => {
                 </Typography>
             ) : (
                 <>
-                    <Grid2 container spacing={2} sx={{ mt: 2 }}>
+                    <Grid2 container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 1 }} sx={{ mt: 2 }}>
                         {listings.map((listing) => (
-                            <Grid2 size={{ xs: 12, sm: 6, md: 4 }} key={listing.id}>
-                                <Card>
-                                    <CardContent>
-                                        <img
-                                            src={listing.mainImageData.link}
-                                            alt={listing.title}
-                                            style={{ width: "100%", height: 200, objectFit: "cover" }}
-                                        />
-                                        <Link key={listing.id} to={`/rentalListings/${listing.id}`} style={{ textDecoration: "none" }}>
-                                            <Typography variant="h6">{listing.title}</Typography>
-                                        </Link>
-                                        <Typography color="text.secondary">{listing.address}</Typography>
-                                        <Typography variant="body2">{listing.description}</Typography>
-                                    </CardContent>
-                                </Card>
+                            <Grid2 size={{ xs: 16, sm: 12, md: 8 }} sx={{ m: 2}} key={listing.id}>
+                                <Link key={listing.id} to={`/rentalListings/${listing.id}`} style={{ textDecoration: "none" }}>
+                                    <RentalListingBigCard rental={listing} />
+                                </Link>
                             </Grid2>
                         ))}
                     </Grid2>

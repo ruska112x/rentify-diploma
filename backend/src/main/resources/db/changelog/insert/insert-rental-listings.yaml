@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "1"
+                  value: "-1"
               - column:
                   name: district
                   value: "Ленинский район"
@@ -29,7 +29,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "1"
+                  value: "-1"
               - column:
                   name: per_hour
                   value: "500р"
@@ -59,10 +59,10 @@ databaseChangeLog:
                           Механизм перфоратора Makita HR 2470 надежно защищен от пыли, что предохраняет его от преждевременного износа."
               - column:
                   name: address_id
-                  value: "1"
+                  value: "-1"
               - column:
                   name: tariff_id
-                  value: "1"
+                  value: "-1"
               - column:
                   name: auto_renew
                   value: "false"
@@ -86,7 +86,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "2"
+                  value: "-2"
               - column:
                   name: district
                   value: "Советский район"
@@ -107,7 +107,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "2"
+                  value: "-2"
               - column:
                   name: per_hour
                   value: "50р"
@@ -134,10 +134,10 @@ databaseChangeLog:
                   value: "Хороший большой пляжный зонт"
               - column:
                   name: address_id
-                  value: "2"
+                  value: "-2"
               - column:
                   name: tariff_id
-                  value: "2"
+                  value: "-2"
               - column:
                   name: auto_renew
                   value: "false"
@@ -161,7 +161,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "3"
+                  value: "-3"
               - column:
                   name: district
                   value: "Центральный район"
@@ -182,7 +182,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "3"
+                  value: "-3"
               - column:
                   name: per_hour
                   value: "2000р"
@@ -212,10 +212,10 @@ databaseChangeLog:
                           что позволяет RMK® легко выпрыгивать на снежную поверхность."
               - column:
                   name: address_id
-                  value: "3"
+                  value: "-3"
               - column:
                   name: tariff_id
-                  value: "3"
+                  value: "-3"
               - column:
                   name: auto_renew
                   value: "false"
@@ -239,7 +239,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "4"
+                  value: "-4"
               - column:
                   name: district
                   value: "Центральный район"
@@ -260,7 +260,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "4"
+                  value: "-4"
               - column:
                   name: per_hour
                   value: "50р"
@@ -287,10 +287,10 @@ databaseChangeLog:
                   value: ""
               - column:
                   name: address_id
-                  value: "4"
+                  value: "-4"
               - column:
                   name: tariff_id
-                  value: "4"
+                  value: "-4"
               - column:
                   name: auto_renew
                   value: "false"
@@ -314,7 +314,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "1"
+                  value: "-1"
               - column:
                   name: file_key
                   value: "preinserted/perf02.jpg"
@@ -326,7 +326,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "2"
+                  value: "-2"
               - column:
                   name: file_key
                   value: "preinserted/perf03.jpg"
@@ -338,7 +338,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "3"
+                  value: "-3"
               - column:
                   name: file_key
                   value: "preinserted/brella02.png"
@@ -350,7 +350,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "4"
+                  value: "-4"
               - column:
                   name: file_key
                   value: "preinserted/sneg02.jpg"
@@ -362,7 +362,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  value: "5"
+                  value: "-5"
               - column:
                   name: file_key
                   value: "preinserted/sneg03.jpg"

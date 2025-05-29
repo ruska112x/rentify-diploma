@@ -53,8 +53,19 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
     const [formErrors, setFormErrors] = useState({
         title: "",
         description: "",
-        address: "",
-        tariff: "",
+        address: {
+            district: "",
+            locality: "",
+            street: "",
+            houseNumber: "",
+            additionalInfo: "",
+        },
+        tariff: {
+            perHour: "",
+            perDay: "",
+            perWeek: "",
+            additionalInfo: "",
+        },
         mainImage: "",
         additionalImages: "",
     });
@@ -220,8 +231,19 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         const newErrors = {
             title: "",
             description: "",
-            address: "",
-            tariff: "",
+            address: {
+                district: "",
+                locality: "",
+                street: "",
+                houseNumber: "",
+                additionalInfo: "",
+            },
+            tariff: {
+                perHour: "",
+                perDay: "",
+                perWeek: "",
+                additionalInfo: "",
+            },
             mainImage: "",
             additionalImages: "",
         };
@@ -242,23 +264,35 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             valid = false;
         }
         if (!tariff.perHour) {
-            newErrors.tariff = "Тариф за час обязателен";
+            newErrors.tariff.perHour = "Тариф за час обязателен";
             valid = false;
         }
-        if (tariff.perDay && tariff.perDay.length > 255) {
-            newErrors.tariff = "Тариф за день должен быть не более 255 символов";
+        if (tariff.perHour.length > 50) {
+            newErrors.tariff.perHour = "Тариф за час должен быть не более 50 символов";
             valid = false;
         }
-        if (tariff.perWeek && tariff.perWeek.length > 255) {
-            newErrors.tariff = "Тариф за неделю должен быть не более 255 символов";
+        if (tariff.perDay && tariff.perDay.length > 50) {
+            newErrors.tariff.perDay = "Тариф за день должен быть не более 50 символов";
+            valid = false;
+        }
+        if (tariff.perWeek && tariff.perWeek.length > 50) {
+            newErrors.tariff.perWeek = "Тариф за неделю должен быть не более 50 символов";
             valid = false;
         }
         if (tariff.additionalInfo && tariff.additionalInfo.length > 255) {
-            newErrors.tariff = "Дополнительная информация тарифа должна быть не более 255 символов";
+            newErrors.tariff.additionalInfo = "Дополнительная информация тарифа должна быть не более 255 символов";
             valid = false;
         }
-        if (!address.locality || !address.street || !address.houseNumber) {
-            newErrors.address = "Населенный пункт, улица и номер дома обязательны";
+        if (!address.locality) {
+            newErrors.address.locality = "Населенный пункт обязателен";
+            valid = false;
+        }
+        if (!address.street) {
+            newErrors.address.street = "Улица обязательна";
+            valid = false;
+        }
+        if (!address.houseNumber) {
+            newErrors.address.houseNumber = "Номер дома обязателен";
             valid = false;
         }
 
@@ -342,10 +376,6 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
             setAdditionalImagesPreviews([]);
         } catch (error) {
             console.error("Error creating rental listing:", error);
-            setFormErrors((prev) => ({
-                ...prev,
-                address: "Ошибка при создании объявления. Проверьте данные адреса.",
-            }));
         } finally {
             setIsLoading(false);
         }
@@ -356,8 +386,19 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         setFormErrors({
             title: "",
             description: "",
-            address: "",
-            tariff: "",
+            address: {
+                district: "",
+                locality: "",
+                street: "",
+                houseNumber: "",
+                additionalInfo: "",
+            },
+            tariff: {
+                perHour: "",
+                perDay: "",
+                perWeek: "",
+                additionalInfo: "",
+            },
             mainImage: "",
             additionalImages: "",
         });
@@ -523,8 +564,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         value={address.district}
                         onChange={handleAddressChange}
                         fullWidth
-                        error={!!formErrors.address}
-                        helperText={formErrors.address}
+                        error={!!formErrors.address.district}
+                        helperText={formErrors.address.district}
                     />
                     <TextField
                         label="Населенный пункт"
@@ -533,8 +574,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         onChange={handleAddressChange}
                         fullWidth
                         required
-                        error={!!formErrors.address}
-                        helperText={formErrors.address}
+                        error={!!formErrors.address.locality}
+                        helperText={formErrors.address.locality}
                     />
                     <TextField
                         label="Улица"
@@ -543,8 +584,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         onChange={handleAddressChange}
                         fullWidth
                         required
-                        error={!!formErrors.address}
-                        helperText={formErrors.address}
+                        error={!!formErrors.address.street}
+                        helperText={formErrors.address.street}
                     />
                     <TextField
                         label="Номер дома"
@@ -553,8 +594,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         onChange={handleAddressChange}
                         fullWidth
                         required
-                        error={!!formErrors.address}
-                        helperText={formErrors.address}
+                        error={!!formErrors.address.houseNumber}
+                        helperText={formErrors.address.houseNumber}
                     />
                     <TextField
                         label="Дополнительная информация об адресе"
@@ -562,8 +603,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         value={address.additionalInfo}
                         onChange={handleAddressChange}
                         fullWidth
-                        error={!!formErrors.address}
-                        helperText={formErrors.address}
+                        error={!!formErrors.address.additionalInfo}
+                        helperText={formErrors.address.additionalInfo}
                     />
                     <Typography variant="h6" sx={{ mt: 2 }}>
                         Цены и тарифы:
@@ -575,8 +616,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         onChange={handleTariffChange}
                         fullWidth
                         required
-                        error={!!formErrors.tariff}
-                        helperText={formErrors.tariff}
+                        error={!!formErrors.tariff.perHour}
+                        helperText={formErrors.tariff.perHour}
                     />
                     <TextField
                         label="Цена за день"
@@ -584,8 +625,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         value={tariff.perDay}
                         onChange={handleTariffChange}
                         fullWidth
-                        error={!!formErrors.tariff}
-                        helperText={formErrors.tariff}
+                        error={!!formErrors.tariff.perDay}
+                        helperText={formErrors.tariff.perDay}
                     />
                     <TextField
                         label="Цена за неделю"
@@ -593,8 +634,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         value={tariff.perWeek}
                         onChange={handleTariffChange}
                         fullWidth
-                        error={!!formErrors.tariff}
-                        helperText={formErrors.tariff}
+                        error={!!formErrors.tariff.perWeek}
+                        helperText={formErrors.tariff.perWeek}
                     />
                     <TextField
                         label="Дополнительная информация о тарифе"
@@ -602,8 +643,8 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
                         value={tariff.additionalInfo}
                         onChange={handleTariffChange}
                         fullWidth
-                        error={!!formErrors.tariff}
-                        helperText={formErrors.tariff}
+                        error={!!formErrors.tariff.additionalInfo}
+                        helperText={formErrors.tariff.additionalInfo}
                     />
                     <FormControlLabel
                         control={

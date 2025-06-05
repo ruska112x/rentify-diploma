@@ -1,13 +1,22 @@
-# rentify-diploma
+> [!NOTE]
+> Для запуска требуется наличие `docker`.
 
-### docker compose tips
+Перед запуском необходимо убедиться docker запущен и порты `5432`, `8080`, и `80` открыты.
 
-run
+Запуск осуществляется командой:
+
 ```bash
-docker compose up -d --build --force-recreate
+docker compose up -d --build
 ```
 
-stop
+После полного запуска по адресу `localhost:80` должна быть главная страница сайта, такая как на скриншоте ниже
+![home page](misc/homePage.png)
+
+Если объявления не прогрузились подождите несколько секунд и перезагрузите страницу.
+
+
+Выключение осуществляется командой:
+
 ```bash
 docker compose down --volumes
 ```

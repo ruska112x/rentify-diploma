@@ -427,7 +427,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             let errorMessage = "Не удалось обновить объявление";
             if (axiosError.response) {
                 if (axiosError.response.status === 400) {
-                    const errorData = axiosError.response.data as { [key: string]: string };
+                    // const errorData = axiosError.response.data as { [key: string]: string };
                 } else if (axiosError.response.status === 404) {
                     errorMessage = "Объявление не найдено.";
                 } else if (axiosError.response.status === 405) {

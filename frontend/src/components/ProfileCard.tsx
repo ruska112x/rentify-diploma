@@ -86,7 +86,7 @@ const ProfileCard: React.FC<{ userId: string }> = ({ userId }) => {
     return (
         <>
             <Box sx={{ mt: 2 }}>
-                <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" />
+                <ImageSquare imageUrl={user.imageData.link} altText="Фото пользователя" fallbackText="Нет фото" />
                 <List>
                     <ListItem>
                         <ListItemText primary="Электронная почта" secondary={user.email} />

@@ -1,104 +1,110 @@
 @startuml database
 allow_mixing
 
-scale max 1920 width
-scale max 1080 height
+scale 1920 width
+scale 1080 height
 
 left to right direction
-top to bottom direction
 
+skinparam dpi 200
+skinparam nodesep 30
+skinparam ranksep 30
 
-entity "User" as user {
-    * id: UUID <<generated>> <<PK>>
-    ---
-    * email: String <<unique>>
-    * password: String
-    * firstName: String
-    * lastName: String
-    * phone: String
-    * photoLink: String
-    * lastLoginTime: Instant
-    * createdAtTime: Instant
-    * updatedAtTime: Instant
-    * statusId: Long <<FK>>
-    * roleId: Long <<FK>>
+entity users {
+    * id
+    --
+    email
+    password
+    first_name
+    last_name
+    phone
+    photo_key
+    last_login_time
+    created_at_time
+    updated_at_time
+    role_id
+    status_id
 }
 
-' USER, ADMIN, MODERATOR
-entity "UserRole" as userRole {
-    * id: Long <<generated>> <<PK>>
-    ---
-    * name: String
+entity roles {
+    * id
+    --
+    name
 }
 
-' ACTIVE, BLOCKED, DELETED
-entity "UserStatus" as userStatus {
-    * id: Long <<generated>> <<PK>>
-    ---
-    * name: String
+entity user_statuses {
+    * id
+    --
+    name
 }
 
-entity "RentalListing" as rentalListing {
-    * id: UUID <<generated>> <<PK>>
-    ---
-    * title: String
-    * description: String
-    * address: String
-    * tariffDescription: String
-    * autoRenew: boolean
-    * mainPhotoLink: String
-    * createdAtTime: Instant
-    * updatedAtTime: Instant
-    * userId: UUID <<FK>>
-    * statusId: Long <<FK>>
+entity rental_listings {
+    * id
+    --
+    "title"
+    description
+    address_id
+    tariff_id
+    auto_renew
+    main_photo_key
+    created_at_time
+    updated_at_time
+    user_id
+    status_id
 }
 
-' ACTIVE, BLOCKED, ONDELETION, DELETED
-entity "RentalListingStatus" as rentalListingStatus {
-    * id: Long <<generated>> <<PK>>
-    ---
-    * name: String
+entity rental_listing_addresses {
+    * id
+    --
+    district
+    locality
+    street
+    house_number
+    additional_info
 }
 
-entity "RentalListingPhoto" as rentalListingPhoto {
-    * id: Long <<generated>> <<PK>>
-    ---
-    * fileKey: String
-    * rentalListingId: UUID <<FK>>
+entity rental_listing_tariffs {
+    * id
+    --
+    per_hour
+    per_day
+    per_week
+    additional_info
 }
 
-entity "Booking" as booking {
-    * id: UUID <<generated>> <<PK>>
-    ---
-    * startDateTime: Instant
-    * endDateTime: Instant
-    * createdAtTime: Instant
-    * updatedAtTime: Instant
-    * rentalListingId: UUID <<FK>>
-    * userId: UUID <<FK>>
+entity rental_listing_statuses {
+    * id
+    --
+    name
 }
 
-entity "Review" as review {
-    * id: UUID <<generated>> <<PK>>
-    ---
-    * text: String
-    * createdAtTime: Instant
-    * rentalListingId: UUID <<FK>>
-    * authorId: UUID <<FK>>
+entity rental_listing_photos {
+    * id
+    --
+    file_key
+    rental_listing_id
 }
 
-user ||--|| userRole
-user ||--|| userStatus
+entity bookings {
+    * id
+    --
+    start_date_time
+    end_date_time
+    created_at_time
+    updated_at_time
+    rental_listing_id
+    user_id
+}
 
-rentalListing }o--|| user
-rentalListing ||--|| rentalListingStatus
-rentalListing ||--o{ rentalListingPhoto
-
-booking }o--|| rentalListing
-booking }o--|| user
-
-review }o--|| user
-review }o--|| rentalListing
-
+' Связи
+users::role_id --> roles::id
+users::status_id --> user_statuses::id
+rental_listings::user_id --> users::id
+rental_listings::address_id --> rental_listing_addresses::id
+rental_listings::tariff_id --> rental_listing_tariffs::id
+rental_listings::status_id --> rental_listing_statuses::id
+rental_listing_photos::rental_listing_id --> rental_listings::id
+bookings::rental_listing_id --> rental_listings::id
+bookings::user_id --> users::id
 
 @enduml

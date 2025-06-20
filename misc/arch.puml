@@ -1,0 +1,16 @@
+@startuml arch
+
+left to right direction
+
+actor "Клиент" as Client
+
+node "Сервер" as AppServer
+
+database "PostgreSQL" as MainDB
+database "Yandex Object Storage" as AnalyticsDB
+
+Client --> AppServer : HTTP/HTTPS
+AppServer --> MainDB : SQL-запросы\n(ORM)
+AppServer --> AnalyticsDB : Сохранение/чтение/удаление изображенией
+
+@enduml

@@ -187,7 +187,6 @@ const Register: React.FC = () => {
                 <Typography component="h1" variant="h5" sx={{ mb: 1 }}>
                     Регистрация
                 </Typography>
-                <Alert severity="error">{"СЕРВИС НЕ НЕСЁТ НИКАКОЙ ОТВЕСТВЕННОСТИ ЗА ПОЛОМКУ, КРАЖУ, ПОТЕРЮ ВАШЕЙ ВЕЩИ!"}</Alert>
                 <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1 }}>
                     {error && (
                         <Alert severity="error" sx={{ mb: 2 }}>
@@ -213,7 +212,10 @@ const Register: React.FC = () => {
                         onDragOver={handleDragOver}
                         onDrop={handleDrop}
                     >
-                        <Typography variant="body1" sx={{ mb: 2 }}>
+                        <Typography variant="h6" sx={{ mb: 2 }}>
+                            Загрузите фотографию профиля:
+                        </Typography>
+                        <Typography variant="body2" color="grey" sx={{ mb: 2 }}>
                             {profilePicture ? `Selected: ${profilePicture.name}` : "Перенесите файл сюда или нажмите, чтобы выбрать"}
                         </Typography>
                         <Button

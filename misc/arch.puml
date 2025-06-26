@@ -7,10 +7,10 @@ actor "Клиент" as Client
 node "Сервер" as AppServer
 
 database "PostgreSQL" as MainDB
-database "Yandex Object Storage" as AnalyticsDB
+database "Yandex Object Storage" as ImageStorage
 
 Client --> AppServer : HTTP/HTTPS
 AppServer --> MainDB : SQL-запросы\n(ORM)
-AppServer --> AnalyticsDB : Сохранение/чтение/удаление изображенией
+AppServer --> ImageStorage : Сохранение/чтение/удаление изображенией
 
 @enduml

@@ -1,3 +1,4 @@
+```latex
 \documentclass[12pt]{beamer}
 \usepackage[english, russian]{babel}
 \usepackage[utf8]{inputenc}
@@ -270,3 +271,4 @@
     \end{frame}
 
 \end{document}
+```

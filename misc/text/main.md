@@ -1,3 +1,4 @@
+```latex
 \documentclass[14pt]{extarticle}
 \usepackage[english, russian]{babel}
 \usepackage[utf8]{inputenc}
@@ -658,3 +659,4 @@ Yandex Object Storage для эффективного управления из�
 \end{enumerate}
 
 \end{document}
+```

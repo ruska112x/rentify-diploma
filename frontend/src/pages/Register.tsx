@@ -9,6 +9,7 @@ import { ErrorRegisterResponse, AccessToken } from "../shared/types";
 import api from "../api/api";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import PhoneMaskInput, { phoneRegex } from "../components/PhoneMaskInput";
+import { validateImageFile, readFileAsDataURL } from "../shared/imageValidation";
 
 const Register: React.FC = () => {
     const [email, setEmail] = useState<string>("");
@@ -33,8 +34,6 @@ const Register: React.FC = () => {
 
     const dispatch = useDispatch<AppDispatch>();
     const navigate = useNavigate();
-
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const validatePhone = (value: string): string | null => {
         const cleanValue = value.replace(/[^+\d]/g, "");
@@ -75,22 +74,12 @@ const Register: React.FC = () => {
         }
     };
 
-    const processImage = (file: File) => {
-        const allowedFileTypes = ["image/png", "image/jpeg"];
-        if (file.size > MAX_FILE_SIZE) {
+    const processImage = async (file: File) => {
+        const validation = validateImageFile(file);
+        if (!validation.valid) {
             setFieldErrors(prev => ({
                 ...prev,
-                profilePicture: "Изображение слишком большого размера. Максимальный размер 5 МБ"
-            }));
-            setProfilePicture(null);
-            setImagePreview(null);
-            return;
-        }
-
-        if (!allowedFileTypes.includes(file.type)) {
-            setFieldErrors(prev => ({
-                ...prev,
-                profilePicture: "Недопустимый формат файла. Допустимые форматы: PNG, JPEG"
+                profilePicture: validation.error || "Ошибка загрузки изображения"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -99,12 +88,8 @@ const Register: React.FC = () => {
 
         setProfilePicture(file);
         setFieldErrors(prev => ({ ...prev, profilePicture: undefined }));
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        const preview = await readFileAsDataURL(file);
+        setImagePreview(preview);
     };
 
     const handleSubmit = async (e: FormEvent) => {

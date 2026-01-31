@@ -16,6 +16,7 @@ import { AppDispatch } from "../state/store";
 import { fetchUser } from "../state/userSlice";
 import { ExtendedUser } from "../shared/types";
 import TransparentLoadingSpinner from "../components/TransparentLoadingSpinner";
+import { validateImageFile, readFileAsDataURL } from "../shared/imageValidation";
 
 interface ProfileEditDialogProps {
     isOpen: boolean;
@@ -26,7 +27,6 @@ interface ProfileEditDialogProps {
 
 const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, user, handleClose }) => {
     const dispatch = useDispatch<AppDispatch>();
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     const [profilePicture, setProfilePicture] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -97,22 +97,12 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
         }
     };
 
-    const processImage = (file: File) => {
-        const allowedFileTypes = ["image/png", "image/jpeg"];
-        if (file.size > MAX_FILE_SIZE) {
+    const processImage = async (file: File) => {
+        const validation = validateImageFile(file);
+        if (!validation.valid) {
             setFormErrors(prev => ({
                 ...prev,
-                profilePicture: "Размер файла не должен превышать 5 МБ"
-            }));
-            setProfilePicture(null);
-            setImagePreview(null);
-            return;
-        }
-
-        if (!allowedFileTypes.includes(file.type)) {
-            setFormErrors(prev => ({
-                ...prev,
-                profilePicture: "Поддерживаются только PNG и JPEG"
+                profilePicture: validation.error || "Ошибка загрузки изображения"
             }));
             setProfilePicture(null);
             setImagePreview(null);
@@ -121,12 +111,8 @@ const ProfileEditDialog: React.FC<ProfileEditDialogProps> = ({ isOpen, userId, u
 
         setProfilePicture(file);
         setFormErrors(prev => ({ ...prev, profilePicture: "" }));
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        const preview = await readFileAsDataURL(file);
+        setImagePreview(preview);
     };
 
     const handleDragOver = (e: React.DragEvent<HTMLDivElement>) => {

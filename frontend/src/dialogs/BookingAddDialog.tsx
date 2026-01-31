@@ -16,11 +16,10 @@ import dayjs, { Dayjs } from "dayjs";
 import utc from "dayjs/plugin/utc";
 import authoredApi from "../api/authoredApi";
 import { AxiosError } from "axios";
-import isSameOrBefore from "dayjs/plugin/isSameOrBefore";
-import isSameOrAfter from "dayjs/plugin/isSameOrAfter";
+import { parseUnixTimestamp } from "../shared/timeUtils";
+import { shouldDisableDate, shouldDisableTime, BookingTimeSlot } from "../shared/bookingValidation";
+import { getErrorMessage } from "../shared/axiosErrorHandler";
 
-dayjs.extend(isSameOrAfter);
-dayjs.extend(isSameOrBefore);
 dayjs.extend(utc);
 
 interface BookingDialogProps {
@@ -47,10 +46,8 @@ interface FormErrors {
     server: string;
 }
 
-interface Booking {
+interface Booking extends BookingTimeSlot {
     id: string;
-    startDateTime: string;
-    endDateTime: string;
     rentalListingId: string;
     userId: string;
 }
@@ -79,18 +76,6 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [existingBookings, setExistingBookings] = useState<Booking[]>([]);
 
-
-    const parseUnixTimestamp = (timestamp: string): Dayjs => {
-        const num = parseInt(timestamp);
-        if (isNaN(num)) {
-            console.error(`Invalid timestamp: ${timestamp}`);
-            return dayjs(0);
-        }
-        const seconds = num >= 1e12 ? num / 1000 : num;
-        return dayjs.unix(seconds);
-    };
-
-
     useEffect(() => {
         if (!isOpen) {
             setExistingBookings([]);
@@ -117,90 +102,13 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
         fetchBookings();
     }, [isOpen, rentalListingId]);
 
+    const handleDisableDate = useCallback((date: Dayjs) => {
+        return shouldDisableDate(date, existingBookings);
+    }, [existingBookings]);
 
-    const shouldDisableDate = (date: Dayjs) => {
-        const dateStart = date.startOf("day");
-        const dateEnd = date.endOf("day");
-
-
-        const bookingsOnDate = existingBookings.filter((booking) => {
-            const bookingStart = parseUnixTimestamp(booking.startDateTime);
-            const bookingEnd = parseUnixTimestamp(booking.endDateTime);
-            return dateStart.isBefore(bookingEnd) && dateEnd.isAfter(bookingStart);
-        });
-
-        if (bookingsOnDate.length === 0) {
-
-            return false;
-        }
-
-
-        const sortedBookings = bookingsOnDate
-            .map((booking) => ({
-                start: parseUnixTimestamp(booking.startDateTime),
-                end: parseUnixTimestamp(booking.endDateTime),
-            }))
-            .sort((a, b) => a.start.valueOf() - b.start.valueOf());
-
-
-        const mergedBookings: { start: Dayjs; end: Dayjs }[] = [];
-        let current = sortedBookings[0];
-        for (let i = 1; i < sortedBookings.length; i++) {
-            if (sortedBookings[i].start.isBefore(current.end) || sortedBookings[i].start.isSame(current.end)) {
-                current.end = current.end.isBefore(sortedBookings[i].end) ? sortedBookings[i].end : current.end;
-            } else {
-                mergedBookings.push(current);
-                current = sortedBookings[i];
-            }
-        }
-        mergedBookings.push(current);
-
-
-        const isFullyBooked = mergedBookings.some((booking) => {
-            const coversDay = booking.start.isSameOrBefore(dateStart) && booking.end.isSameOrAfter(dateEnd);
-
-            return coversDay;
-        });
-
-        if (!isFullyBooked) {
-
-        }
-
-        return isFullyBooked;
-    };
-
-
-    const shouldDisableTime = (time: Dayjs, selectedDate: Dayjs | null) => {
-        if (!selectedDate) return false;
-
-        const minutes = time.minute();
-
-        const selectedDateTime = selectedDate
-            .set("hour", time.hour())
-            .set("minute", minutes)
-            .set("second", 0);
-
-        if (selectedDateTime.isBefore(dayjs())) {
-            return true;
-        }
-
-        const isDisabled = existingBookings.some((booking) => {
-            const bookingStart = parseUnixTimestamp(booking.startDateTime);
-            const bookingEnd = parseUnixTimestamp(booking.endDateTime);
-
-
-            if (!selectedDate.isSame(bookingStart, "day") && !selectedDate.isSame(bookingEnd, "day")) {
-                return false;
-            }
-
-
-            const isDisabled = selectedDateTime.isSameOrAfter(bookingStart) && selectedDateTime.isSameOrBefore(bookingEnd);
-
-            return isDisabled;
-        });
-
-        return isDisabled;
-    };
+    const handleDisableTime = useCallback((time: Dayjs, selectedDate: Dayjs | null) => {
+        return shouldDisableTime(time, selectedDate, existingBookings, true);
+    }, [existingBookings]);
 
     const validateForm = useCallback(() => {
         const errors: FormErrors = {
@@ -289,18 +197,8 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                 endTime: null,
             });
         } catch (error) {
-            const axiosError = error as AxiosError;
-            let errorMessage = "Не удается создать аренду. Пожалуйста, попробуйте еще раз.";
-            if (axiosError.response) {
-                if (axiosError.response.status === 401) {
-                    errorMessage = "Unauthorized: Please log in again.";
-                } else if (axiosError.response.status === 404) {
-                    errorMessage = "User or rental listing not found.";
-                } else if (axiosError.response.status === 400) {
-                    errorMessage = "Invalid booking details. Please check your inputs.";
-                }
-            }
-            console.error("Error creating booking:", axiosError.message, axiosError.response?.data);
+            console.error("Error creating booking:", error);
+            const errorMessage = getErrorMessage(error, "Бронирование");
             setFormErrors((prev) => ({ ...prev, server: errorMessage }));
         } finally {
             setIsLoading(false);
@@ -334,7 +232,7 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                                 value={formData.startDate}
                                 onChange={handleDateChange("startDate")}
                                 minDate={dayjs()}
-                                shouldDisableDate={shouldDisableDate}
+                                shouldDisableDate={handleDisableDate}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
@@ -351,7 +249,7 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                                 ampm={false}
                                 minutesStep={10}
                                 timeSteps={{ minutes: 10 }}
-                                shouldDisableTime={(time) => shouldDisableTime(time, formData.startDate)}
+                                shouldDisableTime={(time) => handleDisableTime(time, formData.startDate)}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
@@ -368,7 +266,7 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                                 value={formData.endDate}
                                 onChange={handleDateChange("endDate")}
                                 minDate={formData.startDate || dayjs()}
-                                shouldDisableDate={shouldDisableDate}
+                                shouldDisableDate={handleDisableDate}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,
@@ -385,7 +283,7 @@ const BookingAddDialog: React.FC<BookingDialogProps> = ({
                                 ampm={false}
                                 minutesStep={10}
                                 timeSteps={{ minutes: 10 }}
-                                shouldDisableTime={(time) => shouldDisableTime(time, formData.endDate)}
+                                shouldDisableTime={(time) => handleDisableTime(time, formData.endDate)}
                                 slotProps={{
                                     textField: {
                                         fullWidth: true,

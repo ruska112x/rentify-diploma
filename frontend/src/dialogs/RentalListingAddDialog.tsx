@@ -15,6 +15,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useState } from "react";
 import TransparentLoadingSpinner from "../components/TransparentLoadingSpinner";
 import authoredApi from "../api/authoredApi";
+import { IMAGE_CONFIG } from "../shared/imageConstants";
+import { validateImageFile, readFileAsDataURL, readFilesAsDataURLs } from "../shared/imageValidation";
 
 interface RentalListingAddDialogProps {
     isOpen: boolean;
@@ -77,10 +79,6 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
 
     const [isLoading, setIsLoading] = useState(false);
 
-    const MAX_FILE_SIZE = 5 * 1024 * 1024;
-    const MAX_ADDITIONAL_IMAGES = 4;
-    const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg"];
-
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
         setFormData((prev) => ({
@@ -134,30 +132,20 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         }
     };
 
-    const processMainImage = (file: File) => {
-        if (file.size > MAX_FILE_SIZE) {
+    const processMainImage = async (file: File) => {
+        const validation = validateImageFile(file);
+        if (!validation.valid) {
             setFormErrors((prev) => ({
                 ...prev,
-                mainImage: "Основное изображение должно быть меньше 5MB",
-            }));
-            return;
-        }
-        if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-            setFormErrors((prev) => ({
-                ...prev,
-                mainImage: "Основное изображение должно быть PNG или JPEG",
+                mainImage: validation.error || "Ошибка загрузки изображения",
             }));
             return;
         }
 
         setMainImage(file);
         setFormErrors((prev) => ({ ...prev, mainImage: "" }));
-
-        const reader = new FileReader();
-        reader.onloadend = () => {
-            setMainImagePreview(reader.result as string);
-        };
-        reader.readAsDataURL(file);
+        const preview = await readFileAsDataURL(file);
+        setMainImagePreview(preview);
     };
 
     const handleAdditionalImagesDragOver = (e: React.DragEvent<HTMLDivElement>) => {
@@ -177,47 +165,32 @@ const RentalListingAddDialog: React.FC<RentalListingAddDialogProps> = ({
         processAdditionalImages(files);
     };
 
-    const processAdditionalImages = (files: File[]) => {
-        const validFiles = files.filter((file) => {
-            if (file.size > MAX_FILE_SIZE) {
+    const processAdditionalImages = async (files: File[]) => {
+        const validFiles: File[] = [];
+        for (const file of files) {
+            const validation = validateImageFile(file);
+            if (!validation.valid) {
                 setFormErrors((prev) => ({
                     ...prev,
-                    additionalImages: "Каждое дополнительное изображение должно быть меньше 5MB",
+                    additionalImages: validation.error || "Ошибка загрузки изображения",
                 }));
-                return false;
+                return;
             }
-            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                setFormErrors((prev) => ({
-                    ...prev,
-                    additionalImages: "Каждое дополнительное изображение должно быть PNG или JPEG",
-                }));
-                return false;
-            }
-            return true;
-        });
+            validFiles.push(file);
+        }
 
-        if (additionalImages.length + validFiles.length > MAX_ADDITIONAL_IMAGES) {
+        if (additionalImages.length + validFiles.length > IMAGE_CONFIG.MAX_ADDITIONAL_IMAGES) {
             setFormErrors((prev) => ({
                 ...prev,
-                additionalImages: `Вы можете загрузить максимум ${MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
+                additionalImages: `Максимум ${IMAGE_CONFIG.MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
             }));
             return;
         }
 
         setAdditionalImages((prev) => [...prev, ...validFiles]);
         setFormErrors((prev) => ({ ...prev, additionalImages: "" }));
-
-        const previews = validFiles.map((file) => {
-            return new Promise<string>((resolve) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result as string);
-                reader.readAsDataURL(file);
-            });
-        });
-
-        Promise.all(previews).then((newPreviews) => {
-            setAdditionalImagesPreviews((prev) => [...prev, ...newPreviews]);
-        });
+        const newPreviews = await readFilesAsDataURLs(validFiles);
+        setAdditionalImagesPreviews((prev) => [...prev, ...newPreviews]);
     };
 
     const handleDeleteAdditionalImage = (index: number) => {

@@ -1,9 +1,5 @@
-import { CircularProgress, Container } from "@mui/material";
+import Spinner from "./Spinner";
 
-const LoadingSpinner: React.FC = () => (
-  <Container sx={{ display: "flex", justifyContent: "center", mt: 4 }}>
-    <CircularProgress />
-  </Container>
-);
+const LoadingSpinner: React.FC = () => <Spinner variant="inline" />;
 
 export default LoadingSpinner;

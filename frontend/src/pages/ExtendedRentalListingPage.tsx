@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { ExtendedRentalListing, ExtendedUser, RentalListingAddress, RentalListingTariff } from "../shared/types";
+import { ExtendedRentalListing, ExtendedUser } from "../shared/types";
+import { formatAddress, formatTariff } from "../shared/formatters";
 import {
     Box,
     Container,
@@ -82,26 +83,6 @@ const ExtendedRentalListingPage: React.FC<ExtendedRentalListingPageProps> = ({ r
     useEffect(() => {
         fetchRentalListing();
     }, [rentalListingId]);
-    const formatAddress = (address: RentalListingAddress) => {
-        const parts = [
-            address.locality,
-            address.street,
-            address.houseNumber,
-            address.district ? `(${address.district})` : null,
-            address.additionalInfo,
-        ].filter(Boolean);
-        return parts.join(", ");
-    };
-
-    const formatTariff = (tariff: RentalListingTariff) => {
-        const parts = [
-            tariff.perHour ? `За час: ${tariff.perHour}` : null,
-            tariff.perDay ? `За день: ${tariff.perDay}` : null,
-            tariff.perWeek ? `За неделю: ${tariff.perWeek}` : null,
-            tariff.additionalInfo ? `Доп. инфо: ${tariff.additionalInfo}` : null,
-        ].filter(Boolean);
-        return parts.join("; ");
-    };
 
     if (loading) {
         return <LoadingSpinner />;

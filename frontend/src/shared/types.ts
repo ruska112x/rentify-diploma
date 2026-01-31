@@ -73,14 +73,8 @@ export interface ExtendedRentalListing {
     address: RentalListingAddress;
     tariff: RentalListingTariff;
     autoRenew: boolean;
-    mainImageData: {
-        key: string | null;
-        link: string;
-    };
-    additionalImagesData: Array<{
-        key: string;
-        link: string;
-    }>;
+    mainImageData: ImageData;
+    additionalImagesData: ImageData[];
     userId: string;
     status: string;
 }

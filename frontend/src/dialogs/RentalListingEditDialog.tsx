@@ -16,7 +16,9 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useEffect, useState } from "react";
 import authoredApi from "../api/authoredApi";
 import { ExtendedRentalListing } from "../shared/types";
-import { AxiosError } from "axios";
+import { IMAGE_CONFIG } from "../shared/imageConstants";
+import { validateImageFile, readFileAsDataURL } from "../shared/imageValidation";
+import { getErrorMessage } from "../shared/axiosErrorHandler";
 
 interface RentalListingEditDialogProps {
     isOpen: boolean;
@@ -52,10 +54,6 @@ interface Image {
     isNew?: boolean;
     file?: File;
 }
-
-const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
-const MAX_ADDITIONAL_IMAGES = 4;
-const ALLOWED_FILE_TYPES = ["image/png", "image/jpeg"];
 
 const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
     isOpen,
@@ -252,28 +250,18 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
         setFormData((prev) => ({ ...prev, autoRenew: e.target.checked }));
     };
 
-    const processImage = (file: File): Promise<Image> => {
-        return new Promise((resolve, reject) => {
-            if (file.size > MAX_FILE_SIZE) {
-                reject("Размер изображения превышает 5MB");
-                return;
-            }
-            if (!ALLOWED_FILE_TYPES.includes(file.type)) {
-                reject("Изображение должно быть в формате PNG или JPEG");
-                return;
-            }
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                resolve({
-                    key: `new-${Date.now()}-${Math.random()}`,
-                    preview: reader.result as string,
-                    isNew: true,
-                    file,
-                });
-            };
-            reader.onerror = () => reject("Ошибка чтения файла");
-            reader.readAsDataURL(file);
-        });
+    const processImage = async (file: File): Promise<Image> => {
+        const validation = validateImageFile(file);
+        if (!validation.valid) {
+            throw new Error(validation.error || "Ошибка загрузки изображения");
+        }
+        const preview = await readFileAsDataURL(file);
+        return {
+            key: `new-${Date.now()}-${Math.random()}`,
+            preview,
+            isNew: true,
+            file,
+        };
     };
 
     const handleMainImageDrop = async (e: React.DragEvent<HTMLDivElement>) => {
@@ -285,7 +273,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                 setMainImage(image);
                 setFormErrors((prev) => ({ ...prev, mainImage: "" }));
             } catch (error) {
-                setFormErrors((prev) => ({ ...prev, mainImage: error as string }));
+                setFormErrors((prev) => ({ ...prev, mainImage: (error as Error).message }));
             }
         }
     };
@@ -298,7 +286,7 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                 setMainImage(image);
                 setFormErrors((prev) => ({ ...prev, mainImage: "" }));
             } catch (error) {
-                setFormErrors((prev) => ({ ...prev, mainImage: error as string }));
+                setFormErrors((prev) => ({ ...prev, mainImage: (error as Error).message }));
             }
         }
     };
@@ -321,15 +309,15 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
                 const image = await processImage(file);
                 newImages.push(image);
             } catch (error) {
-                setFormErrors((prev) => ({ ...prev, additionalImages: error as string }));
+                setFormErrors((prev) => ({ ...prev, additionalImages: (error as Error).message }));
                 return;
             }
         }
 
-        if (additionalImages.length + newImages.length > MAX_ADDITIONAL_IMAGES) {
+        if (additionalImages.length + newImages.length > IMAGE_CONFIG.MAX_ADDITIONAL_IMAGES) {
             setFormErrors((prev) => ({
                 ...prev,
-                additionalImages: `Вы можете загрузить максимум ${MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
+                additionalImages: `Максимум ${IMAGE_CONFIG.MAX_ADDITIONAL_IMAGES} дополнительных изображений`,
             }));
             return;
         }
@@ -423,19 +411,9 @@ const RentalListingEditDialog: React.FC<RentalListingEditDialogProps> = ({
             setAdditionalImages([]);
             setDeleteImageKeys([]);
         } catch (error) {
-            const axiosError = error as AxiosError;
-            let errorMessage = "Не удалось обновить объявление";
-            if (axiosError.response) {
-                if (axiosError.response.status === 400) {
-                    // const errorData = axiosError.response.data as { [key: string]: string };
-                } else if (axiosError.response.status === 404) {
-                    errorMessage = "Объявление не найдено.";
-                } else if (axiosError.response.status === 405) {
-                    errorMessage = "Сервер не поддерживает эту операцию. Обратитесь в поддержку.";
-                }
-            }
-            setFormErrors((prev) => ({ ...prev, server: errorMessage }));
             console.error("Error updating rental listing:", error);
+            const errorMessage = getErrorMessage(error, "Объявление");
+            setFormErrors((prev) => ({ ...prev, server: errorMessage }));
         } finally {
             setIsLoading(false);
         }

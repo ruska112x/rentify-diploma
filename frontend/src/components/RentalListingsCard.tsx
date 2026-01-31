@@ -18,7 +18,8 @@ import { Link } from "react-router";
 import LoadingSpinner from "./LoadingSpinner";
 import ImageSquare from "./ImageSquare";
 import RentalListingBookingsCard from "./RentalListingBookingsCard";
-import { ExtendedRentalListing, RentalListingAddress, RentalListingTariff } from "../shared/types";
+import { ExtendedRentalListing } from "../shared/types";
+import { formatAddress, formatTariff } from "../shared/formatters";
 import { AxiosError } from "axios";
 
 interface RentalListingsCardProps {
@@ -132,27 +133,6 @@ const RentalListingsCard: React.FC<RentalListingsCardProps> = ({ userId }) => {
             console.error("Archive error:", err);
             alert("Не удалось активировать объявление. Пожалуйста, попробуйте позже.");
         }
-    };
-
-    const formatAddress = (address: RentalListingAddress) => {
-        const parts = [
-            address.locality,
-            address.street,
-            address.houseNumber,
-            address.district ? `(${address.district})` : null,
-            address.additionalInfo,
-        ].filter(Boolean);
-        return parts.join(", ");
-    };
-
-    const formatTariff = (tariff: RentalListingTariff) => {
-        const parts = [
-            tariff.perHour ? `За час: ${tariff.perHour}` : null,
-            tariff.perDay ? `За день: ${tariff.perDay}` : null,
-            tariff.perWeek ? `За неделю: ${tariff.perWeek}` : null,
-            tariff.additionalInfo ? `Доп. инфо: ${tariff.additionalInfo}` : null,
-        ].filter(Boolean);
-        return parts.join("; ");
     };
 
     const [onDeleteFailDialog, setOnDeleteFailDialog] = useState(false);
